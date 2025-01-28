@@ -117,6 +117,28 @@ export const MOCK_POSTS = [
       domain: "youtube.com",
     },
   },
+  {
+    author: {
+      firstName: "Mike",
+      lastName: "Johnson",
+      handle: "fitcoach",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      verified: true,
+    },
+    content: "Check out my latest workout tutorial! 💪 Perfect for beginners looking to build strength and improve form.",
+    timestamp: "2h",
+    metrics: {
+      likes: 324,
+      comments: 42,
+      reposts: 12,
+      shares: 8,
+    },
+    media: {
+      type: "video",
+      url: "https://example.com/workout-video.mp4",
+      thumbnail: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop",
+    },
+  },
 ];
 
 const Community = () => {

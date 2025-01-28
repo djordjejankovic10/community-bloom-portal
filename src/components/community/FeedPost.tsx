@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { Heart, MessageCircle, Repeat2, Share, Check, MoreVertical, Link2, Share2, FileText, AlertOctagon } from "lucide-react";
+import { Heart, MessageCircle, Repeat2, Share, Check, MoreVertical, Link2, Share2, FileText, AlertOctagon, Play } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -29,10 +29,11 @@ interface FeedPostProps {
     shares: number;
   };
   media?: {
-    type: "image" | "link";
+    type: "image" | "link" | "video";
     url: string;
     title?: string;
     domain?: string;
+    thumbnail?: string;
   };
   isDetail?: boolean;
   index?: number;
@@ -166,6 +167,28 @@ export const FeedPost = ({
                     alt=""
                     className="w-full h-auto rounded-lg"
                   />
+                ) : media.type === "video" ? (
+                  <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
+                    <img
+                      src={media.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-12 w-12 rounded-full bg-background/80 hover:bg-background/90"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Handle video playback here
+                          console.log("Play video:", media.url);
+                        }}
+                      >
+                        <Play className="h-6 w-6" />
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
                   <a
                     href={media.url}
