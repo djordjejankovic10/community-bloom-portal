@@ -2,6 +2,7 @@ import { CommunityHeader } from "@/components/community/CommunityHeader";
 import { CommunityTabs } from "@/components/community/CommunityTabs";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { FeedPost } from "@/components/community/FeedPost";
+import { CreatePost } from "@/components/community/CreatePost";
 import { useLocation } from "react-router-dom";
 
 export const MOCK_POSTS = [
@@ -125,9 +126,14 @@ const Community = () => {
   const renderContent = () => {
     switch (currentPath) {
       case "/community":
-        return MOCK_POSTS.map((post, index) => (
-          <FeedPost key={index} {...post} index={index} />
-        ));
+        return (
+          <>
+            <CreatePost />
+            {MOCK_POSTS.map((post, index) => (
+              <FeedPost key={index} {...post} index={index} />
+            ))}
+          </>
+        );
       case "/community/challenges":
       case "/community/meetups":
       case "/community/leaderboard":
