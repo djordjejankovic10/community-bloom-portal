@@ -88,7 +88,7 @@ export const MOCK_POSTS = [
       shares: 8,
     },
     media: {
-      type: "image",
+      type: "image" as const,
       url: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&h=400&fit=crop",
     },
   },
@@ -110,7 +110,7 @@ export const MOCK_POSTS = [
       shares: 23,
     },
     media: {
-      type: "link",
+      type: "link" as const,
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       title: "15-Minute Morning Yoga Flow",
       domain: "youtube.com",
