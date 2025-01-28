@@ -19,10 +19,7 @@ const PostDetail = () => {
           <button onClick={() => window.history.back()} className="text-xl">
             ←
           </button>
-          <div>
-            <h1 className="font-bold text-xl">Thread</h1>
-            <p className="text-sm text-gray-500">{post.metrics.likes + post.metrics.reposts}K views</p>
-          </div>
+          <h1 className="font-bold text-xl">{post.author.firstName}'s post</h1>
         </div>
         <Separator />
       </div>
