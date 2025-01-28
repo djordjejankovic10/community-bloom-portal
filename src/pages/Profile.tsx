@@ -3,7 +3,6 @@ import { useTheme } from "next-themes";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
-import { toast } from "sonner";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
@@ -20,7 +19,6 @@ const Profile = () => {
     const root = document.documentElement;
     root.style.setProperty('--primary', convertHexToHSL(color));
     console.log("Primary color changed to:", color);
-    toast.success("Theme color updated!");
   };
 
   // Convert hex color to HSL format
