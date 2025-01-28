@@ -19,14 +19,15 @@ export const BottomNav = () => {
       <div className="flex justify-between items-center max-w-lg mx-auto">
         {navItems.map((item, index) => {
           const Icon = item.icon;
+          const active = isActive(item.path);
           return (
             <Link
               key={index}
               to={item.path}
               className={`p-2 rounded-full transition-colors ${
-                isActive(item.path)
+                active
                   ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:text-foreground/80"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Icon className="w-6 h-6" />
