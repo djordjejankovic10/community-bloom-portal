@@ -1,4 +1,4 @@
-import { BellIcon, MessageCircle, Menu } from "lucide-react";
+import { BellIcon, MessageCircle, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const CommunityHeader = () => {
@@ -12,6 +12,9 @@ export const CommunityHeader = () => {
           <h1 className="text-2xl font-bold text-foreground">Community</h1>
         </div>
         <div className="flex gap-4">
+          <button className="p-2 text-primary hover:text-primary/80 transition-colors">
+            <Search className="w-6 h-6" />
+          </button>
           <button className="p-2 text-primary hover:text-primary/80 transition-colors">
             <MessageCircle className="w-6 h-6" />
           </button>
