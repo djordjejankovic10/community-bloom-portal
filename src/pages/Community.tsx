@@ -20,7 +20,7 @@ const MOCK_POSTS = [
       shares: 22,
     },
     media: {
-      type: "link",
+      type: "link" as const,
       url: "https://www.wired.com/story/deepseek-ai-data-china",
       title: "DeepSeek's Popular AI App Is Explicitly Sending US Data to China",
       domain: "wired.com",
@@ -42,7 +42,7 @@ const MOCK_POSTS = [
       shares: 105,
     },
     media: {
-      type: "link",
+      type: "link" as const,
       url: "https://youtube.com/mkbhd",
       title: "MKBHD's Dream Phone Revealed",
       domain: "youtube.com",
@@ -55,7 +55,7 @@ const Community = () => {
     <div className="min-h-screen pb-20">
       <CommunityHeader />
       <CommunityTabs />
-      <main className="p-4">
+      <main>
         {MOCK_POSTS.map((post, index) => (
           <FeedPost key={index} {...post} />
         ))}

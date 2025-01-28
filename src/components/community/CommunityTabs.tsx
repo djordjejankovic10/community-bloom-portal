@@ -20,17 +20,10 @@ export const CommunityTabs = () => {
             className={`relative py-4 ${
               currentPath === tab.path
                 ? "text-black border-b-2 border-black"
-                : "text-gray-600"
+                : "text-gray-500"
             }`}
           >
-            <span className="flex items-center gap-2">
-              {tab.name}
-              {tab.isNew && (
-                <span className="bg-accent text-xs px-2 py-0.5 rounded-full text-black">
-                  NEW
-                </span>
-              )}
-            </span>
+            {tab.name}
           </Link>
         ))}
       </nav>
