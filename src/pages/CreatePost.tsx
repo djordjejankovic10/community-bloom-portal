@@ -72,16 +72,19 @@ const CreatePostPage = () => {
           </Button>
         </div>
 
-        <div className="w-full overflow-x-auto">
-          <Tabs value={selectedCircle} onValueChange={setSelectedCircle}>
-            <TabsList className="w-full justify-start">
-              {CIRCLES.map((circle) => (
-                <TabsTrigger key={circle} value={circle} className="text-xs whitespace-nowrap">
-                  {circle}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">Select Circle</label>
+          <div className="w-full overflow-x-auto">
+            <Tabs value={selectedCircle} onValueChange={setSelectedCircle}>
+              <TabsList className="w-full justify-start">
+                {CIRCLES.map((circle) => (
+                  <TabsTrigger key={circle} value={circle} className="text-xs whitespace-nowrap">
+                    {circle}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
       </div>
     </div>
