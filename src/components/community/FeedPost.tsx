@@ -100,35 +100,35 @@ export const FeedPost = ({
               </Button>
             </DrawerTrigger>
             <DrawerContent>
-              <div className="p-4 space-y-4">
-                <div className="mx-auto h-1.5 w-12 rounded-full bg-muted mb-8" />
+              <div className="p-2 space-y-2">
+                <div className="mx-auto h-1 w-12 rounded-full bg-muted mb-4" />
                 <button
                   onClick={handleCopyLink}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors"
+                  className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors"
                 >
-                  <Link2 className="h-5 w-5 text-primary" />
+                  <Link2 className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">Copy link</span>
                 </button>
                 <button
                   onClick={handleShareLink}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors"
+                  className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors"
                 >
-                  <Share2 className="h-5 w-5 text-primary" />
+                  <Share2 className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">Share link</span>
                 </button>
                 <button
                   onClick={handleCopyText}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors"
+                  className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors"
                 >
-                  <FileText className="h-5 w-5 text-primary" />
+                  <FileText className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">Copy text</span>
                 </button>
-                <Separator className="my-2" />
+                <Separator className="my-1" />
                 <button
                   onClick={handleReport}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors text-destructive"
+                  className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors text-destructive"
                 >
-                  <AlertOctagon className="h-5 w-5" />
+                  <AlertOctagon className="h-4 w-4" />
                   <span className="text-sm font-medium">Report</span>
                 </button>
               </div>
