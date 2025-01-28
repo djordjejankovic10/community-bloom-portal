@@ -40,58 +40,41 @@
   color: #888;
 }
 
-/* Mobile container with fixed width */
+/* Mobile container with fixed positioning */
 body {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
   background: #f0f0f0;
   overflow-x: hidden;
-  width: 100%;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
 }
 
 #root {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
   width: 375px;
-  min-width: 375px;
-  max-width: 375px;
-  margin: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: white;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow-x: hidden;
-  flex: 0 0 375px;
 }
 
 .dark #root {
   background: hsl(var(--background));
 }
 
-/* Prevent content from overflowing */
+/* Force all content to stay within container */
 #root > * {
   width: 100%;
   max-width: 375px;
   box-sizing: border-box;
 }
 
-/* Force all elements to respect container width */
+/* Prevent any element from breaking the width */
 * {
   max-width: 375px;
-}
-
-/* Additional container constraints */
-html {
-  overflow-x: hidden;
-  width: 100%;
-}
-
-/* Ensure fixed width for all major containers */
-main, header, footer, nav, section, article {
-  width: 100%;
-  max-width: 375px;
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
 }
