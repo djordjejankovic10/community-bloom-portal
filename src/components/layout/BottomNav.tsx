@@ -40,12 +40,14 @@ export const BottomNav = () => {
 
     if (item.comingSoon) {
       return (
-        <Tooltip key={index}>
-          <TooltipTrigger asChild>{link}</TooltipTrigger>
-          <TooltipContent>
-            <p>Coming Soon</p>
-          </TooltipContent>
-        </Tooltip>
+        <TooltipProvider key={index}>
+          <Tooltip>
+            <TooltipTrigger asChild>{link}</TooltipTrigger>
+            <TooltipContent>
+              <p>Coming Soon</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     }
 
