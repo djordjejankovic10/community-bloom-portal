@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 
 export const CommunityHeader = () => {
   return (
-    <header className="px-4 py-2 border-b border-border">
-      <div className="flex justify-between items-center">
+    <header className="sticky top-0 bg-background border-b border-border z-50">
+      <div className="flex justify-between items-center px-4 py-2">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="lg:hidden">
             <Menu className="w-5 h-5" />
