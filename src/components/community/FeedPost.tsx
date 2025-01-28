@@ -151,7 +151,7 @@ export const FeedPost = ({
                 </span>
               )}
               {author.role && (
-                <Badge variant={author.role === "founder" ? "default" : "secondary"} className="text-[10px] px-1 py-0">
+                <Badge variant="default" className="text-[10px] px-1 py-0">
                   {author.role}
                 </Badge>
               )}
