@@ -130,30 +130,30 @@ export const FeedPost = ({
                 )}
               </div>
             )}
-            <div className="flex justify-between mt-3 text-primary w-full">
+            <div className="flex justify-between mt-3 text-muted-foreground w-full">
               <button 
-                className="flex items-center gap-2 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-2 hover:text-red-500"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Star className="w-5 h-5" />
                 <span>{metrics.likes}</span>
               </button>
               <button 
-                className="flex items-center gap-2 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-2 hover:text-blue-500"
                 onClick={(e) => e.stopPropagation()}
               >
                 <MessageCircle className="w-5 h-5" />
                 <span>{metrics.comments}</span>
               </button>
               <button 
-                className="flex items-center gap-2 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-2 hover:text-green-500"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Star className="w-5 h-5" />
                 <span>{metrics.reposts}</span>
               </button>
               <button 
-                className="flex items-center gap-2 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-2 hover:text-blue-500"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Share2 className="w-5 h-5" />

@@ -12,10 +12,10 @@ export const CommunityHeader = () => {
           <h1 className="text-2xl font-bold text-foreground">Community</h1>
         </div>
         <div className="flex gap-4">
-          <button className="p-2 text-primary hover:text-primary/80 transition-colors">
+          <button className="p-2 text-foreground hover:text-primary">
             <MessageCircle className="w-6 h-6" />
           </button>
-          <button className="p-2 text-primary hover:text-primary/80 transition-colors">
+          <button className="p-2 text-foreground hover:text-primary">
             <BellRing className="w-6 h-6" />
           </button>
         </div>
