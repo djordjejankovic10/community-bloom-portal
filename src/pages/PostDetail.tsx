@@ -51,12 +51,16 @@ const PostDetail = () => {
       </div>
 
       <div className="px-4 py-2">
-        <h2 className="font-bold mb-4">Replies</h2>
-        {post.replies?.map((reply, index) => (
-          <div key={index} className="mb-4">
-            <FeedPost {...reply} />
-          </div>
-        ))}
+        {post.replies && post.replies.length > 0 && (
+          <>
+            <h2 className="font-bold mb-4">Replies</h2>
+            {post.replies.map((reply, index) => (
+              <div key={index} className="mb-4">
+                <FeedPost {...reply} />
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
