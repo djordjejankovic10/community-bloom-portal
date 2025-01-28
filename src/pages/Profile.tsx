@@ -18,15 +18,16 @@ const Profile = () => {
       </header>
       
       <div className="p-4">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg shadow-sm">
           <div className="flex items-center gap-3">
             <Moon className="w-5 h-5" />
-            <span>Dark Mode</span>
+            <span className="font-medium">Dark Mode</span>
           </div>
           <Toggle
             pressed={theme === "dark"}
             onPressedChange={toggleDarkMode}
             aria-label="Toggle dark mode"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
           />
         </div>
       </div>
