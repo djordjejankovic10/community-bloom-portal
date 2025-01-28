@@ -25,8 +25,8 @@ export const PostDialog = ({ open, onOpenChange }: PostDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="fixed inset-0 w-full h-full p-0 max-w-none rounded-none">
-        <div className="flex items-center justify-between border-b p-4">
+      <DialogContent className="fixed inset-0 w-full h-full p-0 max-w-none rounded-none bg-background">
+        <div className="flex items-center justify-between border-b p-3">
           <Button
             variant="ghost"
             size="icon"
@@ -38,16 +38,16 @@ export const PostDialog = ({ open, onOpenChange }: PostDialogProps) => {
           <div className="font-semibold">New note</div>
           <Button
             size="sm"
-            className="rounded-full px-6"
+            className="rounded-full px-4"
             disabled={!content.trim()}
           >
             Post
           </Button>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-3 space-y-4 h-[calc(100%-60px)] overflow-y-auto">
           <div className="flex gap-3">
-            <Avatar className="w-10 h-10">
+            <Avatar className="w-10 h-10 flex-shrink-0">
               <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
               <AvatarFallback>DJ</AvatarFallback>
             </Avatar>
@@ -59,28 +59,28 @@ export const PostDialog = ({ open, onOpenChange }: PostDialogProps) => {
             />
           </div>
 
-          <div className="flex gap-1">
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+          <div className="flex gap-1 overflow-x-auto pb-2">
+            <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
               <Plus className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
               <Image className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
               <Camera className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
               <Mic className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
               <LineChart className="h-5 w-5 text-muted-foreground" />
             </Button>
           </div>
 
           <Tabs value={selectedCircle} onValueChange={setSelectedCircle}>
-            <TabsList className="w-full justify-start">
+            <TabsList className="w-full justify-start overflow-x-auto">
               {CIRCLES.map((circle) => (
-                <TabsTrigger key={circle} value={circle} className="text-xs">
+                <TabsTrigger key={circle} value={circle} className="text-xs whitespace-nowrap">
                   {circle}
                 </TabsTrigger>
               ))}
