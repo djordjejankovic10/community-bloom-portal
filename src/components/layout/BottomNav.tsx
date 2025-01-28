@@ -30,7 +30,7 @@ export const BottomNav = () => {
         onClick={(e) => item.comingSoon && e.preventDefault()}
         className={`p-2 rounded-full transition-colors ${
           active
-            ? "bg-[#8B5CF6] text-white hover:bg-[#7c4deb] shadow-md"
+            ? "bg-primary text-primary-foreground hover:bg-primary/90"
             : "text-muted-foreground hover:text-foreground"
         }`}
       >
