@@ -24,6 +24,7 @@ const App = () => (
             <Route path="/community" element={<Community />} />
             <Route path="/community/challenges" element={<Community />} />
             <Route path="/community/meetups" element={<Community />} />
+            <Route path="/community/leaderboard" element={<Community />} />
             <Route path="/community/post/:postId" element={<PostDetail />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
