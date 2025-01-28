@@ -1,4 +1,4 @@
-import { BellIcon, UserPlusIcon, Menu } from "lucide-react";
+import { BellIcon, MessageCircle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const CommunityHeader = () => {
@@ -13,7 +13,7 @@ export const CommunityHeader = () => {
         </div>
         <div className="flex gap-4">
           <button className="p-2 text-foreground hover:text-primary">
-            <UserPlusIcon className="w-6 h-6" />
+            <MessageCircle className="w-6 h-6" />
           </button>
           <button className="p-2 text-foreground hover:text-primary">
             <BellIcon className="w-6 h-6" />
