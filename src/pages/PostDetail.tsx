@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Image, Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MOCK_POSTS } from "./Community";
 
 const PostDetail = () => {
@@ -28,7 +29,10 @@ const PostDetail = () => {
 
       <div className="px-4 py-3">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-8 h-8 rounded-full bg-gray-200" />
+          <Avatar className="w-8 h-8">
+            <AvatarImage src={post.author.avatar} />
+            <AvatarFallback>{post.author.firstName[0]}</AvatarFallback>
+          </Avatar>
           <div className="flex-1 relative">
             <Input 
               placeholder="Reply to wired..."
