@@ -11,7 +11,7 @@ export const CommunityTabs = () => {
   ];
 
   return (
-    <div className="border-b border-gray-200">
+    <div className="border-b border-border">
       <nav className="flex gap-8 px-4">
         {tabs.map((tab) => (
           <Link
@@ -19,8 +19,8 @@ export const CommunityTabs = () => {
             to={tab.path}
             className={`relative py-4 ${
               currentPath === tab.path
-                ? "text-black border-b-2 border-black"
-                : "text-gray-500"
+                ? "text-foreground border-b-2 border-primary"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {tab.name}

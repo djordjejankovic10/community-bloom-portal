@@ -48,7 +48,7 @@ export const FeedPost = ({
   return (
     <>
       <div 
-        className={`px-4 py-3 ${!isDetail ? "hover:bg-gray-50 cursor-pointer" : ""} transition-colors`}
+        className={`px-4 py-3 ${!isDetail ? "hover:bg-accent cursor-pointer" : ""} transition-colors`}
         onClick={handleClick}
       >
         <div className="flex gap-3">
@@ -58,7 +58,7 @@ export const FeedPost = ({
           </Avatar>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className="font-bold">{author.name}</span>
+              <span className="font-bold text-foreground">{author.name}</span>
               {author.verified && (
                 <span className="text-blue-500">
                   <svg
@@ -69,10 +69,10 @@ export const FeedPost = ({
                   </svg>
                 </span>
               )}
-              <span className="text-gray-500">@{author.handle}</span>
-              <span className="text-gray-500">· {timestamp}</span>
+              <span className="text-muted-foreground">@{author.handle}</span>
+              <span className="text-muted-foreground">· {timestamp}</span>
             </div>
-            <p className="mt-1 text-gray-900">{content}</p>
+            <p className="mt-1 text-foreground">{content}</p>
             {media && (
               <div className="mt-3 rounded-xl overflow-hidden">
                 {media.type === "image" ? (
@@ -86,7 +86,7 @@ export const FeedPost = ({
                     href={media.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block border rounded-xl overflow-hidden hover:bg-gray-50"
+                    className="block border rounded-xl overflow-hidden hover:bg-accent"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <img
@@ -95,10 +95,10 @@ export const FeedPost = ({
                       className="w-full h-auto"
                     />
                     <div className="p-3">
-                      <div className="text-gray-900 font-medium">
+                      <div className="text-foreground font-medium">
                         {media.title}
                       </div>
-                      <div className="text-gray-500 text-sm">
+                      <div className="text-muted-foreground text-sm">
                         {media.domain}
                       </div>
                     </div>
@@ -106,7 +106,7 @@ export const FeedPost = ({
                 )}
               </div>
             )}
-            <div className="flex justify-between mt-3 text-gray-500 w-full">
+            <div className="flex justify-between mt-3 text-muted-foreground w-full">
               <button 
                 className="flex items-center gap-2 hover:text-red-500"
                 onClick={(e) => e.stopPropagation()}
