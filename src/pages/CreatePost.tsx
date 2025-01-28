@@ -40,7 +40,7 @@ const CreatePostPage = () => {
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 space-y-2">
         <div className="flex gap-3">
           <Avatar className="w-10 h-10 flex-shrink-0">
             <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
@@ -72,16 +72,19 @@ const CreatePostPage = () => {
           </Button>
         </div>
 
-        <div className="w-full overflow-x-auto">
-          <Tabs value={selectedCircle} onValueChange={setSelectedCircle}>
-            <TabsList className="w-full justify-start">
-              {CIRCLES.map((circle) => (
-                <TabsTrigger key={circle} value={circle} className="text-xs whitespace-nowrap">
-                  {circle}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">Select Circle</label>
+          <div className="w-full overflow-x-auto">
+            <Tabs value={selectedCircle} onValueChange={setSelectedCircle}>
+              <TabsList className="w-full justify-start">
+                {CIRCLES.map((circle) => (
+                  <TabsTrigger key={circle} value={circle} className="text-xs whitespace-nowrap">
+                    {circle}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
       </div>
     </div>
