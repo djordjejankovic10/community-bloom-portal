@@ -15,7 +15,7 @@ export const BottomNav = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2">
+    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-2 transition-colors">
       <div className="flex justify-between items-center max-w-lg mx-auto">
         {navItems.map((item, index) => {
           const Icon = item.icon;
@@ -23,10 +23,10 @@ export const BottomNav = () => {
             <Link
               key={index}
               to={item.path}
-              className={`p-2 rounded-full ${
+              className={`p-2 rounded-full transition-colors ${
                 isActive(item.path)
-                  ? "bg-black text-white"
-                  : "text-gray-600 hover:bg-gray-100"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               }`}
             >
               <Icon className="w-6 h-6" />
