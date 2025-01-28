@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { Heart, MessageCircle, Repeat2, Share, Check, MoreVertical } from "lucide-react";
+import { MessageCircle, Star, Share2, Check, MoreVertical } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -135,7 +135,7 @@ export const FeedPost = ({
                 className="flex items-center gap-2 hover:text-red-500"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Heart className="w-5 h-5" />
+                <Star className="w-5 h-5" />
                 <span>{metrics.likes}</span>
               </button>
               <button 
@@ -149,14 +149,14 @@ export const FeedPost = ({
                 className="flex items-center gap-2 hover:text-green-500"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Repeat2 className="w-5 h-5" />
+                <Star className="w-5 h-5" />
                 <span>{metrics.reposts}</span>
               </button>
               <button 
                 className="flex items-center gap-2 hover:text-blue-500"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Share className="w-5 h-5" />
+                <Share2 className="w-5 h-5" />
                 <span>{metrics.shares}</span>
               </button>
             </div>

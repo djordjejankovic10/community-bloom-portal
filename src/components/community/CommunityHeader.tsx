@@ -1,4 +1,4 @@
-import { BellIcon, MessageCircle, Menu } from "lucide-react";
+import { BellRing, MessageCircle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const CommunityHeader = () => {
@@ -16,7 +16,7 @@ export const CommunityHeader = () => {
             <MessageCircle className="w-6 h-6" />
           </button>
           <button className="p-2 text-foreground hover:text-primary">
-            <BellIcon className="w-6 h-6" />
+            <BellRing className="w-6 h-6" />
           </button>
         </div>
       </div>
