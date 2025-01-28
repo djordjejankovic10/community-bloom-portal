@@ -157,7 +157,7 @@ export const FeedPost = ({
               )}
               <span className="text-muted-foreground text-xs whitespace-nowrap">· {timestamp}</span>
             </div>
-            <p className="mt-0.5 text-sm text-foreground">{content}</p>
+            <p className="mt-0.5 text-base text-foreground">{content}</p>
             {media && (
               <div className="mt-2 rounded-lg overflow-hidden">
                 {media.type === "image" ? (
