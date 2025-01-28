@@ -89,13 +89,13 @@ export const FeedPost = ({
   return (
     <>
       <div 
-        className={`px-4 py-3 ${!isDetail ? "hover:bg-accent cursor-pointer" : ""} transition-colors relative`}
+        className={`px-3 py-2 ${!isDetail ? "hover:bg-accent cursor-pointer" : ""} transition-colors relative`}
         onClick={handleClick}
       >
-        <div className="absolute top-3 right-4">
+        <div className="absolute top-2 right-3">
           <Drawer>
             <DrawerTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button variant="ghost" size="icon" className="h-7 w-7">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DrawerTrigger>
@@ -135,43 +135,43 @@ export const FeedPost = ({
             </DrawerContent>
           </Drawer>
         </div>
-        <div className="flex gap-3">
-          <Avatar className="w-10 h-10">
+        <div className="flex gap-2">
+          <Avatar className="w-8 h-8">
             <AvatarImage src={author.avatar} />
             <AvatarFallback>{author.firstName[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
-              <span className="font-medium text-foreground">
+            <div className="flex items-center flex-wrap gap-x-1 gap-y-0.5">
+              <span className="font-medium text-foreground text-sm">
                 {author.firstName} {author.lastName}
               </span>
               {author.verified && (
                 <span className="text-blue-500">
-                  <Check className="w-4 h-4" />
+                  <Check className="w-3.5 h-3.5" />
                 </span>
               )}
               {author.role && (
-                <Badge variant={author.role === "founder" ? "default" : "secondary"} className="text-xs">
+                <Badge variant={author.role === "founder" ? "default" : "secondary"} className="text-[10px] px-1 py-0">
                   {author.role}
                 </Badge>
               )}
-              <span className="text-muted-foreground whitespace-nowrap">· {timestamp}</span>
+              <span className="text-muted-foreground text-xs whitespace-nowrap">· {timestamp}</span>
             </div>
-            <p className="mt-1 text-foreground">{content}</p>
+            <p className="mt-0.5 text-sm text-foreground">{content}</p>
             {media && (
-              <div className="mt-3 rounded-xl overflow-hidden">
+              <div className="mt-2 rounded-lg overflow-hidden">
                 {media.type === "image" ? (
                   <img
                     src={media.url}
                     alt=""
-                    className="w-full h-auto rounded-xl"
+                    className="w-full h-auto rounded-lg"
                   />
                 ) : (
                   <a
                     href={media.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block border rounded-xl overflow-hidden hover:bg-accent"
+                    className="block border rounded-lg overflow-hidden hover:bg-accent"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <img
@@ -179,11 +179,11 @@ export const FeedPost = ({
                       alt=""
                       className="w-full h-auto"
                     />
-                    <div className="p-3">
-                      <div className="text-foreground font-medium">
+                    <div className="p-2">
+                      <div className="text-foreground font-medium text-sm">
                         {media.title}
                       </div>
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-muted-foreground text-xs">
                         {media.domain}
                       </div>
                     </div>
@@ -191,34 +191,34 @@ export const FeedPost = ({
                 )}
               </div>
             )}
-            <div className="flex justify-between mt-3 text-primary w-full">
+            <div className="flex justify-between mt-2 text-primary w-full">
               <button 
-                className="flex items-center gap-2 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-1 hover:text-primary/80 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Heart className="w-5 h-5" />
-                <span>{metrics.likes}</span>
+                <Heart className="w-4 h-4" />
+                <span className="text-xs">{metrics.likes}</span>
               </button>
               <button 
-                className="flex items-center gap-2 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-1 hover:text-primary/80 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                <MessageCircle className="w-5 h-5" />
-                <span>{metrics.comments}</span>
+                <MessageCircle className="w-4 h-4" />
+                <span className="text-xs">{metrics.comments}</span>
               </button>
               <button 
-                className="flex items-center gap-2 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-1 hover:text-primary/80 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Repeat2 className="w-5 h-5" />
-                <span>{metrics.reposts}</span>
+                <Repeat2 className="w-4 h-4" />
+                <span className="text-xs">{metrics.reposts}</span>
               </button>
               <button 
-                className="flex items-center gap-2 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-1 hover:text-primary/80 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Share className="w-5 h-5" />
-                <span>{metrics.shares}</span>
+                <Share className="w-4 h-4" />
+                <span className="text-xs">{metrics.shares}</span>
               </button>
             </div>
           </div>
