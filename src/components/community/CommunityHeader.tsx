@@ -7,19 +7,19 @@ export const CommunityHeader = () => {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="lg:hidden">
-            <Menu className="w-6 h-6" />
+            <Menu className="w-5 h-5" />
           </Button>
           <h1 className="text-2xl font-bold text-foreground">Community</h1>
         </div>
-        <div className="flex gap-4">
-          <button className="p-2 text-primary hover:text-primary/80 transition-colors">
-            <Search className="w-6 h-6" />
+        <div className="flex gap-2">
+          <button className="p-1.5 text-primary hover:text-primary/80 transition-colors">
+            <Search className="w-5 h-5" />
           </button>
-          <button className="p-2 text-primary hover:text-primary/80 transition-colors">
-            <MessageCircle className="w-6 h-6" />
+          <button className="p-1.5 text-primary hover:text-primary/80 transition-colors">
+            <MessageCircle className="w-5 h-5" />
           </button>
-          <button className="p-2 text-primary hover:text-primary/80 transition-colors">
-            <BellIcon className="w-6 h-6" />
+          <button className="p-1.5 text-primary hover:text-primary/80 transition-colors">
+            <BellIcon className="w-5 h-5" />
           </button>
         </div>
       </div>
