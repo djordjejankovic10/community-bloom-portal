@@ -68,7 +68,17 @@ const Profile = () => {
     { value: "#8B5CF6", label: "Vivid Purple" },
     { value: "#E5DEFF", label: "Soft Purple" },
     { value: "#7E69AB", label: "Secondary Purple" },
+    { value: "#6E59A5", label: "Tertiary Purple" },
+    { value: "#D6BCFA", label: "Light Purple" },
+    { value: "#F2FCE2", label: "Soft Green" },
+    { value: "#FEF7CD", label: "Soft Yellow" },
+    { value: "#FEC6A1", label: "Soft Orange" },
+    { value: "#FFDEE2", label: "Soft Pink" },
+    { value: "#FDE1D3", label: "Soft Peach" },
+    { value: "#D3E4FD", label: "Soft Blue" },
     { value: "#1EAEDB", label: "Bright Blue" },
+    { value: "#0EA5E9", label: "Ocean Blue" },
+    { value: "#D946EF", label: "Magenta Pink" },
   ];
 
   return (
