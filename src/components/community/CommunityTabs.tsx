@@ -8,6 +8,7 @@ export const CommunityTabs = () => {
     { name: "Feed", path: "/community" },
     { name: "Challenges", path: "/community/challenges" },
     { name: "Meetups", path: "/community/meetups" },
+    { name: "Leaderboard", path: "/community/leaderboard" },
   ];
 
   return (
