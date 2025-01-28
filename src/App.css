@@ -1,5 +1,5 @@
 #root {
-  width: 350px;
+  width: 375px;
   margin: 0 auto;
   text-align: center;
 }
@@ -50,7 +50,7 @@ body {
 
 #root {
   position: relative;
-  width: 350px;
+  width: 375px;
   flex-shrink: 0;
   background: white;
 }
