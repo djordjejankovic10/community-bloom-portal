@@ -25,7 +25,7 @@ export const PostDialog = ({ open, onOpenChange }: PostDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] p-0">
+      <DialogContent className="fixed inset-0 w-full h-full p-0 max-w-none rounded-none">
         <div className="flex items-center justify-between border-b p-4">
           <Button
             variant="ghost"
