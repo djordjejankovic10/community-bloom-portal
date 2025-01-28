@@ -8,7 +8,7 @@ export const MOCK_POSTS = [
     author: {
       name: "FitnessPro",
       handle: "fitnesspro",
-      avatar: "https://pbs.twimg.com/profile_images/1679157854607613952/7Z0-0FeJ_400x400.jpg",
+      avatar: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=400&h=400&fit=crop",
       verified: true,
     },
     content: "Just crushed a new deadlift PR! 💪 Remember: proper form is everything. Here's my top 3 tips for maintaining perfect form during heavy lifts. What's your current PR goal?",
@@ -30,7 +30,7 @@ export const MOCK_POSTS = [
         author: {
           name: "GymLife",
           handle: "gymlife",
-          avatar: "https://pbs.twimg.com/profile_images/1234567890/avatar_400x400.jpg",
+          avatar: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop",
         },
         content: "Amazing progress! My current goal is 405lbs by end of month. Your form tips have been super helpful! 🎯",
         timestamp: "1h",
@@ -47,7 +47,7 @@ export const MOCK_POSTS = [
     author: {
       name: "NutritionCoach",
       handle: "nutritioncoach",
-      avatar: "https://pbs.twimg.com/profile_images/1468001914302390278/B_Xv_8gu_400x400.jpg",
+      avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=400&h=400&fit=crop",
       verified: true,
     },
     content: "🥗 Meal prep Sunday! Here's my go-to high-protein lunch that takes just 15 minutes to prepare. Perfect for busy gym-goers who still want to eat clean.",
