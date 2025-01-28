@@ -1,11 +1,5 @@
 import { Home, Play, Activity, Users, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 export const BottomNav = () => {
   const location = useLocation();
@@ -14,48 +8,31 @@ export const BottomNav = () => {
   
   const navItems = [
     { icon: Home, path: "/" },
-    { icon: Play, path: "/library", comingSoon: true },
+    { icon: Play, path: "/library" },
     { icon: Activity, path: "/community" },
-    { icon: Users, path: "/teams", comingSoon: true },
+    { icon: Users, path: "/teams" },
     { icon: User, path: "/profile" },
   ];
-
-  const renderNavItem = (item: typeof navItems[0], index: number) => {
-    const Icon = item.icon;
-    const active = isActive(item.path);
-    const link = (
-      <Link
-        key={index}
-        to={item.comingSoon ? "#" : item.path}
-        onClick={(e) => item.comingSoon && e.preventDefault()}
-        className={`p-2 rounded-full transition-colors ${
-          active
-            ? "bg-primary text-primary-foreground"
-            : "text-muted-foreground hover:text-foreground"
-        }`}
-      >
-        <Icon className="w-6 h-6" />
-      </Link>
-    );
-
-    if (item.comingSoon) {
-      return (
-        <Tooltip key={index}>
-          <TooltipTrigger asChild>{link}</TooltipTrigger>
-          <TooltipContent>
-            <p>Coming Soon</p>
-          </TooltipContent>
-        </Tooltip>
-      );
-    }
-
-    return link;
-  };
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-2 transition-colors">
       <div className="flex justify-between items-center max-w-lg mx-auto">
-        {navItems.map((item, index) => renderNavItem(item, index))}
+        {navItems.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={index}
+              to={item.path}
+              className={`p-2 rounded-full transition-colors ${
+                isActive(item.path)
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground hover:text-foreground/80"
+              }`}
+            >
+              <Icon className="w-6 h-6" />
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );
