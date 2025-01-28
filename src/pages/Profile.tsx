@@ -1,7 +1,7 @@
 import { Moon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Toggle } from "@/components/ui/toggle";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { Switch } from "@/components/ui/switch";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
@@ -18,16 +18,15 @@ const Profile = () => {
       </header>
       
       <div className="p-4">
-        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg shadow-sm">
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
           <div className="flex items-center gap-3">
             <Moon className="w-5 h-5" />
             <span className="font-medium">Dark Mode</span>
           </div>
-          <Toggle
-            pressed={theme === "dark"}
-            onPressedChange={toggleDarkMode}
+          <Switch
+            checked={theme === "dark"}
+            onCheckedChange={toggleDarkMode}
             aria-label="Toggle dark mode"
-            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           />
         </div>
       </div>
