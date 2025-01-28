@@ -71,6 +71,51 @@ export const MOCK_POSTS = [
       domain: "nutritioncoach.com",
     },
   },
+  {
+    author: {
+      firstName: "Mike",
+      lastName: "Johnson",
+      handle: "fitcoach",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      verified: true,
+    },
+    content: "Just wrapped up an amazing outdoor workout session! 🌞 Check out this beautiful trail - perfect for morning runs and HIIT exercises. Who else loves outdoor workouts?",
+    timestamp: "1h",
+    metrics: {
+      likes: 324,
+      comments: 42,
+      reposts: 12,
+      shares: 8,
+    },
+    media: {
+      type: "image",
+      url: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&h=400&fit=crop",
+    },
+  },
+  {
+    author: {
+      firstName: "Lisa",
+      lastName: "Chen",
+      handle: "yogalife",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
+      verified: true,
+      role: "admin" as const,
+    },
+    content: "New beginner-friendly yoga flow! 🧘‍♀️ Focus on breathing and gentle stretches. Perfect for morning routines or desk break refreshers. Save this for later! #YogaEveryday",
+    timestamp: "30m",
+    metrics: {
+      likes: 567,
+      comments: 89,
+      reposts: 45,
+      shares: 23,
+    },
+    media: {
+      type: "link",
+      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      title: "15-Minute Morning Yoga Flow",
+      domain: "youtube.com",
+    },
+  },
 ];
 
 const Community = () => {
