@@ -25,12 +25,12 @@ export const CommunityTabs = () => {
   return (
     <div>
       <div className="border-b border-border">
-        <nav className="flex gap-8 px-4">
+        <nav className="overflow-x-auto flex gap-8 px-4">
           {tabs.map((tab) => (
             <Link
               key={tab.name}
               to={tab.path}
-              className={`relative py-4 ${
+              className={`relative py-4 whitespace-nowrap ${
                 currentPath === tab.path
                   ? "text-foreground border-b-2 border-primary"
                   : "text-muted-foreground hover:text-foreground"
