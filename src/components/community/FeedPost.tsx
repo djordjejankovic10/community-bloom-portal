@@ -1,6 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { Heart, MessageCircle, Repeat2, Share } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 
 interface FeedPostProps {
   author: {
@@ -23,6 +24,8 @@ interface FeedPostProps {
     title?: string;
     domain?: string;
   };
+  isDetail?: boolean;
+  index?: number;
 }
 
 export const FeedPost = ({
@@ -31,10 +34,23 @@ export const FeedPost = ({
   timestamp,
   metrics,
   media,
+  isDetail,
+  index,
 }: FeedPostProps) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (!isDetail && typeof index === 'number') {
+      navigate(`/community/post/${index}`);
+    }
+  };
+
   return (
     <>
-      <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
+      <div 
+        className={`px-4 py-3 ${!isDetail ? "hover:bg-gray-50 cursor-pointer" : ""} transition-colors`}
+        onClick={handleClick}
+      >
         <div className="flex gap-3">
           <Avatar className="w-10 h-10">
             <AvatarImage src={author.avatar} />
@@ -71,6 +87,7 @@ export const FeedPost = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block border rounded-xl overflow-hidden hover:bg-gray-50"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <img
                       src={media.url}
@@ -90,19 +107,31 @@ export const FeedPost = ({
               </div>
             )}
             <div className="flex justify-between mt-3 text-gray-500 max-w-md">
-              <button className="flex items-center gap-1 hover:text-red-500">
+              <button 
+                className="flex items-center gap-2 hover:text-red-500"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <Heart className="w-5 h-5" />
                 <span>{metrics.likes}</span>
               </button>
-              <button className="flex items-center gap-1 hover:text-blue-500">
+              <button 
+                className="flex items-center gap-2 hover:text-blue-500"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <MessageCircle className="w-5 h-5" />
                 <span>{metrics.comments}</span>
               </button>
-              <button className="flex items-center gap-1 hover:text-green-500">
+              <button 
+                className="flex items-center gap-2 hover:text-green-500"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <Repeat2 className="w-5 h-5" />
                 <span>{metrics.reposts}</span>
               </button>
-              <button className="flex items-center gap-1 hover:text-blue-500">
+              <button 
+                className="flex items-center gap-2 hover:text-blue-500"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <Share className="w-5 h-5" />
                 <span>{metrics.shares}</span>
               </button>

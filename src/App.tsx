@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Community from "./pages/Community";
+import PostDetail from "./pages/PostDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/community" element={<Community />} />
           <Route path="/community/challenges" element={<Community />} />
           <Route path="/community/meetups" element={<Community />} />
+          <Route path="/community/post/:postId" element={<PostDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

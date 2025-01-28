@@ -3,7 +3,7 @@ import { CommunityTabs } from "@/components/community/CommunityTabs";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { FeedPost } from "@/components/community/FeedPost";
 
-const MOCK_POSTS = [
+export const MOCK_POSTS = [
   {
     author: {
       name: "Wired",
@@ -25,6 +25,23 @@ const MOCK_POSTS = [
       title: "DeepSeek's Popular AI App Is Explicitly Sending US Data to China",
       domain: "wired.com",
     },
+    replies: [
+      {
+        author: {
+          name: "dimitrymakphoto",
+          handle: "dimitrymakphoto",
+          avatar: "https://pbs.twimg.com/profile_images/1234567890/avatar_400x400.jpg",
+        },
+        content: "I will literally send the Chinese government my social security number just to see the broligarchs fail.",
+        timestamp: "7h",
+        metrics: {
+          likes: 256,
+          comments: 16,
+          reposts: 1,
+          shares: 0,
+        },
+      },
+    ],
   },
   {
     author: {
@@ -57,7 +74,7 @@ const Community = () => {
       <CommunityTabs />
       <main>
         {MOCK_POSTS.map((post, index) => (
-          <FeedPost key={index} {...post} />
+          <FeedPost key={index} {...post} index={index} />
         ))}
       </main>
       <BottomNav />
