@@ -7,7 +7,7 @@ export const CommunityTabs = () => {
   const tabs = [
     { name: "Feed", path: "/community" },
     { name: "Challenges", path: "/community/challenges" },
-    { name: "Meetups", path: "/community/meetups", isNew: true },
+    { name: "Meetups", path: "/community/meetups" },
   ];
 
   return (
