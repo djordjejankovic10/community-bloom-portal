@@ -58,13 +58,11 @@ export const FeedPost = ({
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
-              <span className="font-bold text-foreground">{author.name}</span>
               {author.verified && (
                 <span className="text-blue-500">
                   <Check className="w-4 h-4" />
                 </span>
               )}
-              <span className="text-muted-foreground">{author.handle}</span>
               <span className="text-muted-foreground whitespace-nowrap">· {timestamp}</span>
             </div>
             <p className="mt-1 text-foreground">{content}</p>
