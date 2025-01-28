@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
-  const [primaryColor, setPrimaryColor] = useState("#8B5CF6"); // Default vivid purple
+  const [primaryColor, setPrimaryColor] = useState("#FFFFFF"); // Changed default to white
 
   const toggleDarkMode = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -64,11 +64,11 @@ const Profile = () => {
   }, []);
 
   const colorOptions = [
+    { value: "#FFFFFF", label: "White" }, // Changed first option to white
     { value: "#8B5CF6", label: "Vivid Purple" },
     { value: "#9b87f5", label: "Primary Purple" },
     { value: "#E5DEFF", label: "Soft Purple" },
     { value: "#1EAEDB", label: "Bright Blue" },
-    { value: "#D946EF", label: "Magenta Pink" },
   ];
 
   return (
