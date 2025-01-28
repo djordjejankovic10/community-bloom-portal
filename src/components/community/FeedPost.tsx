@@ -1,15 +1,15 @@
 import { Separator } from "@/components/ui/separator";
-import { Heart, MessageCircle, Repeat2, Share, Check, MoreVertical } from "lucide-react";
+import { Heart, MessageCircle, Repeat2, Share, Check, MoreVertical, Link2, Share2, FileText, AlertOctagon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { useToast } from "@/hooks/use-toast";
 
 interface FeedPostProps {
   author: {
@@ -48,11 +48,42 @@ export const FeedPost = ({
   index,
 }: FeedPostProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleClick = () => {
     if (!isDetail && typeof index === 'number') {
       navigate(`/community/post/${index}`);
     }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+      description: "Link copied to clipboard",
+    });
+  };
+
+  const handleShareLink = async () => {
+    try {
+      await navigator.share({
+        url: window.location.href,
+      });
+    } catch (err) {
+      console.log('Share failed:', err);
+    }
+  };
+
+  const handleCopyText = () => {
+    navigator.clipboard.writeText(content);
+    toast({
+      description: "Text copied to clipboard",
+    });
+  };
+
+  const handleReport = () => {
+    toast({
+      description: "Post reported. Thank you for helping keep our community safe.",
+    });
   };
 
   return (
@@ -62,17 +93,47 @@ export const FeedPost = ({
         onClick={handleClick}
       >
         <div className="absolute top-3 right-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+          <Drawer>
+            <DrawerTrigger asChild onClick={(e) => e.stopPropagation()}>
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <MoreVertical className="h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Report</DropdownMenuItem>
-              <DropdownMenuItem>Share</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </DrawerTrigger>
+            <DrawerContent>
+              <div className="p-4 space-y-4">
+                <div className="mx-auto h-1.5 w-12 rounded-full bg-muted mb-8" />
+                <button
+                  onClick={handleCopyLink}
+                  className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors"
+                >
+                  <Link2 className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Copy link</span>
+                </button>
+                <button
+                  onClick={handleShareLink}
+                  className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors"
+                >
+                  <Share2 className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Share link</span>
+                </button>
+                <button
+                  onClick={handleCopyText}
+                  className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors"
+                >
+                  <FileText className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Copy text</span>
+                </button>
+                <Separator className="my-2" />
+                <button
+                  onClick={handleReport}
+                  className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors text-destructive"
+                >
+                  <AlertOctagon className="h-5 w-5" />
+                  <span className="text-sm font-medium">Report</span>
+                </button>
+              </div>
+            </DrawerContent>
+          </Drawer>
         </div>
         <div className="flex gap-3">
           <Avatar className="w-10 h-10">
