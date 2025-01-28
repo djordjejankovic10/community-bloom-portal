@@ -26,7 +26,7 @@ export const BottomNav = () => {
               className={`p-2 rounded-full transition-colors ${
                 isActive(item.path)
                   ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  : "text-primary hover:text-primary/80"
               }`}
             >
               <Icon className="w-6 h-6" />
