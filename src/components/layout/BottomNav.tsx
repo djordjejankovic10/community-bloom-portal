@@ -30,7 +30,7 @@ export const BottomNav = () => {
         onClick={(e) => item.comingSoon && e.preventDefault()}
         className={`p-2 rounded-full transition-colors ${
           active
-            ? "bg-primary text-primary-foreground hover:bg-primary/90"
+            ? "bg-primary text-primary-foreground"
             : "text-muted-foreground hover:text-foreground"
         }`}
       >
@@ -40,14 +40,12 @@ export const BottomNav = () => {
 
     if (item.comingSoon) {
       return (
-        <TooltipProvider key={index}>
-          <Tooltip>
-            <TooltipTrigger asChild>{link}</TooltipTrigger>
-            <TooltipContent>
-              <p>Coming Soon</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip key={index}>
+          <TooltipTrigger asChild>{link}</TooltipTrigger>
+          <TooltipContent>
+            <p>Coming Soon</p>
+          </TooltipContent>
+        </Tooltip>
       );
     }
 
