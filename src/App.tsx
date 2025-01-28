@@ -18,8 +18,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/community" element={<Community />} />
-          <Route path="/community/teams" element={<Community />} />
           <Route path="/community/challenges" element={<Community />} />
+          <Route path="/community/meetups" element={<Community />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

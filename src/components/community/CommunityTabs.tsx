@@ -5,9 +5,9 @@ export const CommunityTabs = () => {
   const currentPath = location.pathname;
 
   const tabs = [
-    { name: "Teams", path: "/community/teams", isNew: true },
     { name: "Feed", path: "/community" },
     { name: "Challenges", path: "/community/challenges" },
+    { name: "Meetups", path: "/community/meetups", isNew: true },
   ];
 
   return (
