@@ -2,6 +2,7 @@ import { CommunityHeader } from "@/components/community/CommunityHeader";
 import { CommunityTabs } from "@/components/community/CommunityTabs";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { FeedPost } from "@/components/community/FeedPost";
+import { useLocation } from "react-router-dom";
 
 export const MOCK_POSTS = [
   {
@@ -73,14 +74,34 @@ export const MOCK_POSTS = [
 ];
 
 const Community = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const renderContent = () => {
+    switch (currentPath) {
+      case "/community":
+        return MOCK_POSTS.map((post, index) => (
+          <FeedPost key={index} {...post} index={index} />
+        ));
+      case "/community/challenges":
+      case "/community/meetups":
+      case "/community/leaderboard":
+        return (
+          <div className="p-8 text-center text-muted-foreground">
+            This is a webview
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen pb-20">
       <CommunityHeader />
       <CommunityTabs />
       <main>
-        {MOCK_POSTS.map((post, index) => (
-          <FeedPost key={index} {...post} index={index} />
-        ))}
+        {renderContent()}
       </main>
       <BottomNav />
     </div>
