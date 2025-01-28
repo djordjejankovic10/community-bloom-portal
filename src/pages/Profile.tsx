@@ -27,7 +27,7 @@ const Profile = () => {
             pressed={theme === "dark"}
             onPressedChange={toggleDarkMode}
             aria-label="Toggle dark mode"
-            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           />
         </div>
       </div>
