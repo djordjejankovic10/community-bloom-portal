@@ -1,8 +1,15 @@
 import { Separator } from "@/components/ui/separator";
-import { Heart, MessageCircle, Repeat2, Share, Check } from "lucide-react";
+import { Heart, MessageCircle, Repeat2, Share, Check, MoreVertical } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface FeedPostProps {
   author: {
@@ -51,9 +58,22 @@ export const FeedPost = ({
   return (
     <>
       <div 
-        className={`px-4 py-3 ${!isDetail ? "hover:bg-accent cursor-pointer" : ""} transition-colors`}
+        className={`px-4 py-3 ${!isDetail ? "hover:bg-accent cursor-pointer" : ""} transition-colors relative`}
         onClick={handleClick}
       >
+        <div className="absolute top-3 right-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>Report</DropdownMenuItem>
+              <DropdownMenuItem>Share</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <div className="flex gap-3">
           <Avatar className="w-10 h-10">
             <AvatarImage src={author.avatar} />
