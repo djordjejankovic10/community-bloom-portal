@@ -106,7 +106,7 @@ export const FeedPost = ({
                 )}
               </div>
             )}
-            <div className="flex justify-between mt-3 text-gray-500 max-w-md">
+            <div className="flex justify-between mt-3 text-gray-500 w-full">
               <button 
                 className="flex items-center gap-2 hover:text-red-500"
                 onClick={(e) => e.stopPropagation()}
