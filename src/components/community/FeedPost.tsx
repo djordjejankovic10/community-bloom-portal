@@ -2,13 +2,16 @@ import { Separator } from "@/components/ui/separator";
 import { Heart, MessageCircle, Repeat2, Share, Check } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 interface FeedPostProps {
   author: {
-    name: string;
+    firstName: string;
+    lastName: string;
     handle: string;
     avatar: string;
     verified?: boolean;
+    role?: "admin" | "founder";
   };
   content: string;
   timestamp: string;
@@ -54,14 +57,22 @@ export const FeedPost = ({
         <div className="flex gap-3">
           <Avatar className="w-10 h-10">
             <AvatarImage src={author.avatar} />
-            <AvatarFallback>{author.name[0]}</AvatarFallback>
+            <AvatarFallback>{author.firstName[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
+              <span className="font-medium text-foreground">
+                {author.firstName} {author.lastName}
+              </span>
               {author.verified && (
                 <span className="text-blue-500">
                   <Check className="w-4 h-4" />
                 </span>
+              )}
+              {author.role && (
+                <Badge variant={author.role === "founder" ? "default" : "secondary"} className="text-xs">
+                  {author.role}
+                </Badge>
               )}
               <span className="text-muted-foreground whitespace-nowrap">· {timestamp}</span>
             </div>

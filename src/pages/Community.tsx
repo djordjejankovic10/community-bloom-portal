@@ -6,10 +6,12 @@ import { FeedPost } from "@/components/community/FeedPost";
 export const MOCK_POSTS = [
   {
     author: {
-      name: "FitnessPro",
+      firstName: "John",
+      lastName: "Smith",
       handle: "fitnesspro",
       avatar: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=400&h=400&fit=crop",
       verified: true,
+      role: "founder" as const,
     },
     content: "Just crushed a new deadlift PR! 💪 Remember: proper form is everything. Here's my top 3 tips for maintaining perfect form during heavy lifts. What's your current PR goal?",
     timestamp: "2h",
@@ -28,7 +30,8 @@ export const MOCK_POSTS = [
     replies: [
       {
         author: {
-          name: "GymLife",
+          firstName: "Sarah",
+          lastName: "Johnson",
           handle: "gymlife",
           avatar: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop",
         },
@@ -45,10 +48,12 @@ export const MOCK_POSTS = [
   },
   {
     author: {
-      name: "NutritionCoach",
+      firstName: "Emma",
+      lastName: "Davis",
       handle: "nutritioncoach",
       avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=400&h=400&fit=crop",
       verified: true,
+      role: "admin" as const,
     },
     content: "🥗 Meal prep Sunday! Here's my go-to high-protein lunch that takes just 15 minutes to prepare. Perfect for busy gym-goers who still want to eat clean.",
     timestamp: "5h",
