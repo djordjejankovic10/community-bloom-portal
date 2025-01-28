@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
-  const [primaryColor, setPrimaryColor] = useState("#FFFFFF"); // Changed default to white
+  const [primaryColor, setPrimaryColor] = useState("#9b87f5");
 
   const toggleDarkMode = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -64,22 +64,22 @@ const Profile = () => {
   }, []);
 
   const colorOptions = [
-    { value: "#FFFFFF", label: "White" }, // Changed first option to white
-    { value: "#8B5CF6", label: "Vivid Purple" },
     { value: "#9b87f5", label: "Primary Purple" },
+    { value: "#8B5CF6", label: "Vivid Purple" },
     { value: "#E5DEFF", label: "Soft Purple" },
+    { value: "#7E69AB", label: "Secondary Purple" },
     { value: "#1EAEDB", label: "Bright Blue" },
   ];
 
   return (
-    <div className="min-h-screen pb-20">
-      <header className="px-4 py-2 border-b border-gray-200 dark:border-gray-800">
-        <h1 className="text-2xl font-bold">Profile</h1>
+    <div className="min-h-screen pb-20 bg-background">
+      <header className="px-4 py-2 border-b border-border bg-background">
+        <h1 className="text-2xl font-bold text-foreground">Profile</h1>
       </header>
       
       <div className="p-4 space-y-4">
-        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between p-4 bg-card rounded-lg">
+          <div className="flex items-center gap-3 text-card-foreground">
             <Moon className="w-5 h-5" />
             <span className="font-medium">Dark Mode</span>
           </div>
@@ -90,8 +90,8 @@ const Profile = () => {
           />
         </div>
 
-        <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-          <div className="flex items-center gap-3 mb-4">
+        <div className="p-4 bg-card rounded-lg">
+          <div className="flex items-center gap-3 mb-4 text-card-foreground">
             <Palette className="w-5 h-5" />
             <span className="font-medium">Theme Color</span>
           </div>
