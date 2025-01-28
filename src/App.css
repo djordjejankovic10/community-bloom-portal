@@ -47,19 +47,33 @@ body {
   margin: 0;
   min-height: 100vh;
   background: #f0f0f0;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 #root {
   position: relative;
   width: 375px !important;
-  max-width: 375px;
-  min-width: 375px;
+  max-width: 375px !important;
+  min-width: 375px !important;
   flex-shrink: 0;
   background: white;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   overflow-x: hidden;
+  margin: 0 auto;
 }
 
 .dark #root {
   background: hsl(var(--background));
+}
+
+/* Force all direct children of body to respect max width */
+body > * {
+  max-width: 375px !important;
+  width: 375px !important;
+}
+
+/* Additional safety measure for any potential full-width elements */
+#root * {
+  max-width: 375px;
 }
