@@ -64,7 +64,7 @@ export const FeedPost = ({
                   <Check className="w-4 h-4" />
                 </span>
               )}
-              <span className="text-muted-foreground">@{author.handle}</span>
+              <span className="text-muted-foreground">{author.handle}</span>
               <span className="text-muted-foreground whitespace-nowrap">· {timestamp}</span>
             </div>
             <p className="mt-1 text-foreground">{content}</p>
