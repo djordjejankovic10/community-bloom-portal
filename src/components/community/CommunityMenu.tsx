@@ -1,6 +1,6 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLocation } from "react-router-dom";
 
@@ -46,9 +46,10 @@ export const CommunityMenu = () => {
               This is a detailed description of our fitness community where members can share their journey, achievements, and support each other.
             </p>
             <div className="flex items-center gap-2">
-              <div className="text-sm text-muted-foreground">
+              <Button variant="ghost" size="sm" className="h-8 px-3 text-sm text-muted-foreground hover:text-foreground">
+                <Users className="h-4 w-4 mr-2" />
                 <span className="font-semibold text-foreground">49</span> Members
-              </div>
+              </Button>
             </div>
           </div>
 
