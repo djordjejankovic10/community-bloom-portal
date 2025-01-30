@@ -46,8 +46,8 @@ export const CommunityMenu = () => {
             <p className="text-sm text-muted-foreground">
               This is a detailed description of our fitness community where members can share their journey, achievements, and support each other.
             </p>
-            <Button variant="outline" className="w-full">
-              <Users className="h-4 w-4 mr-2" />
+            <Button variant="outline" className="w-full justify-start text-left whitespace-normal h-auto py-2">
+              <Users className="h-4 w-4 mr-2 shrink-0" />
               <span className="font-semibold">49</span> Members
             </Button>
           </div>
