@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 
 export const CommunityMenu = () => {
   const location = useLocation();
+  const currentPath = location.pathname;
 
   return (
     <Sheet>
@@ -55,16 +56,28 @@ export const CommunityMenu = () => {
 
           {/* Navigation Menu */}
           <div className="p-4 space-y-2">
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant={currentPath === "/community" ? "secondary" : "ghost"} 
+              className="w-full justify-start"
+            >
               Feed
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant={currentPath === "/community/challenges" ? "secondary" : "ghost"} 
+              className="w-full justify-start"
+            >
               Challenges
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant={currentPath === "/community/meetups" ? "secondary" : "ghost"} 
+              className="w-full justify-start"
+            >
               Meetups
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant={currentPath === "/community/leaderboard" ? "secondary" : "ghost"} 
+              className="w-full justify-start"
+            >
               Leaderboard
             </Button>
           </div>
