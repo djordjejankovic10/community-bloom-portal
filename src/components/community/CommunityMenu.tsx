@@ -1,12 +1,36 @@
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Users } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+
+const MOCK_MEMBERS = [
+  {
+    name: "David",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces&auto=format",
+  },
+  {
+    name: "Sarah",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces&auto=format",
+  },
+  {
+    name: "Mike",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=faces&auto=format",
+  },
+  {
+    name: "Lisa",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=faces&auto=format",
+  },
+];
 
 export const CommunityMenu = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
 
   return (
     <Sheet>
@@ -46,38 +70,67 @@ export const CommunityMenu = () => {
             <p className="text-sm text-muted-foreground">
               This is a detailed description of our fitness community where members can share their journey, achievements, and support each other.
             </p>
-            <Button variant="outline" className="justify-start text-left whitespace-normal h-auto py-2">
-              <Users className="h-4 w-4 mr-2 shrink-0" />
-              <span className="font-semibold">49</span> Members
-            </Button>
+            <div className="flex -space-x-3">
+              {MOCK_MEMBERS.map((member, i) => (
+                <Avatar 
+                  key={i} 
+                  className="h-8 w-8 border-2 border-background ring-0"
+                >
+                  <AvatarImage 
+                    src={member.image} 
+                    alt={member.name}
+                    className="object-cover"
+                  />
+                  <AvatarFallback>{member.name[0]}</AvatarFallback>
+                </Avatar>
+              ))}
+              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border-2 border-background text-sm font-medium">
+                +45
+              </div>
+            </div>
           </div>
 
           {/* Navigation Menu */}
           <div className="p-4 space-y-2">
-            <Button 
-              variant={currentPath === "/community" ? "secondary" : "ghost"} 
-              className="w-full justify-start"
-            >
-              Feed
-            </Button>
-            <Button 
-              variant={currentPath === "/community/challenges" ? "secondary" : "ghost"} 
-              className="w-full justify-start"
-            >
-              Challenges
-            </Button>
-            <Button 
-              variant={currentPath === "/community/meetups" ? "secondary" : "ghost"} 
-              className="w-full justify-start"
-            >
-              Meetups
-            </Button>
-            <Button 
-              variant={currentPath === "/community/leaderboard" ? "secondary" : "ghost"} 
-              className="w-full justify-start"
-            >
-              Leaderboard
-            </Button>
+            <SheetClose asChild>
+              <Button 
+                variant={currentPath === "/community" ? "secondary" : "ghost"} 
+                className="w-full justify-start"
+                onClick={() => handleNavigation("/community")}
+              >
+                Feed
+              </Button>
+            </SheetClose>
+            
+            <SheetClose asChild>
+              <Button 
+                variant={currentPath === "/community/challenges" ? "secondary" : "ghost"} 
+                className="w-full justify-start"
+                onClick={() => handleNavigation("/community/challenges")}
+              >
+                Challenges
+              </Button>
+            </SheetClose>
+            
+            <SheetClose asChild>
+              <Button 
+                variant={currentPath === "/community/meetups" ? "secondary" : "ghost"} 
+                className="w-full justify-start"
+                onClick={() => handleNavigation("/community/meetups")}
+              >
+                Meetups
+              </Button>
+            </SheetClose>
+            
+            <SheetClose asChild>
+              <Button 
+                variant={currentPath === "/community/leaderboard" ? "secondary" : "ghost"} 
+                className="w-full justify-start"
+                onClick={() => handleNavigation("/community/leaderboard")}
+              >
+                Leaderboard
+              </Button>
+            </SheetClose>
           </div>
 
           {/* Live Button */}

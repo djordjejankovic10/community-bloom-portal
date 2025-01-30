@@ -1,19 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
+import { CategoryCircles } from "./CategoryCircles";
 
-const FILTERS = [
-  "All",
-  "Weight Training",
-  "Cardio",
-  "Yoga",
-  "Nutrition",
-  "Recovery",
-];
+interface CommunityTabsProps {
+  activeFilter: string;
+  onFilterChange: (filter: string) => void;
+}
 
-export const CommunityTabs = () => {
+export const CommunityTabs = ({ activeFilter, onFilterChange }: CommunityTabsProps) => {
   const location = useLocation();
   const currentPath = location.pathname;
-  const [activeFilter, setActiveFilter] = useState("All");
 
   const tabs = [
     { name: "Feed", path: "/community" },
@@ -42,21 +38,10 @@ export const CommunityTabs = () => {
         </nav>
       </div>
       
-      <div className="overflow-x-auto px-4 py-3 flex gap-2 bg-secondary/50">
-        {FILTERS.map((filter) => (
-          <button
-            key={filter}
-            onClick={() => setActiveFilter(filter)}
-            className={`px-4 py-1.5 rounded-full text-sm whitespace-nowrap transition-colors ${
-              activeFilter === filter
-                ? "bg-primary text-primary-foreground"
-                : "bg-background hover:bg-background/80"
-            }`}
-          >
-            {filter}
-          </button>
-        ))}
-      </div>
+      <CategoryCircles 
+        activeFilter={activeFilter}
+        onFilterChange={onFilterChange}
+      />
     </div>
   );
 };

@@ -1,6 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Plus, Image, Camera, Mic, LineChart } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 export const CreatePost = () => {
@@ -21,23 +19,6 @@ export const CreatePost = () => {
             onClick={() => navigate("/community/post/create")}
             readOnly
           />
-          <div className="flex gap-1 mt-1">
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <Plus className="h-5 w-5 text-muted-foreground" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <Image className="h-5 w-5 text-muted-foreground" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <Camera className="h-5 w-5 text-muted-foreground" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <Mic className="h-5 w-5 text-muted-foreground" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <LineChart className="h-5 w-5 text-muted-foreground" />
-            </Button>
-          </div>
         </div>
       </div>
     </div>
