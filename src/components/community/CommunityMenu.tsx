@@ -30,7 +30,7 @@ export const CommunityMenu = () => {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-full sm:max-w-md p-0">
+      <SheetContent side="left" className="w-[350px] max-w-[350px] p-0">
         <div className="flex flex-col h-full">
           {/* Header Image */}
           <div className="h-32 bg-muted relative">
@@ -86,4 +86,4 @@ export const CommunityMenu = () => {
       </SheetContent>
     </Sheet>
   );
-}; 
+};
