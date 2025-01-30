@@ -22,20 +22,20 @@ export const CreatePost = () => {
             readOnly
           />
           <div className="flex gap-1 mt-1">
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Plus className="h-4 w-4 text-muted-foreground" />
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <Plus className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Image className="h-4 w-4 text-muted-foreground" />
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <Image className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Camera className="h-4 w-4 text-muted-foreground" />
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <Camera className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Mic className="h-4 w-4 text-muted-foreground" />
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <Mic className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <LineChart className="h-4 w-4 text-muted-foreground" />
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <LineChart className="h-5 w-5 text-muted-foreground" />
             </Button>
           </div>
         </div>

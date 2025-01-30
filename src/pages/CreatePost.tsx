@@ -55,20 +55,20 @@ const CreatePostPage = () => {
         </div>
 
         <div className="flex gap-1 overflow-x-auto pb-2">
-          <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
-            <Plus className="h-5 w-5 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="h-11 w-11 flex-shrink-0">
+            <Plus className="h-6 w-6 text-muted-foreground" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
-            <Image className="h-5 w-5 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="h-11 w-11 flex-shrink-0">
+            <Image className="h-6 w-6 text-muted-foreground" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
-            <Camera className="h-5 w-5 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="h-11 w-11 flex-shrink-0">
+            <Camera className="h-6 w-6 text-muted-foreground" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
-            <Mic className="h-5 w-5 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="h-11 w-11 flex-shrink-0">
+            <Mic className="h-6 w-6 text-muted-foreground" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
-            <LineChart className="h-5 w-5 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="h-11 w-11 flex-shrink-0">
+            <LineChart className="h-6 w-6 text-muted-foreground" />
           </Button>
         </div>
 
