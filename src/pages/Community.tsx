@@ -134,7 +134,7 @@ export const MOCK_POSTS = [
       shares: 8,
     },
     media: {
-      type: "video",
+      type: "video" as const,
       url: "https://example.com/workout-video.mp4",
       thumbnail: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop",
     },
