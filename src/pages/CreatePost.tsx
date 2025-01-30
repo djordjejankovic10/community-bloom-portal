@@ -1,8 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Plus, Image, Camera, Mic, LineChart, ArrowLeft } from "lucide-react";
+import { Image, Camera, Mic, LineChart, ArrowLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CIRCLES = [
@@ -14,10 +14,56 @@ const CIRCLES = [
   "Recovery",
 ];
 
+type UploadedImage = {
+  id: string;
+  url: string;
+};
+
 const CreatePostPage = () => {
   const [content, setContent] = useState("");
   const [selectedCircle, setSelectedCircle] = useState(CIRCLES[0]);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageClick = () => {
+    if (uploadedImages.length >= 10) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    const remainingSlots = 10 - uploadedImages.length;
+    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+
+    const newImages = filesToProcess.map(file => ({
+      id: crypto.randomUUID(),
+      url: URL.createObjectURL(file)
+    }));
+
+    setUploadedImages(prev => [...prev, ...newImages]);
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeImage = (idToRemove: string) => {
+    setUploadedImages(prev => {
+      const filtered = prev.filter(img => img.id !== idToRemove);
+      // Cleanup URL object
+      const removedImage = prev.find(img => img.id === idToRemove);
+      if (removedImage) {
+        URL.revokeObjectURL(removedImage.url);
+      }
+      return filtered;
+    });
+  };
+
+  const isPostButtonEnabled = content.trim().length > 0 || uploadedImages.length > 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -34,7 +80,7 @@ const CreatePostPage = () => {
         <Button
           size="sm"
           className="rounded-full px-4"
-          disabled={!content.trim()}
+          disabled={!isPostButtonEnabled}
         >
           Post
         </Button>
@@ -54,13 +100,46 @@ const CreatePostPage = () => {
           />
         </div>
 
+        {uploadedImages.length > 0 && (
+          <div className="grid grid-cols-3 gap-2">
+            {uploadedImages.map((image) => (
+              <div key={image.id} className="relative aspect-square">
+                <img 
+                  src={image.url} 
+                  alt="Upload preview" 
+                  className="w-full h-full object-cover rounded-lg"
+                />
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="absolute top-1 right-1 h-6 w-6"
+                  onClick={() => removeImage(image.id)}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="flex gap-1 overflow-x-auto pb-2">
-          <Button variant="ghost" size="icon" className="h-11 w-11 flex-shrink-0">
-            <Plus className="h-6 w-6 text-muted-foreground" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-11 w-11 flex-shrink-0">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-11 w-11 flex-shrink-0" 
+            onClick={handleImageClick}
+            disabled={uploadedImages.length >= 10}
+          >
             <Image className="h-6 w-6 text-muted-foreground" />
           </Button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleImageUpload}
+            multiple
+          />
           <Button variant="ghost" size="icon" className="h-11 w-11 flex-shrink-0">
             <Camera className="h-6 w-6 text-muted-foreground" />
           </Button>
