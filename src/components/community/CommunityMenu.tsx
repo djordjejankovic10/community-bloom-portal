@@ -46,12 +46,10 @@ export const CommunityMenu = () => {
             <p className="text-sm text-muted-foreground">
               This is a detailed description of our fitness community where members can share their journey, achievements, and support each other.
             </p>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="h-8 px-3 text-sm text-muted-foreground hover:text-foreground">
-                <Users className="h-4 w-4 mr-2" />
-                <span className="font-semibold text-foreground">49</span> Members
-              </Button>
-            </div>
+            <Button variant="outline" className="w-full">
+              <Users className="h-4 w-4 mr-2" />
+              <span className="font-semibold">49</span> Members
+            </Button>
           </div>
 
           {/* Navigation Menu */}
