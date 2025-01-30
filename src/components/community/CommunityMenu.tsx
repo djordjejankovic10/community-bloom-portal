@@ -4,24 +4,8 @@ import { Menu } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLocation } from "react-router-dom";
 
-const getCurrentTab = (pathname: string) => {
-  switch (pathname) {
-    case "/community":
-      return "Feed";
-    case "/community/challenges":
-      return "Challenges";
-    case "/community/meetups":
-      return "Meetups";
-    case "/community/leaderboard":
-      return "Leaderboard";
-    default:
-      return "Feed";
-  }
-};
-
 export const CommunityMenu = () => {
   const location = useLocation();
-  const currentTab = getCurrentTab(location.pathname);
 
   return (
     <Sheet>
@@ -65,11 +49,23 @@ export const CommunityMenu = () => {
               <div className="text-sm text-muted-foreground">
                 <span className="font-semibold text-foreground">49</span> Members
               </div>
-              <div className="text-sm text-muted-foreground">•</div>
-              <div className="text-sm text-muted-foreground">
-                Current tab: <span className="font-semibold text-foreground">{currentTab}</span>
-              </div>
             </div>
+          </div>
+
+          {/* Navigation Menu */}
+          <div className="p-4 space-y-2">
+            <Button variant="ghost" className="w-full justify-start">
+              Feed
+            </Button>
+            <Button variant="ghost" className="w-full justify-start">
+              Challenges
+            </Button>
+            <Button variant="ghost" className="w-full justify-start">
+              Meetups
+            </Button>
+            <Button variant="ghost" className="w-full justify-start">
+              Leaderboard
+            </Button>
           </div>
 
           {/* Live Button */}
