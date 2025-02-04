@@ -6,7 +6,7 @@ export const CreatePost = () => {
 
   return (
     <div className="py-3 px-4 border-b">
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-start">
         <Avatar className="w-8 h-8">
           <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
           <AvatarFallback>DJ</AvatarFallback>

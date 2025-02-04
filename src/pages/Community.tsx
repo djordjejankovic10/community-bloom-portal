@@ -5,6 +5,7 @@ import { FeedPost } from "@/components/community/FeedPost";
 import { CreatePost } from "@/components/community/CreatePost";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
+import { SortOptions } from "@/components/community/SortOptions";
 
 export const MOCK_POSTS = [
   {
@@ -22,7 +23,6 @@ export const MOCK_POSTS = [
     metrics: {
       likes: 842,
       comments: 156,
-      reposts: 89,
       shares: 45,
     },
     media: {
@@ -44,7 +44,6 @@ export const MOCK_POSTS = [
         metrics: {
           likes: 156,
           comments: 12,
-          reposts: 3,
           shares: 1,
         },
       },
@@ -65,7 +64,6 @@ export const MOCK_POSTS = [
     metrics: {
       likes: 1243,
       comments: 234,
-      reposts: 167,
       shares: 89,
     },
     media: {
@@ -89,7 +87,6 @@ export const MOCK_POSTS = [
     metrics: {
       likes: 324,
       comments: 42,
-      reposts: 12,
       shares: 8,
     },
     media: {
@@ -111,7 +108,6 @@ export const MOCK_POSTS = [
     metrics: {
       likes: 567,
       comments: 89,
-      reposts: 45,
       shares: 23,
     },
     media: {
@@ -134,7 +130,6 @@ export const MOCK_POSTS = [
     metrics: {
       likes: 324,
       comments: 42,
-      reposts: 12,
       shares: 8,
     },
     media: {
@@ -158,7 +153,6 @@ export const MOCK_POSTS = [
     metrics: {
       likes: 428,
       comments: 67,
-      reposts: 23,
       shares: 51,
     },
     media: {
@@ -180,7 +174,6 @@ export const MOCK_POSTS = [
     metrics: {
       likes: 752,
       comments: 89,
-      reposts: 34,
       shares: 12,
     },
   },
@@ -198,7 +191,6 @@ export const MOCK_POSTS = [
     metrics: {
       likes: 634,
       comments: 72,
-      reposts: 28,
       shares: 45,
     },
     media: {
@@ -222,20 +214,65 @@ export const MOCK_POSTS = [
     metrics: {
       likes: 891,
       comments: 134,
-      reposts: 67,
       shares: 89,
     },
   },
 ];
 
+const PINNED_POST = {
+  pinned: true,
+  category: "weight-training",
+  author: {
+    firstName: "David",
+    lastName: "Johnson",
+    handle: "davidj",
+    avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
+    verified: true,
+    role: "founder" as const,
+  },
+  content: "👋 Welcome to our fitness community! Here's a quick guide to get you started:\n\n• Share your progress & achievements\n• Ask questions & support others\n• Join weekly challenges\n• Follow our community guidelines\n\nLet's crush our fitness goals together! 💪",
+  timestamp: "2d",
+  metrics: {
+    likes: 1567,
+    comments: 245,
+    shares: 89,
+  },
+};
+
+type SortOption = "latest" | "newest" | "oldest";
+
 const Community = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const [activeFilter, setActiveFilter] = useState("all");
+  const [isPinned, setIsPinned] = useState(true);
+  const [currentSort, setCurrentSort] = useState<SortOption>("latest");
 
   const filteredPosts = MOCK_POSTS.filter(post => 
     activeFilter === "all" || post.category === activeFilter
   );
+
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    switch (currentSort) {
+      case "latest":
+        // Sort by engagement (likes + comments)
+        const engagementA = a.metrics.likes + a.metrics.comments;
+        const engagementB = b.metrics.likes + b.metrics.comments;
+        return engagementB - engagementA;
+      case "newest":
+        // For demo, using timestamp string comparison
+        return b.timestamp.localeCompare(a.timestamp);
+      case "oldest":
+        // For demo, using timestamp string comparison
+        return a.timestamp.localeCompare(b.timestamp);
+      default:
+        return 0;
+    }
+  });
+
+  const handleUnpin = () => {
+    setIsPinned(false);
+  };
 
   const renderContent = () => {
     switch (currentPath) {
@@ -243,7 +280,12 @@ const Community = () => {
         return (
           <>
             <CreatePost />
-            {filteredPosts.map((post, index) => (
+            <SortOptions 
+              currentSort={currentSort}
+              onSortChange={setCurrentSort}
+            />
+            {isPinned && <FeedPost {...PINNED_POST} onUnpin={handleUnpin} />}
+            {sortedPosts.map((post, index) => (
               <FeedPost key={index} {...post} index={index} />
             ))}
           </>

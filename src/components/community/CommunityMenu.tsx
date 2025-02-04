@@ -70,24 +70,32 @@ export const CommunityMenu = () => {
             <p className="text-sm text-muted-foreground">
               This is a detailed description of our fitness community where members can share their journey, achievements, and support each other.
             </p>
-            <div className="flex -space-x-3">
-              {MOCK_MEMBERS.map((member, i) => (
-                <Avatar 
-                  key={i} 
-                  className="h-8 w-8 border-2 border-background ring-0"
-                >
-                  <AvatarImage 
-                    src={member.image} 
-                    alt={member.name}
-                    className="object-cover"
-                  />
-                  <AvatarFallback>{member.name[0]}</AvatarFallback>
-                </Avatar>
-              ))}
-              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border-2 border-background text-sm font-medium">
-                +45
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start p-0 h-auto hover:bg-transparent"
+              onClick={() => {
+                navigate("/community/members");
+              }}
+            >
+              <div className="flex -space-x-3">
+                {MOCK_MEMBERS.map((member, i) => (
+                  <Avatar 
+                    key={i} 
+                    className="h-8 w-8 border-2 border-background ring-0"
+                  >
+                    <AvatarImage 
+                      src={member.image} 
+                      alt={member.name}
+                      className="object-cover"
+                    />
+                    <AvatarFallback>{member.name[0]}</AvatarFallback>
+                  </Avatar>
+                ))}
+                <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border-2 border-background text-sm font-medium">
+                  +45
+                </div>
               </div>
-            </div>
+            </Button>
           </div>
 
           {/* Navigation Menu */}

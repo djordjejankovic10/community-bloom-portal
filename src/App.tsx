@@ -11,6 +11,7 @@ import CreatePost from "./pages/CreatePost";
 import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import { MembersList } from "@/components/community/MembersList";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/community/leaderboard" element={<Community />} />
             <Route path="/community/post/:postId" element={<PostDetail />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/community/members" element={<MembersList />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

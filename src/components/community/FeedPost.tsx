@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { Heart, MessageCircle, Repeat2, Share, Check, MoreVertical, Link2, Share2, FileText, AlertOctagon, Play } from "lucide-react";
+import { Heart, MessageCircle, Repeat2, Share, MoreVertical, Link2, Share2, FileText, AlertOctagon, Play, Pin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -10,49 +10,49 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
-interface FeedPostProps {
-  author: {
-    firstName: string;
-    lastName: string;
-    handle: string;
-    avatar: string;
-    verified?: boolean;
-    role?: "admin" | "founder";
-  };
+type PostMetrics = {
+  likes: number;
+  comments: number;
+  shares: number;
+};
+
+type PostMedia = {
+  type: "link" | "image" | "video";
+  url: string;
+  title?: string;
+  domain?: string;
+  thumbnail?: string;
+};
+
+type PostAuthor = {
+  firstName: string;
+  lastName: string;
+  handle: string;
+  avatar: string;
+  verified?: boolean;
+  role?: "admin" | "founder";
+};
+
+type PostProps = {
+  author: PostAuthor;
   content: string;
   timestamp: string;
-  metrics: {
-    likes: number;
-    comments: number;
-    reposts: number;
-    shares: number;
-  };
-  media?: {
-    type: "image" | "link" | "video";
-    url: string;
-    title?: string;
-    domain?: string;
-    thumbnail?: string;
-  };
-  isDetail?: boolean;
+  metrics: PostMetrics;
+  media?: PostMedia;
+  replies?: PostProps[];
   index?: number;
-}
+  pinned?: boolean;
+  onUnpin?: () => void;
+};
 
-export const FeedPost = ({
-  author,
-  content,
-  timestamp,
-  metrics,
-  media,
-  isDetail,
-  index,
-}: FeedPostProps) => {
+export const FeedPost = ({ author, content, timestamp, metrics, media, replies, index, pinned, onUnpin }: PostProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleClick = () => {
-    if (!isDetail && typeof index === 'number') {
+    if (!replies && typeof index === 'number') {
       navigate(`/community/post/${index}`);
     }
   };
@@ -88,21 +88,46 @@ export const FeedPost = ({
   };
 
   return (
-    <>
+    <div className={cn(
+      "border-b",
+      pinned && "bg-secondary/30 border-l-2 border-l-primary"
+    )}>
       <div 
-        className={`px-3 py-2 ${!isDetail ? "hover:bg-accent cursor-pointer" : ""} transition-colors relative`}
+        className={cn(
+          "p-4",
+          !replies && "hover:bg-accent cursor-pointer",
+          "transition-colors relative"
+        )}
         onClick={handleClick}
       >
-        <div className="absolute top-2 right-3">
+        {pinned && (
+          <div className="flex items-center gap-1.5 mb-2 text-primary text-xs font-medium">
+            <Pin className="h-3.5 w-3.5" />
+            Pinned post
+          </div>
+        )}
+        <div className="absolute top-4 right-4">
           <Drawer>
             <DrawerTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" size="icon" className="h-7 w-7">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DrawerTrigger>
             <DrawerContent>
               <div className="p-2 space-y-2">
                 <div className="mx-auto h-1 w-12 rounded-full bg-muted mb-4" />
+                {pinned && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUnpin?.();
+                    }}
+                    className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors"
+                  >
+                    <Pin className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">Unpin post</span>
+                  </button>
+                )}
                 <button
                   onClick={handleCopyLink}
                   className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors"
@@ -136,8 +161,8 @@ export const FeedPost = ({
             </DrawerContent>
           </Drawer>
         </div>
-        <div className="flex gap-2">
-          <Avatar className="w-8 h-8">
+        <div className="flex gap-3">
+          <Avatar className="w-8 h-8 flex-shrink-0">
             <AvatarImage src={author.avatar} />
             <AvatarFallback>{author.firstName[0]}</AvatarFallback>
           </Avatar>
@@ -146,11 +171,6 @@ export const FeedPost = ({
               <span className="font-medium text-foreground text-sm">
                 {author.firstName} {author.lastName}
               </span>
-              {author.verified && (
-                <span className="text-blue-500">
-                  <Check className="w-3.5 h-3.5" />
-                </span>
-              )}
               {author.role && (
                 <Badge variant="default" className="text-[10px] px-1 py-0">
                   {author.role}
@@ -214,40 +234,33 @@ export const FeedPost = ({
                 )}
               </div>
             )}
-            <div className="flex justify-between mt-2 text-primary w-full">
+            <div className="flex items-center gap-6 mt-3">
               <button 
-                className="flex items-center gap-1 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Heart className="w-4 h-4" />
-                <span className="text-xs">{metrics.likes}</span>
+                <Heart className="h-5 w-5" />
+                <span className="text-sm">{metrics.likes}</span>
               </button>
               <button 
-                className="flex items-center gap-1 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                <MessageCircle className="w-4 h-4" />
-                <span className="text-xs">{metrics.comments}</span>
+                <MessageCircle className="h-5 w-5" />
+                <span className="text-sm">{metrics.comments}</span>
               </button>
               <button 
-                className="flex items-center gap-1 hover:text-primary/80 transition-colors"
+                className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Repeat2 className="w-4 h-4" />
-                <span className="text-xs">{metrics.reposts}</span>
-              </button>
-              <button 
-                className="flex items-center gap-1 hover:text-primary/80 transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Share className="w-4 h-4" />
-                <span className="text-xs">{metrics.shares}</span>
+                <Share className="h-5 w-5" />
+                <span className="text-sm">{metrics.shares}</span>
               </button>
             </div>
           </div>
         </div>
       </div>
       <Separator />
-    </>
+    </div>
   );
 };
