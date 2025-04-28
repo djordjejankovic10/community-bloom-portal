@@ -8,7 +8,48 @@ import { useState } from "react";
 import { SortOptions } from "@/components/community/SortOptions";
 
 export const MOCK_POSTS = [
+  // Repost example
   {
+    index: 0,
+    author: {
+      firstName: "Alex",
+      lastName: "Johnson",
+      handle: "alexj",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+    },
+    content: "This is such a great tip! I always stretch for 10 minutes after my runs.",
+    timestamp: "15m",
+    metrics: {
+      likes: 42,
+      comments: 5,
+      shares: 2
+    },
+    originalPost: {
+      author: {
+        firstName: "Emma",
+        lastName: "Davis",
+        handle: "nutritioncoach",
+        avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=400&h=400&fit=crop",
+        verified: true,
+        role: "admin" as const
+      },
+      content: "🧘‍♀️ Starting your yoga journey? Here's my beginner-friendly guide to essential poses that will help improve your flexibility and strength. Perfect for busy gym-goers who want to add yoga to their routine.",
+      timestamp: "5h",
+      metrics: {
+        likes: 1243,
+        comments: 234,
+        shares: 89
+      },
+      media: {
+        type: "link" as const,
+        url: "https://www.verywellfit.com/essential-yoga-poses-for-beginners-3566747",
+        title: "31 Yoga Poses for Beginners",
+        domain: "verywellfit.com"
+      }
+    }
+  },
+  {
+    index: 1,
     category: "weight-training",
     author: {
       firstName: "John",
@@ -50,6 +91,7 @@ export const MOCK_POSTS = [
     ],
   },
   {
+    index: 2,
     category: "yoga",
     author: {
       firstName: "Emma",
@@ -71,9 +113,11 @@ export const MOCK_POSTS = [
       url: "https://www.verywellfit.com/essential-yoga-poses-for-beginners-3566747",
       title: "31 Yoga Poses for Beginners",
       domain: "verywellfit.com",
+      thumbnail: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=600&h=400&fit=crop",
     },
   },
   {
+    index: 3,
     category: "cardio",
     author: {
       firstName: "Mike",
@@ -93,8 +137,57 @@ export const MOCK_POSTS = [
       type: "image" as const,
       url: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&h=400&fit=crop",
     },
+    replies: [
+      {
+        author: {
+          firstName: "Jamie",
+          lastName: "Korsgaard",
+          handle: "jamiek",
+          avatar: "https://images.unsplash.com/photo-1542103749-8ef59b94f47e?w=400&h=400&fit=crop"
+        },
+        content: "That trail looks amazing! Where is this located? I've been looking for new running spots.",
+        timestamp: "45m",
+        metrics: {
+          likes: 18,
+          comments: 2,
+          shares: 0
+        }
+      },
+      {
+        author: {
+          firstName: "David",
+          lastName: "Park",
+          handle: "dpark",
+          avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop"
+        },
+        content: "Outdoor workouts are the best! Nothing beats fresh air and sunshine for motivation. I usually hit the park near my place every morning.",
+        timestamp: "32m",
+        metrics: {
+          likes: 11,
+          comments: 0,
+          shares: 0
+        }
+      },
+      {
+        author: {
+          firstName: "Mike",
+          lastName: "Johnson",
+          handle: "fitcoach",
+          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+          verified: true
+        },
+        content: "@jamiek It's the Cedar Ridge Trail just outside the city! About a 15-minute drive from downtown. Happy to share the exact location if you want to check it out!",
+        timestamp: "28m",
+        metrics: {
+          likes: 7,
+          comments: 0,
+          shares: 0
+        }
+      }
+    ],
   },
   {
+    index: 4,
     author: {
       firstName: "Lisa",
       lastName: "Chen",
@@ -112,12 +205,14 @@ export const MOCK_POSTS = [
     },
     media: {
       type: "link" as const,
-      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      title: "15-Minute Morning Yoga Flow",
-      domain: "youtube.com",
+      url: "https://www.fitbody.com/healthy-recipes/protein-bowl",
+      title: "The Ultimate Protein Bowl - 5 Variations",
+      domain: "fitbody.com",
+      thumbnail: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop",
     },
   },
   {
+    index: 5,
     author: {
       firstName: "Mike",
       lastName: "Johnson",
@@ -137,8 +232,74 @@ export const MOCK_POSTS = [
       url: "https://example.com/workout-video.mp4",
       thumbnail: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop",
     },
+    replies: [
+      {
+        author: {
+          firstName: "Taylor",
+          lastName: "Wilson",
+          handle: "taylorw",
+          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"
+        },
+        content: "This is exactly what I needed! I've been struggling with proper form on squats. Thanks for breaking it down step by step!",
+        timestamp: "1h 45m",
+        metrics: {
+          likes: 28,
+          comments: 1,
+          shares: 0
+        }
+      },
+      {
+        author: {
+          firstName: "Carlos",
+          lastName: "Rodriguez",
+          handle: "carlosr",
+          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop"
+        },
+        content: "Great tutorial! Question - what weight do you recommend starting with for complete beginners? I don't want to push too hard too fast.",
+        timestamp: "1h 30m",
+        metrics: {
+          likes: 15,
+          comments: 1,
+          shares: 0
+        }
+      },
+      {
+        author: {
+          firstName: "Mike",
+          lastName: "Johnson",
+          handle: "fitcoach",
+          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+          verified: true
+        },
+        content: "@carlosr Always start with just your bodyweight to master the movement pattern first! Then add light weights - for most beginners, 10-15lbs dumbbells are perfect. Focus on form over weight every time!",
+        timestamp: "1h 20m",
+        metrics: {
+          likes: 22,
+          comments: 0,
+          shares: 2
+        }
+      },
+      {
+        author: {
+          firstName: "Emma",
+          lastName: "Davis",
+          handle: "nutritioncoach",
+          avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=400&h=400&fit=crop",
+          verified: true,
+          role: "admin" as const
+        },
+        content: "Love this content, Mike! Your clear instructions are so helpful. Would be great to collaborate on a nutrition + workout series sometime!",
+        timestamp: "58m",
+        metrics: {
+          likes: 31,
+          comments: 0,
+          shares: 0
+        }
+      }
+    ],
   },
   {
+    index: 6,
     category: "nutrition",
     author: {
       firstName: "Sarah",
@@ -161,6 +322,7 @@ export const MOCK_POSTS = [
     },
   },
   {
+    index: 7,
     category: "nutrition",
     author: {
       firstName: "Alex",
@@ -178,6 +340,7 @@ export const MOCK_POSTS = [
     },
   },
   {
+    index: 8,
     category: "recovery",
     author: {
       firstName: "Maya",
@@ -198,9 +361,75 @@ export const MOCK_POSTS = [
       url: "https://www.healthline.com/health/shoulder-pain-exercises",
       title: "Ice Bath vs Cold Shower: Complete Recovery Guide",
       domain: "healthline.com",
+      thumbnail: "https://images.unsplash.com/photo-1563268093-a158621e3fc2?w=600&h=400&fit=crop",
     },
+    replies: [
+      {
+        author: {
+          firstName: "Alex",
+          lastName: "Johnson",
+          handle: "alexj",
+          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+        },
+        content: "This is incredibly helpful! I've been experimenting with both methods but wasn't sure about optimal timing. Do you think cold therapy is effective for muscle soreness from weight training?",
+        timestamp: "3h 45m",
+        metrics: {
+          likes: 48,
+          comments: 1,
+          shares: 0
+        }
+      },
+      {
+        author: {
+          firstName: "Maya",
+          lastName: "Patel",
+          handle: "recoverycoach",
+          avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&h=400&fit=crop",
+          verified: true
+        },
+        content: "@alexj Absolutely! Cold therapy is excellent for reducing inflammation from weight training. For best results, wait 1-2 hours post-workout, then 10-15 minutes in cold water (50-59°F). This timing allows your body to initiate the recovery process while still getting the anti-inflammatory benefits!",
+        timestamp: "3h 30m",
+        metrics: {
+          likes: 62,
+          comments: 0,
+          shares: 5
+        }
+      },
+      {
+        author: {
+          firstName: "Sarah",
+          lastName: "Johnson",
+          handle: "gymlife",
+          avatar: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop"
+        },
+        content: "I've been afraid to try ice baths because of how cold they are. Do you think starting with cold showers is a good way to ease into it?",
+        timestamp: "2h 15m",
+        metrics: {
+          likes: 29,
+          comments: 1,
+          shares: 0
+        }
+      },
+      {
+        author: {
+          firstName: "Maya",
+          lastName: "Patel",
+          handle: "recoverycoach",
+          avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&h=400&fit=crop",
+          verified: true
+        },
+        content: "@gymlife Definitely! Cold showers are a perfect way to build tolerance. Start with 30 seconds of cool (not cold) water at the end of your normal shower, then gradually increase the duration and decrease the temperature. After a few weeks, you'll be ready to try an ice bath starting at 60°F for 3-5 minutes.",
+        timestamp: "2h",
+        metrics: {
+          likes: 37,
+          comments: 0,
+          shares: 3
+        }
+      }
+    ],
   },
   {
+    index: 9,
     category: "recovery",
     author: {
       firstName: "Tom",

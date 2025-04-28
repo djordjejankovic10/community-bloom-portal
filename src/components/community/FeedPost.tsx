@@ -11,49 +11,21 @@ import {
 } from "@/components/ui/drawer";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { PostProps } from "@/types/post";
 
-type PostMetrics = {
-  likes: number;
-  comments: number;
-  shares: number;
-};
-
-type PostMedia = {
-  type: "link" | "image" | "video";
-  url: string;
-  title?: string;
-  domain?: string;
-  thumbnail?: string;
-};
-
-type PostAuthor = {
-  firstName: string;
-  lastName: string;
-  handle: string;
-  avatar: string;
-  verified?: boolean;
-  role?: "admin" | "founder";
-};
-
-type PostProps = {
-  author: PostAuthor;
-  content: string;
-  timestamp: string;
-  metrics: PostMetrics;
-  media?: PostMedia;
-  replies?: PostProps[];
-  index?: number;
-  pinned?: boolean;
-  onUnpin?: () => void;
-};
-
-export const FeedPost = ({ author, content, timestamp, metrics, media, replies, index, pinned, onUnpin }: PostProps) => {
+export const FeedPost = ({ author, content, timestamp, metrics, media, replies, index, pinned, onUnpin, isEmbedded = false, originalPost }: PostProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleClick = () => {
+    // Only navigate if this is not a reply post and has a valid index
     if (!replies && typeof index === 'number') {
-      navigate(`/community/post/${index}`);
+      // If this is a repost, navigate to the original post if available
+      if (originalPost && typeof originalPost.index === 'number') {
+        navigate(`/community/post/${originalPost.index}`);
+      } else {
+        navigate(`/community/post/${index}`);
+      }
     }
   };
 
@@ -89,16 +61,16 @@ export const FeedPost = ({ author, content, timestamp, metrics, media, replies, 
 
   return (
     <div className={cn(
-      "border-b",
+      isEmbedded ? "" : "border-b",
       pinned && "bg-secondary/30 border-l-2 border-l-primary"
     )}>
       <div 
         className={cn(
-          "p-4",
-          !replies && "hover:bg-accent cursor-pointer",
+          isEmbedded ? "p-2" : "p-4",
+          !replies && !isEmbedded && "hover:bg-accent cursor-pointer",
           "transition-colors relative"
         )}
-        onClick={handleClick}
+        onClick={isEmbedded ? undefined : handleClick}
       >
         {pinned && (
           <div className="flex items-center gap-1.5 mb-2 text-primary text-xs font-medium">
@@ -106,7 +78,7 @@ export const FeedPost = ({ author, content, timestamp, metrics, media, replies, 
             Pinned post
           </div>
         )}
-        <div className="absolute top-4 right-4">
+        {!isEmbedded && <div className="absolute top-4 right-4">
           <Drawer>
             <DrawerTrigger asChild onClick={(e) => e.stopPropagation()}>
               <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -160,7 +132,7 @@ export const FeedPost = ({ author, content, timestamp, metrics, media, replies, 
               </div>
             </DrawerContent>
           </Drawer>
-        </div>
+        </div>}
         <div className="flex gap-3">
           <Avatar className="w-8 h-8 flex-shrink-0">
             <AvatarImage src={author.avatar} />
@@ -217,11 +189,13 @@ export const FeedPost = ({ author, content, timestamp, metrics, media, replies, 
                     className="block border rounded-lg overflow-hidden hover:bg-accent"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <img
-                      src={media.url}
-                      alt=""
-                      className="w-full h-auto"
-                    />
+                    {media.thumbnail && (
+                      <img
+                        src={media.thumbnail}
+                        alt=""
+                        className="w-full h-[160px] object-cover"
+                      />
+                    )}
                     <div className="p-2">
                       <div className="text-foreground font-medium text-sm">
                         {media.title}
@@ -234,33 +208,130 @@ export const FeedPost = ({ author, content, timestamp, metrics, media, replies, 
                 )}
               </div>
             )}
-            <div className="flex items-center gap-6 mt-3">
-              <button 
-                className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Heart className="h-5 w-5" />
-                <span className="text-sm">{metrics.likes}</span>
-              </button>
-              <button 
-                className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MessageCircle className="h-5 w-5" />
-                <span className="text-sm">{metrics.comments}</span>
-              </button>
-              <button 
-                className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Share className="h-5 w-5" />
-                <span className="text-sm">{metrics.shares}</span>
-              </button>
-            </div>
+            
+            {/* Embedded original post (if this is a repost) */}
+            {originalPost && !isEmbedded && (
+              <div className="mt-3 border rounded-lg overflow-hidden">
+                <div className="p-3">
+                  <div className="flex gap-3">
+                    <Avatar className="w-8 h-8 flex-shrink-0">
+                      <AvatarImage src={originalPost.author.avatar} />
+                      <AvatarFallback>{originalPost.author.firstName[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center flex-wrap gap-x-1 gap-y-0.5">
+                        <span className="font-medium text-foreground text-sm">
+                          {originalPost.author.firstName} {originalPost.author.lastName}
+                        </span>
+                        {originalPost.author.role && (
+                          <Badge variant="default" className="text-[10px] px-1 py-0">
+                            {originalPost.author.role}
+                          </Badge>
+                        )}
+                        <span className="text-muted-foreground text-xs whitespace-nowrap">· {originalPost.timestamp}</span>
+                      </div>
+                      <p className="mt-0.5 text-base text-foreground">{originalPost.content}</p>
+                      {originalPost.media && (
+                        <div className="mt-2 rounded-lg overflow-hidden">
+                          {originalPost.media.type === "image" ? (
+                            <img
+                              src={originalPost.media.url}
+                              alt=""
+                              className="w-full h-auto rounded-lg"
+                            />
+                          ) : originalPost.media.type === "video" ? (
+                            <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
+                              <img
+                                src={originalPost.media.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-10 w-10 rounded-full bg-background/80 hover:bg-background/90"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Handle video playback here
+                                    console.log("Play video:", originalPost.media?.url);
+                                  }}
+                                >
+                                  <Play className="h-5 w-5" />
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <a
+                              href={originalPost.media.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block border rounded-lg overflow-hidden hover:bg-accent"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <img
+                                src={originalPost.media.url}
+                                alt=""
+                                className="w-full h-auto"
+                              />
+                              <div className="p-2">
+                                <div className="text-foreground font-medium text-sm">
+                                  {originalPost.media.title}
+                                </div>
+                                <div className="text-muted-foreground text-xs">
+                                  {originalPost.media.domain}
+                                </div>
+                              </div>
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {!isEmbedded && (
+              <div className="flex items-center gap-6 mt-3">
+                <button 
+                  className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Heart className="h-5 w-5" />
+                  <span className="text-sm">{metrics.likes}</span>
+                </button>
+                <button 
+                  className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  <span className="text-sm">{metrics.comments}</span>
+                </button>
+                <button 
+                  className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (typeof index === 'number') {
+                      navigate(`/community/repost/${index}`);
+                    }
+                  }}
+                >
+                  <Repeat2 className="h-5 w-5" />
+                </button>
+                <button 
+                  className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Share className="h-5 w-5" />
+                  <span className="text-sm">{metrics.shares}</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
-      <Separator />
+      {!isEmbedded && <Separator />}
     </div>
   );
 };

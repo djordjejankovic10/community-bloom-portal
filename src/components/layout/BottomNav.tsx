@@ -1,64 +1,42 @@
-import { Home, Play, Activity, Users, User } from "lucide-react";
+import { Home, BookOpen, Users, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 export const BottomNav = () => {
   const location = useLocation();
-  
-  const isActive = (path: string) => location.pathname === path;
-  
-  const navItems = [
-    { icon: Home, path: "/" },
-    { icon: Play, path: "/library", comingSoon: true },
-    { icon: Activity, path: "/community" },
-    { icon: Users, path: "/teams", comingSoon: true },
-    { icon: User, path: "/profile" },
-  ];
-
-  const renderNavItem = (item: typeof navItems[0], index: number) => {
-    const Icon = item.icon;
-    const active = isActive(item.path);
-    const link = (
-      <Link
-        key={index}
-        to={item.comingSoon ? "#" : item.path}
-        onClick={(e) => item.comingSoon && e.preventDefault()}
-        className={`p-2 rounded-full transition-colors ${
-          active
-            ? "bg-primary text-primary-foreground hover:bg-primary/90"
-            : "text-muted-foreground hover:text-foreground"
-        }`}
-      >
-        <Icon className="w-6 h-6" />
-      </Link>
-    );
-
-    if (item.comingSoon) {
-      return (
-        <TooltipProvider key={index}>
-          <Tooltip>
-            <TooltipTrigger asChild>{link}</TooltipTrigger>
-            <TooltipContent>
-              <p>Coming Soon</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    }
-
-    return link;
-  };
+  const path = location.pathname;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-2 transition-colors">
-      <div className="flex justify-between items-center max-w-lg mx-auto">
-        {navItems.map((item, index) => renderNavItem(item, index))}
+    <div className="fixed bottom-0 left-0 right-0 border-t bg-background z-50">
+      <div className="flex justify-around">
+        <Link 
+          to="/" 
+          className={`flex flex-col items-center py-2 px-4 ${path === "/" ? "text-primary" : "text-muted-foreground"}`}
+        >
+          <Home className="h-6 w-6" />
+          <span className="text-xs mt-1">Home</span>
+        </Link>
+        <Link 
+          to="/library" 
+          className={`flex flex-col items-center py-2 px-4 ${path.includes("/library") ? "text-primary" : "text-muted-foreground"}`}
+        >
+          <BookOpen className="h-6 w-6" />
+          <span className="text-xs mt-1">Library</span>
+        </Link>
+        <Link 
+          to="/community" 
+          className={`flex flex-col items-center py-2 px-4 ${path.includes("/community") ? "text-primary" : "text-muted-foreground"}`}
+        >
+          <Users className="h-6 w-6" />
+          <span className="text-xs mt-1">Community</span>
+        </Link>
+        <Link 
+          to="/profile" 
+          className={`flex flex-col items-center py-2 px-4 ${path.includes("/profile") ? "text-primary" : "text-muted-foreground"}`}
+        >
+          <User className="h-6 w-6" />
+          <span className="text-xs mt-1">Profile</span>
+        </Link>
       </div>
-    </nav>
+    </div>
   );
 };

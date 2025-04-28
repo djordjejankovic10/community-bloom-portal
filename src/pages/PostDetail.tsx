@@ -9,7 +9,8 @@ import { MOCK_POSTS } from "./Community";
 
 const PostDetail = () => {
   const { postId } = useParams();
-  const post = MOCK_POSTS[Number(postId)];
+  // Find the post by its index property instead of array position
+  const post = MOCK_POSTS.find(p => p.index === Number(postId));
 
   if (!post) return <div>Post not found</div>;
 
