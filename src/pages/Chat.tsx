@@ -82,7 +82,7 @@ const ChatPage = () => {
   }
   
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="fixed inset-0 flex flex-col bg-background" style={{width: '100vw'}}>
       {/* Header */}
       <div className="flex items-center gap-3 p-3 border-b bg-background/80 backdrop-blur-sm z-10 sticky top-0">
         <Button

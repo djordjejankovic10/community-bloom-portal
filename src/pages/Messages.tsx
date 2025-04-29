@@ -98,7 +98,7 @@ const MessagesPage = () => {
   });
   
   return (
-    <div className="flex flex-col flex-1 bg-background">
+    <div className="fixed inset-0 flex flex-col bg-background" style={{width: '100vw'}}>
       <div className="sticky top-0 bg-background/80 backdrop-blur-sm z-10">
         <div className="flex items-center gap-2 p-3">
           <Button

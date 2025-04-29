@@ -1,9 +1,10 @@
-import { BellIcon, MessageCircle, Search } from "lucide-react";
+import { BellIcon, MessageCircle, Search, User } from "lucide-react";
 import { CommunityMenu } from "./CommunityMenu";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { MOCK_NOTIFICATIONS } from "@/data/mockNotifications";
 import { NotificationBadge } from "@/components/notifications/NotificationBadge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const CommunityHeader = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export const CommunityHeader = () => {
           <CommunityMenu />
           <h1 className="text-2xl font-bold text-foreground">Community</h1>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <button 
             className="p-1.5 text-primary hover:text-primary/80 transition-colors"
             onClick={() => navigate("/search")}
@@ -42,6 +43,15 @@ export const CommunityHeader = () => {
           >
             <BellIcon className="w-5 h-5" />
             <NotificationBadge count={unreadCount} className="-top-1.5 -right-1.5" />
+          </button>
+          <button 
+            className="ml-1"
+            onClick={() => navigate("/profile")}
+          >
+            <Avatar className="h-8 w-8 border-2 border-primary">
+              <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
+              <AvatarFallback>DJ</AvatarFallback>
+            </Avatar>
           </button>
         </div>
       </div>

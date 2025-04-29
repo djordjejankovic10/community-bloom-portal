@@ -6,9 +6,13 @@ import { MOCK_NOTIFICATIONS } from "@/data/mockNotifications";
 import { ArrowLeft, Check, BellOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+type FilterType = 'all' | 'mentions' | 'replies';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const navigate = useNavigate();
   
   const unreadCount = notifications.filter(notif => !notif.isRead).length;
@@ -22,6 +26,14 @@ const NotificationsPage = () => {
   const handleMarkAllAsRead = () => {
     setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
   };
+  
+  // Filter notifications based on the active filter
+  const filteredNotifications = notifications.filter(notification => {
+    if (activeFilter === 'all') return true;
+    if (activeFilter === 'mentions') return notification.type === 'mention';
+    if (activeFilter === 'replies') return notification.type === 'comment';
+    return true;
+  });
   
   return (
     <div className="flex flex-col flex-1 bg-background">
@@ -52,11 +64,22 @@ const NotificationsPage = () => {
           )}
         </div>
         <Separator />
+        
+        <div className="px-4 py-2">
+          <Tabs value={activeFilter} onValueChange={(value) => setActiveFilter(value as FilterType)} className="w-full">
+            <TabsList className="grid grid-cols-3 w-full">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="mentions">Mentions</TabsTrigger>
+              <TabsTrigger value="replies">Replies</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        <Separator />
       </div>
       
       <div>
-        {notifications.length > 0 ? (
-          notifications.map(notification => (
+        {filteredNotifications.length > 0 ? (
+          filteredNotifications.map(notification => (
             <NotificationItem
               key={notification.id}
               notification={notification}

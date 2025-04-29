@@ -1,4 +1,4 @@
-import { Home, BookOpen, Users, User } from "lucide-react";
+import { Home, BookOpen, Users } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export const BottomNav = () => {
@@ -28,13 +28,6 @@ export const BottomNav = () => {
         >
           <Users className="h-6 w-6" />
           <span className="text-xs mt-1">Community</span>
-        </Link>
-        <Link 
-          to="/profile" 
-          className={`flex flex-col items-center py-2 px-4 ${path.includes("/profile") ? "text-primary" : "text-muted-foreground"}`}
-        >
-          <User className="h-6 w-6" />
-          <span className="text-xs mt-1">Profile</span>
         </Link>
       </div>
     </div>

@@ -1,11 +1,14 @@
-import { Moon, Palette } from "lucide-react";
+import { Moon, Palette, ArrowLeft } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
   const [primaryColor, setPrimaryColor] = useState("#9b87f5");
+  const navigate = useNavigate();
 
   const toggleDarkMode = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -81,8 +84,18 @@ const Profile = () => {
   ];
 
   return (
-    <div className="flex flex-col flex-1 bg-background p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Settings</h1>
+    <div className="fixed inset-0 flex flex-col bg-background p-4 space-y-4" style={{width: '100vw'}}>
+      <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="text-2xl font-bold">Settings</h1>
+      </div>
       <div className="p-4 space-y-4">
         <div className="flex items-center justify-between p-4 bg-card rounded-lg">
           <div className="flex items-center gap-3 text-card-foreground">
