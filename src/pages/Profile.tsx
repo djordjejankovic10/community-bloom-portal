@@ -1,6 +1,5 @@
 import { Moon, Palette } from "lucide-react";
 import { useTheme } from "next-themes";
-import { BottomNav } from "@/components/layout/BottomNav";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
 
@@ -82,11 +81,8 @@ const Profile = () => {
   ];
 
   return (
-    <div className="min-h-screen pb-20 bg-background">
-      <header className="px-4 py-2 border-b border-border bg-background">
-        <h1 className="text-2xl font-bold text-foreground">Profile</h1>
-      </header>
-      
+    <div className="flex flex-col flex-1 bg-background p-4 space-y-4">
+      <h1 className="text-2xl font-bold">Settings</h1>
       <div className="p-4 space-y-4">
         <div className="flex items-center justify-between p-4 bg-card rounded-lg">
           <div className="flex items-center gap-3 text-card-foreground">
@@ -121,8 +117,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      
-      <BottomNav />
     </div>
   );
 };

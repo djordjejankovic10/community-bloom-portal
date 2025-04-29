@@ -98,7 +98,7 @@ const MessagesPage = () => {
   });
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex flex-col flex-1 bg-background">
       <div className="sticky top-0 bg-background/80 backdrop-blur-sm z-10">
         <div className="flex items-center gap-2 p-3">
           <Button

@@ -1,6 +1,5 @@
 import { CommunityHeader } from "@/components/community/CommunityHeader";
 import { CommunityTabs } from "@/components/community/CommunityTabs";
-import { BottomNav } from "@/components/layout/BottomNav";
 import { FeedPost } from "@/components/community/FeedPost";
 import { CreatePost } from "@/components/community/CreatePost";
 import { useLocation } from "react-router-dom";
@@ -8,9 +7,88 @@ import { useState } from "react";
 import { SortOptions } from "@/components/community/SortOptions";
 
 export const MOCK_POSTS = [
-  // Repost example
+  // Long post example with "See more" button
   {
     index: 0,
+    category: "fitness",
+    author: {
+      firstName: "Sarah",
+      lastName: "Williams",
+      handle: "sarahfit",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
+      verified: true,
+      role: "admin" as const
+    },
+    content: `# My 30-Day Fitness Journey: Transforming Mind and Body
+
+Hello Bloom Community! 👋
+
+I wanted to share my recent 30-day fitness journey that completely transformed not just my body, but my entire mindset about health and wellness.
+
+## The Challenge
+
+I challenged myself to 30 days of consistent exercise, mindful eating, and proper recovery. Here's what my routine looked like:
+
+- 🏋️‍♀️ Strength training: 4 days/week
+- 🏃‍♀️ Cardio: 3 days/week (mix of HIIT and steady-state)
+- 🧘‍♀️ Yoga/mobility: Daily (even if just for 10 minutes)
+- 💧 Water intake: Minimum 3 liters daily
+- 😴 Sleep: Prioritized 7-8 hours every night
+
+## The Struggles
+
+Let me be honest - it wasn't always easy. There were days when my motivation was at rock bottom. Week 2 was particularly challenging as my body was adjusting to the new routine. I hit a plateau around day 18 and felt like giving up.
+
+## The Breakthroughs
+
+Around day 21, something magical happened. The workouts that once felt impossible became manageable. I started looking forward to my morning routine. My energy levels stabilized, and I noticed significant improvements in my mood and focus throughout the day.
+
+## Physical Changes
+
+- Lost 4.5 pounds (mostly fat, preserved muscle)
+- Dropped 1.5 inches from my waist
+- Increased my push-up max from 10 to 18
+- Improved my mile time by 45 seconds
+
+## Mental Changes (The Real Victory)
+
+- Reduced anxiety levels
+- Better stress management
+- Improved sleep quality
+- Enhanced focus at work
+- Greater overall confidence
+
+## Key Lessons Learned
+
+1. **Consistency trumps intensity**: Showing up every day, even for a lighter workout, is more important than occasional intense sessions.
+
+2. **Progress isn't linear**: Some days you'll feel stronger, some days weaker. Trust the process.
+
+3. **Community matters**: Having accountability partners (thank you to everyone who supported me here!) made all the difference.
+
+4. **Recovery is not optional**: Rest days and proper sleep are when the real transformation happens.
+
+5. **Mindset is everything**: Approaching fitness as a form of self-care rather than punishment changed everything.
+
+I'm sharing this not to boast, but to hopefully inspire someone who might be hesitating to start their own journey. Remember, the goal isn't perfection - it's progress.
+
+Who's ready to take on their own 30-day challenge? I'm happy to share my detailed workout plan and nutrition approach with anyone interested!
+
+#FitnessJourney #30DayChallenge #MindBodyTransformation`,
+    timestamp: "2h",
+    metrics: {
+      likes: 287,
+      comments: 42,
+      shares: 18
+    },
+    media: {
+      type: "image" as const,
+      url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop"
+    }
+  },
+  // Repost example
+  {
+    index: 1,
     author: {
       firstName: "Alex",
       lastName: "Johnson",
@@ -449,6 +527,7 @@ export const MOCK_POSTS = [
 ];
 
 const PINNED_POST = {
+  index: 999, // Adding a unique index for the pinned post
   pinned: true,
   category: "weight-training",
   author: {
@@ -481,7 +560,16 @@ const Community = () => {
     activeFilter === "all" || post.category === activeFilter
   );
 
-  const sortedPosts = [...filteredPosts].sort((a, b) => {
+  // Make sure all posts have valid index properties
+  const postsWithIndices = filteredPosts.map((post, idx) => {
+    // If post doesn't have an index property, assign one based on its position
+    if (typeof post.index !== 'number') {
+      return { ...post, index: 100 + idx }; // Use 100+ to avoid conflicts with existing indices
+    }
+    return post;
+  });
+
+  const sortedPosts = [...postsWithIndices].sort((a, b) => {
     switch (currentSort) {
       case "latest":
         // Sort by engagement (likes + comments)
@@ -509,14 +597,16 @@ const Community = () => {
         return (
           <>
             <CreatePost />
-            <SortOptions 
-              currentSort={currentSort}
-              onSortChange={setCurrentSort}
-            />
-            {isPinned && <FeedPost {...PINNED_POST} onUnpin={handleUnpin} />}
-            {sortedPosts.map((post, index) => (
-              <FeedPost key={index} {...post} index={index} />
-            ))}
+            <div className="space-y-4">
+              <SortOptions 
+                currentSort={currentSort}
+                onSortChange={setCurrentSort}
+              />
+              {isPinned && <FeedPost {...PINNED_POST} onUnpin={handleUnpin} />}
+              {sortedPosts.map((post) => (
+                <FeedPost key={post.index} {...post} />
+              ))}
+            </div>
           </>
         );
       case "/community/challenges":
@@ -533,13 +623,12 @@ const Community = () => {
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="flex flex-col flex-1">
       <CommunityHeader />
       <CommunityTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} />
       <main>
         {renderContent()}
       </main>
-      <BottomNav />
     </div>
   );
 };

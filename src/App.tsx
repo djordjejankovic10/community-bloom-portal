@@ -19,6 +19,7 @@ import SearchPage from "./pages/Search";
 import MessagesPage from "./pages/Messages";
 import ChatPage from "./pages/Chat";
 import ComingSoonPage from "./pages/ComingSoon";
+import { MainLayout } from "@/components/layout/MainLayout";
 
 const queryClient = new QueryClient();
 
@@ -30,23 +31,86 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<ComingSoonPage />} />
-            <Route path="/library" element={<ComingSoonPage />} />
-            <Route path="/community" element={<Community />} />
+            {/* CreatePost routes rendered outside MainLayout for full width */}
             <Route path="/community/post/create" element={<CreatePost />} />
             <Route path="/community/repost/:postId" element={<CreatePost />} />
-            <Route path="/community/challenges" element={<Community />} />
-            <Route path="/community/meetups" element={<Community />} />
-            <Route path="/community/leaderboard" element={<Community />} />
-            <Route path="/community/post/:postId" element={<PostDetail />} />
-            <Route path="/community/repost-demo" element={<RepostDemo />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/messages" element={<MessagesPage />} />
-            <Route path="/messages/:conversationId" element={<ChatPage />} />
-            <Route path="/community/members" element={<MembersList />} />
-            <Route path="*" element={<NotFound />} />
+            
+            {/* All other routes rendered inside MainLayout */}
+            <Route path="/" element={
+              <MainLayout>
+                <ComingSoonPage />
+              </MainLayout>
+            } />
+            <Route path="/library" element={
+              <MainLayout>
+                <ComingSoonPage />
+              </MainLayout>
+            } />
+            <Route path="/community" element={
+              <MainLayout>
+                <Community />
+              </MainLayout>
+            } />
+            <Route path="/community/challenges" element={
+              <MainLayout>
+                <Community />
+              </MainLayout>
+            } />
+            <Route path="/community/meetups" element={
+              <MainLayout>
+                <Community />
+              </MainLayout>
+            } />
+            <Route path="/community/leaderboard" element={
+              <MainLayout>
+                <Community />
+              </MainLayout>
+            } />
+            <Route path="/community/post/:postId" element={
+              <MainLayout>
+                <PostDetail />
+              </MainLayout>
+            } />
+            <Route path="/community/repost-demo" element={
+              <MainLayout>
+                <RepostDemo />
+              </MainLayout>
+            } />
+            <Route path="/profile" element={
+              <MainLayout>
+                <Profile />
+              </MainLayout>
+            } />
+            <Route path="/notifications" element={
+              <MainLayout>
+                <NotificationsPage />
+              </MainLayout>
+            } />
+            <Route path="/search" element={
+              <MainLayout>
+                <SearchPage />
+              </MainLayout>
+            } />
+            <Route path="/messages" element={
+              <MainLayout>
+                <MessagesPage />
+              </MainLayout>
+            } />
+            <Route path="/messages/:conversationId" element={
+              <MainLayout>
+                <ChatPage />
+              </MainLayout>
+            } />
+            <Route path="/community/members" element={
+              <MainLayout>
+                <MembersList />
+              </MainLayout>
+            } />
+            <Route path="*" element={
+              <MainLayout>
+                <NotFound />
+              </MainLayout>
+            } />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

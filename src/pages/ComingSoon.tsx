@@ -14,7 +14,7 @@ const ComingSoonPage = () => {
   };
   
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="flex flex-col flex-1">
       {/* Header */}
       <div className="flex items-center gap-3 p-3 border-b bg-background/80 backdrop-blur-sm z-10 sticky top-0">
         <Button

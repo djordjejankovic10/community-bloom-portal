@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Heart, MessageCircle, Repeat2, Share, MoreVertical, Link2, Share2, FileText, AlertOctagon, Play, Pin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,17 +17,35 @@ import { PostProps } from "@/types/post";
 export const FeedPost = ({ author, content, timestamp, metrics, media, replies, index, pinned, onUnpin, isEmbedded = false, originalPost }: PostProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isContentTruncated, setIsContentTruncated] = useState(false);
+  const [showFullContent, setShowFullContent] = useState(false);
+  const contentRef = useRef<HTMLParagraphElement>(null);
+  
+  // Check if content is longer than 10 lines
+  useEffect(() => {
+    if (contentRef.current) {
+      const lineHeight = parseInt(window.getComputedStyle(contentRef.current).lineHeight);
+      const height = contentRef.current.scrollHeight;
+      const lines = Math.floor(height / (lineHeight || 20)); // fallback to 20px if lineHeight is not available
+      
+      setIsContentTruncated(lines > 10);
+    }
+  }, [content]);
 
   const handleClick = () => {
-    // Only navigate if this is not a reply post and has a valid index
-    if (!replies && typeof index === 'number') {
-      // If this is a repost, navigate to the original post if available
-      if (originalPost && typeof originalPost.index === 'number') {
-        navigate(`/community/post/${originalPost.index}`);
-      } else {
-        navigate(`/community/post/${index}`);
-      }
+    // Skip navigation for embedded posts or replies
+    if (isEmbedded || replies) return;
+    
+    // If this is a repost with an original post that has an index, navigate to that original post
+    if (originalPost && typeof originalPost.index === 'number') {
+      navigate(`/community/post/${originalPost.index}`);
+      return;
     }
+    
+    // For normal posts, navigate to the post detail view
+    // Use the post's index if available, otherwise use 0 as a fallback
+    const postId = typeof index === 'number' ? index : 0;
+    navigate(`/community/post/${postId}`);
   };
 
   const handleCopyLink = () => {
@@ -67,7 +86,7 @@ export const FeedPost = ({ author, content, timestamp, metrics, media, replies, 
       <div 
         className={cn(
           isEmbedded ? "p-2" : "p-4",
-          !replies && !isEmbedded && "hover:bg-accent cursor-pointer",
+          !isEmbedded && "hover:bg-accent cursor-pointer",
           "transition-colors relative"
         )}
         onClick={isEmbedded ? undefined : handleClick}
@@ -150,7 +169,28 @@ export const FeedPost = ({ author, content, timestamp, metrics, media, replies, 
               )}
               <span className="text-muted-foreground text-xs whitespace-nowrap">· {timestamp}</span>
             </div>
-            <p className="mt-0.5 text-base text-foreground">{content}</p>
+            <div>
+              <p 
+                ref={contentRef}
+                className={`mt-0.5 text-base text-foreground py-[10px] my-[3px] ${isContentTruncated && !showFullContent ? 'line-clamp-10 max-h-[300px] overflow-hidden' : ''}`}
+              >
+                {content}
+              </p>
+              {isContentTruncated && !showFullContent && !isEmbedded && (
+                <Button 
+                  variant="ghost" 
+                  className="text-primary hover:text-primary/80 p-0 h-auto font-medium mt-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (typeof index === 'number') {
+                      navigate(`/community/post/${index}`);
+                    }
+                  }}
+                >
+                  See more
+                </Button>
+              )}
+            </div>
             {media && (
               <div className="mt-2 rounded-lg overflow-hidden">
                 {media.type === "image" ? (

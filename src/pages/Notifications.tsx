@@ -24,7 +24,7 @@ const NotificationsPage = () => {
   };
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex flex-col flex-1 bg-background">
       <div className="sticky top-0 bg-background/80 backdrop-blur-sm z-10">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
@@ -54,7 +54,7 @@ const NotificationsPage = () => {
         <Separator />
       </div>
       
-      <div className="pb-20">
+      <div>
         {notifications.length > 0 ? (
           notifications.map(notification => (
             <NotificationItem

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Image, Camera, Mic, LineChart, ArrowLeft, X, Repeat2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FeedPost } from "@/components/community/FeedPost";
@@ -108,8 +108,8 @@ const CreatePostPage = () => {
   const isPostButtonEnabled = (content.trim().length > 0 || uploadedImages.length > 0 || isRepost);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <div className="flex items-center justify-between border-b p-3 shrink-0">
+    <div className="fixed inset-0 flex flex-col bg-background" style={{width: '100vw'}}>
+      <div className="flex items-center justify-between border-b p-3 shrink-0" style={{width: '100%'}}>
         <Button
           variant="ghost"
           size="icon"
@@ -134,7 +134,27 @@ const CreatePostPage = () => {
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div className="flex-1 overflow-y-auto p-3 space-y-4" style={{width: '100%'}}>
+        {!isRepost && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Select Circle</label>
+            <div className="w-1/2">
+              <Select value={selectedCircle} onValueChange={setSelectedCircle}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a circle" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CIRCLES.map((circle) => (
+                    <SelectItem key={circle} value={circle}>
+                      {circle}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+        
         <div className="flex flex-col">
           <div className="flex gap-3">
             <Avatar className="w-10 h-10 flex-shrink-0">
@@ -217,23 +237,6 @@ const CreatePostPage = () => {
             </Button>
           </div>
         </div>
-
-        {!isRepost && (
-          <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Select Circle</label>
-          <div className="w-full overflow-x-auto">
-            <Tabs value={selectedCircle} onValueChange={setSelectedCircle}>
-              <TabsList className="w-full justify-start">
-                {CIRCLES.map((circle) => (
-                  <TabsTrigger key={circle} value={circle} className="text-xs whitespace-nowrap">
-                    {circle}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-          </div>
-        </div>
-        )}
       </div>
     </div>
   );
