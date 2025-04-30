@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { PostProps } from "@/types/post";
 
-export const FeedPost = ({ author, content, timestamp, metrics, media, replies, index, pinned, onUnpin, isEmbedded = false, originalPost }: PostProps) => {
+export const FeedPost = ({ author, content, timestamp, metrics, media, replies, index, pinned, onUnpin, isEmbedded = false, isDetail = false, originalPost }: PostProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isContentTruncated, setIsContentTruncated] = useState(false);
@@ -28,9 +28,10 @@ export const FeedPost = ({ author, content, timestamp, metrics, media, replies, 
       const height = contentRef.current.scrollHeight;
       const lines = Math.floor(height / (lineHeight || 20)); // fallback to 20px if lineHeight is not available
       
-      setIsContentTruncated(lines > 10);
+      // Only truncate if not in detail view
+      setIsContentTruncated(!isEmbedded && !isDetail && lines > 10);
     }
-  }, [content]);
+  }, [content, isEmbedded, isDetail]);
 
   const handleClick = () => {
     // Skip navigation for embedded posts or replies
@@ -182,8 +183,12 @@ export const FeedPost = ({ author, content, timestamp, metrics, media, replies, 
                   className="text-primary hover:text-primary/80 p-0 h-auto font-medium mt-1"
                   onClick={(e) => {
                     e.stopPropagation();
+                    // Navigate to post detail view using the post's index property
                     if (typeof index === 'number') {
                       navigate(`/community/post/${index}`);
+                    } else if (originalPost && typeof originalPost.index === 'number') {
+                      // If this is a repost, use the original post's index
+                      navigate(`/community/post/${originalPost.index}`);
                     }
                   }}
                 >

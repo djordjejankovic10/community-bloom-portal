@@ -88,7 +88,7 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
   },
   // Repost example
   {
-    index: 1,
+    index: 9,
     author: {
       firstName: "Alex",
       lastName: "Johnson",
