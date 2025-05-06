@@ -1,12 +1,14 @@
-import { Moon, Palette, ArrowLeft } from "lucide-react";
+import { Moon, Palette, ArrowLeft, Layout } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useMenuPreferences } from "@/context/MenuPreferencesContext";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
+  const { showSitesList, toggleSitesList } = useMenuPreferences();
   const [primaryColor, setPrimaryColor] = useState("#9b87f5");
   const navigate = useNavigate();
 
@@ -35,7 +37,8 @@ const Profile = () => {
     
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
-    let h = 0, s = 0, l = (max + min) / 2;
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
 
     if (max !== min) {
       const d = max - min;
@@ -106,6 +109,18 @@ const Profile = () => {
             checked={theme === "dark"}
             onCheckedChange={toggleDarkMode}
             aria-label="Toggle dark mode"
+          />
+        </div>
+
+        <div className="flex items-center justify-between p-4 bg-card rounded-lg">
+          <div className="flex items-center gap-3 text-card-foreground">
+            <Layout className="w-5 h-5" />
+            <span className="font-medium">Show Sites List in Menu</span>
+          </div>
+          <Switch
+            checked={showSitesList}
+            onCheckedChange={toggleSitesList}
+            aria-label="Toggle sites list in menu"
           />
         </div>
 

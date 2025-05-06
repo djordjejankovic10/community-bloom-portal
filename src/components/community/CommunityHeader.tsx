@@ -22,33 +22,33 @@ export const CommunityHeader = () => {
           <CommunityMenu />
           <h1 className="text-2xl font-bold text-foreground">Community</h1>
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-1 items-center">
           <button 
-            className="p-1.5 text-primary hover:text-primary/80 transition-colors"
+            className="p-1 text-primary hover:text-primary/80 transition-colors"
             onClick={() => navigate("/search")}
           >
-            <Search className="w-5 h-5" />
+            <Search className="w-4 h-4" />
           </button>
           <button 
-            className="p-1.5 text-primary hover:text-primary/80 transition-colors relative"
+            className="p-1 text-primary hover:text-primary/80 transition-colors relative"
             onClick={() => navigate("/messages")}
           >
-            <MessageCircle className="w-5 h-5" />
+            <MessageCircle className="w-4 h-4" />
             {/* Add a badge for unread messages */}
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">4</span>
+            <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px] font-medium text-white">4</span>
           </button>
           <button 
-            className="p-1.5 text-primary hover:text-primary/80 transition-colors relative"
+            className="p-1 text-primary hover:text-primary/80 transition-colors relative"
             onClick={() => navigate("/notifications")}
           >
-            <BellIcon className="w-5 h-5" />
-            <NotificationBadge count={unreadCount} className="-top-1.5 -right-1.5" />
+            <BellIcon className="w-4 h-4" />
+            <NotificationBadge count={unreadCount} className="-top-1 -right-1 min-w-[14px] h-[14px] text-[8px]" />
           </button>
           <button 
             className="ml-1"
             onClick={() => navigate("/profile")}
           >
-            <Avatar className="h-8 w-8 border-2 border-primary">
+            <Avatar className="h-7 w-7 border-2 border-primary">
               <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
               <AvatarFallback>DJ</AvatarFallback>
             </Avatar>
