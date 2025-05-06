@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
+import { AIBottomSheet } from "@/components/ai/AIBottomSheet";
 
 const CIRCLES = [
   "General",
@@ -526,7 +527,7 @@ const CreatePostPage = () => {
               className="h-11 w-11 flex-shrink-0"
               onClick={handleAIClick}
             >
-              <Sparkles className="h-6 w-6 text-muted-foreground" />
+              <Sparkles className="h-6 w-6 text-primary" />
             </Button>
             
             {/* Custom mention menu that stays within viewport */}
@@ -596,87 +597,19 @@ const CreatePostPage = () => {
               </div>
             )}
             
-            {/* AI Assistant popover */}
-            {isAIOpen && (
-              <div className="fixed inset-x-0 bottom-16 mx-4 bg-background border rounded-lg shadow-lg z-50" style={{ maxHeight: '60vh' }}>
-                <div className="flex justify-between items-center p-3 border-b">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" />
-                    <div className="text-sm font-medium">AI Assistant</div>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-6 w-6" 
-                    onClick={() => setIsAIOpen(false)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                {/* AI generated content display */}
-                {aiGeneratedContent && (
-                  <div className="p-3 border-b">
-                    <div className="text-sm font-medium mb-1">Generated Content</div>
-                    <div className="p-2 rounded bg-muted/30 text-sm">
-                      {aiGeneratedContent}
-                    </div>
-                    <div className="flex gap-2 mt-2 justify-end">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-8 gap-1"
-                        onClick={handleRegenerateContent}
-                        disabled={isGenerating}
-                      >
-                        <RotateCcw className="h-3 w-3" />
-                        Regenerate
-                      </Button>
-                      <Button 
-                        variant="default" 
-                        size="sm" 
-                        className="h-8 gap-1"
-                        onClick={handleConfirmAIContent}
-                      >
-                        <CheckCircle className="h-3 w-3" />
-                        Use This
-                      </Button>
-                    </div>
-                  </div>
-                )}
-                
-                <div className="p-3">
-                  <div className="text-sm font-medium mb-1">
-                    {aiGeneratedContent ? "Edit Your Notes" : "Outline Your Thoughts"}
-                  </div>
-                  <Textarea
-                    placeholder="Outline your thoughts in brief notes"
-                    className="min-h-[100px] resize-none"
-                    value={aiNotes}
-                    onChange={(e) => setAINotes(e.target.value)}
-                  />
-                  <div className="flex justify-end mt-2">
-                    <Button 
-                      onClick={handleAISubmit} 
-                      disabled={isGenerating || !aiNotes.trim()}
-                      className="gap-1"
-                    >
-                      {isGenerating ? (
-                        <>
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="h-4 w-4" />
-                          {aiGeneratedContent ? "Update" : "Generate"}
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* AI Assistant bottom sheet */}
+            <AIBottomSheet
+              isOpen={isAIOpen}
+              onClose={() => setIsAIOpen(false)}
+              mode="post"
+              aiGeneratedContent={aiGeneratedContent}
+              aiNotes={aiNotes}
+              isGenerating={isGenerating}
+              onAISubmit={handleAISubmit}
+              onRegenerateContent={handleRegenerateContent}
+              onConfirmContent={handleConfirmAIContent}
+              onNotesChange={(notes) => setAINotes(notes)}
+            />
           </div>
         </div>
       </div>

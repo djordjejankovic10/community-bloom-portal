@@ -82,7 +82,7 @@ const ChatPage = () => {
   }
   
   return (
-    <div className="fixed inset-0 flex flex-col bg-background" style={{width: '100vw'}}>
+    <div className="fixed inset-0 flex flex-col bg-background w-full">
       {/* Header */}
       <div className="flex items-center gap-3 p-3 border-b bg-background/80 backdrop-blur-sm z-10 sticky top-0">
         <Button
@@ -121,8 +121,8 @@ const ChatPage = () => {
         </div>
       </div>
       
-      {/* Message list */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-1">
+      {/* Message list - with bottom padding to make room for input */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-1 pb-[80px]">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-4">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -146,8 +146,10 @@ const ChatPage = () => {
         )}
       </div>
       
-      {/* Message input */}
-      <MessageInput onSendMessage={handleSendMessage} />
+      {/* Message input - fixed at the bottom */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background z-[60] border-t w-full max-w-full">
+        <MessageInput onSendMessage={handleSendMessage} />
+      </div>
     </div>
   );
 };
