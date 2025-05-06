@@ -27,22 +27,22 @@ export const CommunityHeader = () => {
             className="p-1 text-primary hover:text-primary/80 transition-colors"
             onClick={() => navigate("/search")}
           >
-            <Search className="w-4 h-4" />
+            <Search className="w-5 h-5" />
           </button>
           <button 
             className="p-1 text-primary hover:text-primary/80 transition-colors relative"
             onClick={() => navigate("/messages")}
           >
-            <MessageCircle className="w-4 h-4" />
+            <MessageCircle className="w-5 h-5" />
             {/* Add a badge for unread messages */}
-            <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px] font-medium text-white">4</span>
+            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[9px] font-medium text-white">4</span>
           </button>
           <button 
             className="p-1 text-primary hover:text-primary/80 transition-colors relative"
             onClick={() => navigate("/notifications")}
           >
-            <BellIcon className="w-4 h-4" />
-            <NotificationBadge count={unreadCount} className="-top-1 -right-1 min-w-[14px] h-[14px] text-[8px]" />
+            <BellIcon className="w-5 h-5" />
+            <NotificationBadge count={unreadCount} className="-top-1 -right-1 min-w-[16px] h-[16px] text-[9px]" />
           </button>
           <button 
             className="ml-1"
