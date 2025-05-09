@@ -5,6 +5,9 @@ import { CreatePost } from "@/components/community/CreatePost";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { SortOptions } from "@/components/community/SortOptions";
+import { UIPreferencesProvider } from "@/context/UIPreferences";
+import { NavigationToggle } from "@/components/community/NavigationToggle";
+import { ConditionalCommunityTabs } from "@/components/community/ConditionalCommunityTabs";
 
 export const MOCK_POSTS = [
   // Long post example with "See more" button
@@ -599,10 +602,13 @@ const Community = () => {
             <CreatePost />
             <div className="space-y-4">
               {isPinned && <FeedPost {...PINNED_POST} onUnpin={handleUnpin} />}
-              <SortOptions 
-                currentSort={currentSort}
-                onSortChange={setCurrentSort}
-              />
+              <div className="flex flex-col space-y-1">
+                <SortOptions 
+                  currentSort={currentSort}
+                  onSortChange={setCurrentSort}
+                />
+                <div className="h-px bg-border w-full" />
+              </div>
               {sortedPosts.map((post) => (
                 <FeedPost key={post.index} {...post} />
               ))}
@@ -623,13 +629,15 @@ const Community = () => {
   };
 
   return (
-    <div className="flex flex-col flex-1">
-      <CommunityHeader />
-      <CommunityTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-      <main>
-        {renderContent()}
-      </main>
-    </div>
+    <UIPreferencesProvider>
+      <div className="flex flex-col flex-1">
+        <CommunityHeader />
+        <ConditionalCommunityTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+        <main>
+          {renderContent()}
+        </main>
+      </div>
+    </UIPreferencesProvider>
   );
 };
 

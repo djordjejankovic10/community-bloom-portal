@@ -4,17 +4,40 @@ import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useUIPreferences } from "@/context/UIPreferences";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { useMenuPreferences } from "@/context/MenuPreferencesContext";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
-  const { showSitesList, toggleSitesList } = useMenuPreferences();
-  const [primaryColor, setPrimaryColor] = useState("#9b87f5");
   const navigate = useNavigate();
+  const [primaryColor, setPrimaryColor] = useState("#9b87f5");
+  
+  // Access UI preferences context
+  const { showNavigation, toggleNavigation } = useUIPreferences();
+  
+  // Add this back - for the side menu toggle
+  let showSitesList = false;
+  let toggleSitesList = () => {};
+  try {
+    const menuPrefs = useMenuPreferences();
+    showSitesList = menuPrefs.showSitesList;
+    toggleSitesList = menuPrefs.toggleSitesList;
+  } catch (error) {
+    console.warn("MenuPreferences context not available");
+  }
+
+  // Create an explicit handler for the navigation toggle
+  const handleNavigationToggle = () => {
+    // Call the context function directly
+    toggleNavigation();
+    console.log("Navigation toggled, new state:", !showNavigation);
+  };
 
   const toggleDarkMode = () => {
     setTheme(theme === "dark" ? "light" : "dark");
-    console.log("Theme toggled:", theme === "dark" ? "light" : "dark");
   };
 
   const handleColorChange = (color: string) => {
@@ -22,7 +45,6 @@ const Profile = () => {
     // Convert hex to HSL
     const root = document.documentElement;
     root.style.setProperty('--primary', convertHexToHSL(color));
-    console.log("Primary color changed to:", color);
   };
 
   // Convert hex color to HSL format
@@ -87,61 +109,161 @@ const Profile = () => {
   ];
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background p-4 space-y-4" style={{width: '100vw'}}>
-      <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="flex items-center gap-4 p-3 border-b">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-9 w-9" 
           onClick={() => navigate(-1)}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold">Settings</h1>
-      </div>
-      <div className="p-4 space-y-4">
-        <div className="flex items-center justify-between p-4 bg-card rounded-lg">
-          <div className="flex items-center gap-3 text-card-foreground">
-            <Moon className="w-5 h-5" />
-            <span className="font-medium">Dark Mode</span>
-          </div>
-          <Switch
-            checked={theme === "dark"}
-            onCheckedChange={toggleDarkMode}
-            aria-label="Toggle dark mode"
-          />
-        </div>
+        <h1 className="text-xl font-semibold flex-1">Settings</h1>
+      </header>
 
-        <div className="flex items-center justify-between p-4 bg-card rounded-lg">
-          <div className="flex items-center gap-3 text-card-foreground">
-            <Layout className="w-5 h-5" />
-            <span className="font-medium">Show Sites List in Menu</span>
-          </div>
-          <Switch
-            checked={showSitesList}
-            onCheckedChange={toggleSitesList}
-            aria-label="Toggle sites list in menu"
-          />
-        </div>
-
-        <div className="p-4 bg-card rounded-lg">
-          <div className="flex items-center gap-3 mb-4 text-card-foreground">
-            <Palette className="w-5 h-5" />
-            <span className="font-medium">Theme Color</span>
-          </div>
-          <div className="grid grid-cols-5 gap-2">
-            {colorOptions.map((color) => (
-              <button
-                key={color.value}
-                onClick={() => handleColorChange(color.value)}
-                className={`w-full aspect-square rounded-lg border-2 transition-all ${
-                  primaryColor === color.value ? 'border-primary scale-110' : 'border-transparent scale-100'
-                }`}
-                style={{ backgroundColor: color.value }}
-                title={color.label}
-                aria-label={`Set theme color to ${color.label}`}
+      <div className="p-4">
+        <h2 className="text-lg font-medium mb-4">App Preferences</h2>
+        
+        <div className="space-y-4">
+          {/* Add back the side menu toggle */}
+          <div className="flex items-center justify-between py-3 border-b">
+            <div>
+              <Label 
+                htmlFor="side-menu-toggle" 
+                className="font-medium text-foreground"
+              >
+                Show Side Navigation
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Show sites list in the side navigation menu
+              </p>
+            </div>
+            
+            {/* Side menu toggle */}
+            <div className="relative">
+              <input
+                id="side-menu-toggle"
+                type="checkbox"
+                checked={showSitesList}
+                onChange={() => {
+                  toggleSitesList();
+                  console.log("Side menu toggle clicked");
+                }}
+                className="sr-only"
               />
-            ))}
+              <label
+                htmlFor="side-menu-toggle"
+                className={`block w-11 h-6 rounded-full cursor-pointer ${
+                  showSitesList ? 'bg-primary' : 'bg-input'
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-background transition-transform duration-200 ${
+                    showSitesList ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                ></span>
+              </label>
+            </div>
+          </div>
+          
+          {/* Feed navigation toggle - already implemented */}
+          <div className="flex items-center justify-between py-3 border-b">
+            <div>
+              <Label 
+                htmlFor="navigation-toggle" 
+                className="font-medium text-foreground"
+              >
+                Show Feed Navigation
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Show tabs and category filters in the community feed
+              </p>
+            </div>
+            
+            {/* Feed navigation toggle - already implemented */}
+            <div className="relative">
+              <input
+                id="navigation-toggle"
+                type="checkbox"
+                checked={showNavigation}
+                onChange={() => {
+                  toggleNavigation();
+                }}
+                className="sr-only"
+              />
+              <label
+                htmlFor="navigation-toggle"
+                className={`block w-11 h-6 rounded-full cursor-pointer ${
+                  showNavigation ? 'bg-primary' : 'bg-input'
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-background transition-transform duration-200 ${
+                    showNavigation ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                ></span>
+              </label>
+            </div>
+          </div>
+          
+          {/* Dark mode toggle */}
+          <div className="flex items-center justify-between py-3 border-b">
+            <div>
+              <Label 
+                htmlFor="dark-mode-toggle" 
+                className="font-medium text-foreground"
+              >
+                Dark Mode
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Use dark theme throughout the app
+              </p>
+            </div>
+            <Switch id="dark-mode-toggle" checked={theme === "dark"} onCheckedChange={toggleDarkMode} />
+          </div>
+
+          {/* Push notifications toggle */}
+          <div className="flex items-center justify-between py-3 border-b">
+            <div>
+              <Label 
+                htmlFor="notifications-toggle" 
+                className="font-medium text-foreground"
+              >
+                Push Notifications
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Receive notifications for activity in your communities
+              </p>
+            </div>
+            <Switch id="notifications-toggle" checked={true} />
+          </div>
+          
+          {/* Color theme section */}
+          <div className="py-3 border-b">
+            <div className="mb-2">
+              <h3 className="font-medium text-foreground">
+                Primary Color
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Choose an accent color for the app
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 mt-3">
+              {colorOptions.slice(0, 9).map((color) => (
+                <button
+                  key={color.value}
+                  onClick={() => handleColorChange(color.value)}
+                  className="w-8 h-8 rounded-full transition-all"
+                  style={{ 
+                    backgroundColor: color.value,
+                    border: primaryColor === color.value ? '2px solid hsl(var(--foreground))' : '2px solid transparent'
+                  }}
+                  title={color.label}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
