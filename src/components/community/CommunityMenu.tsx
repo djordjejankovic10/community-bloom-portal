@@ -1,6 +1,6 @@
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Plus, X } from "lucide-react";
+import { Menu, Plus, X, Dumbbell, Heart, StretchVertical, Battery, Apple, Utensils, BookOpen } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMenuPreferences, Site } from "@/context/MenuPreferencesContext";
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MOCK_SITES } from "@/data/mock-sites";
+import { Separator } from "@/components/ui/separator";
 
 const MOCK_MEMBERS = [
   {
@@ -42,6 +43,26 @@ const AVAILABLE_LOGOS = [
   "/site-logos/ux.png",
 ];
 
+// Circle categories organized by access groups
+const ACCESS_GROUPS = [
+  {
+    name: "Exercise",
+    circles: [
+      { id: "weight-training", name: "Weight Training", icon: Dumbbell },
+      { id: "cardio", name: "Cardio", icon: Heart },
+      { id: "yoga", name: "Yoga", icon: StretchVertical },
+      { id: "recovery", name: "Recovery", icon: Battery },
+    ]
+  },
+  {
+    name: "Nutrition",
+    circles: [
+      { id: "nutrition", name: "Nutrition", icon: Apple },
+      { id: "keto-diet", name: "Keto Diet", icon: Utensils },
+    ]
+  }
+];
+
 export const CommunityMenu = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -70,6 +91,10 @@ export const CommunityMenu = () => {
     navigate(path);
   };
 
+  const handleCircleNavigation = (circleId: string) => {
+    navigate(`/community?circle=${circleId}`);
+  };
+
   const handleSiteNavigation = (url: string) => {
     // Open in a new tab for external URLs
     window.open(`https://${url}`, '_blank');
@@ -96,11 +121,11 @@ export const CommunityMenu = () => {
   };
 
   const renderNavigationMenu = () => (
-    <div className="p-4 space-y-2">
+    <div className="px-3 py-2 space-y-1">
       <SheetClose asChild>
         <Button 
           variant={currentPath === "/community" ? "secondary" : "ghost"} 
-          className="w-full justify-start"
+          className="w-full justify-start h-8 text-sm px-2"
           onClick={() => handleNavigation("/community")}
         >
           Feed
@@ -110,7 +135,7 @@ export const CommunityMenu = () => {
       <SheetClose asChild>
         <Button 
           variant={currentPath === "/community/challenges" ? "secondary" : "ghost"} 
-          className="w-full justify-start"
+          className="w-full justify-start h-8 text-sm px-2"
           onClick={() => handleNavigation("/community/challenges")}
         >
           Challenges
@@ -120,7 +145,7 @@ export const CommunityMenu = () => {
       <SheetClose asChild>
         <Button 
           variant={currentPath === "/community/meetups" ? "secondary" : "ghost"} 
-          className="w-full justify-start"
+          className="w-full justify-start h-8 text-sm px-2"
           onClick={() => handleNavigation("/community/meetups")}
         >
           Meetups
@@ -129,8 +154,28 @@ export const CommunityMenu = () => {
       
       <SheetClose asChild>
         <Button 
+          variant={currentPath === "/community/resources" ? "secondary" : "ghost"} 
+          className="w-full justify-start h-8 text-sm px-2"
+          onClick={() => handleNavigation("/community/resources")}
+        >
+          Resources
+        </Button>
+      </SheetClose>
+      
+      <SheetClose asChild>
+        <Button 
+          variant={currentPath === "/community/welcome" ? "secondary" : "ghost"} 
+          className="w-full justify-start h-8 text-sm px-2"
+          onClick={() => handleNavigation("/community/welcome")}
+        >
+          Welcome
+        </Button>
+      </SheetClose>
+      
+      <SheetClose asChild>
+        <Button 
           variant={currentPath === "/community/leaderboard" ? "secondary" : "ghost"} 
-          className="w-full justify-start"
+          className="w-full justify-start h-8 text-sm px-2"
           onClick={() => handleNavigation("/community/leaderboard")}
         >
           Leaderboard
@@ -139,14 +184,45 @@ export const CommunityMenu = () => {
     </div>
   );
 
+  const renderCirclesMenu = () => (
+    <div className="px-3 py-2 space-y-2">
+      <Separator className="my-2" />
+      
+      {ACCESS_GROUPS.map((group, index) => (
+        <div key={index} className="space-y-1">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-2 py-1">
+            {group.name}
+          </h3>
+          
+          {group.circles.map((circle) => (
+            <SheetClose key={circle.id} asChild>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start h-8 text-sm gap-2 px-2"
+                onClick={() => handleCircleNavigation(circle.id)}
+              >
+                <circle.icon className="h-3.5 w-3.5" />
+                {circle.name}
+              </Button>
+            </SheetClose>
+          ))}
+          
+          {index < ACCESS_GROUPS.length - 1 && (
+            <Separator className="my-2" />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+
   const renderSitesList = () => (
-    <div className="p-4 space-y-3">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="font-medium text-sm text-muted-foreground">YOUR SITES</h2>
+    <div className="px-3 py-2 space-y-2">
+      <div className="flex items-center justify-between mb-1">
+        <h2 className="font-medium text-xs text-muted-foreground">YOUR SITES</h2>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Plus className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+              <Plus className="h-3.5 w-3.5" />
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -190,10 +266,10 @@ export const CommunityMenu = () => {
           <SheetClose asChild>
             <Button 
               variant="ghost" 
-              className="w-full justify-start gap-3 pr-8"
+              className="w-full justify-start h-8 gap-2 pr-8 text-sm"
               onClick={() => handleSiteNavigation(site.url)}
             >
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-6 w-6">
                 <AvatarImage src={site.logo} alt={site.name} />
                 <AvatarFallback>{site.fallback}</AvatarFallback>
               </Avatar>
@@ -208,13 +284,13 @@ export const CommunityMenu = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 p-0 absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="h-5 w-5 p-0 absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
             onClick={(e) => {
               e.stopPropagation();
               removeSite(site.id);
             }}
           >
-            <X className="h-3 w-3" />
+            <X className="h-2.5 w-2.5" />
             <span className="sr-only">Remove {site.name}</span>
           </Button>
         </div>
@@ -229,13 +305,13 @@ export const CommunityMenu = () => {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[350px] max-w-[350px] p-0">
-        <div className="flex flex-col h-full">
+      <SheetContent side="left" className="w-[350px] max-w-[350px] p-0 flex flex-col">
+        <div className="flex flex-col min-h-0 h-full">
           {/* Conditional rendering of header image and profile */}
           {!showSitesList && (
-            <>
+            <div className="flex-shrink-0">
               {/* Header Image */}
-              <div className="h-32 bg-muted relative">
+              <div className="h-24 bg-muted relative">
                 <img
                   src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8"
                   alt="Community header"
@@ -244,76 +320,93 @@ export const CommunityMenu = () => {
               </div>
 
               {/* Profile Section */}
-              <div className="p-4 border-b">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12">
+              <div className="p-3 border-b">
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-10 w-10">
                     <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
                     <AvatarFallback>DJ</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col">
-                    <span className="font-semibold text-foreground">David Johnson</span>
-                    <span className="text-sm text-muted-foreground">@davidj</span>
+                    <span className="font-semibold text-foreground text-sm">David Johnson</span>
+                    <span className="text-xs text-muted-foreground">@davidj</span>
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           {/* Sites list title when in sites mode */}
           {showSitesList && (
-            <div className="p-4 border-b">
-              <h1 className="text-xl font-semibold">Switch Sites</h1>
+            <div className="p-3 border-b flex-shrink-0">
+              <h1 className="text-lg font-semibold">Switch Sites</h1>
             </div>
           )}
 
-          {/* Conditional Content */}
-          {showSitesList ? (
-            // Sites List View
-            renderSitesList()
-          ) : (
-            <>
-              {/* Community Info */}
-              <div className="p-4 space-y-4 border-b">
-                <h2 className="text-xl font-semibold">Community</h2>
-                <p className="text-sm text-muted-foreground">
-                  This is a detailed description of our fitness community where members can share their journey, achievements, and support each other.
-                </p>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start p-0 h-auto hover:bg-transparent"
-                  onClick={() => {
-                    navigate("/community/members");
-                  }}
-                >
-                  <div className="flex -space-x-3">
-                    {MOCK_MEMBERS.map((member, i) => (
-                      <Avatar 
-                        key={i} 
-                        className="h-8 w-8 border-2 border-background ring-0"
-                      >
-                        <AvatarImage 
-                          src={member.image} 
-                          alt={member.name}
-                          className="object-cover"
-                        />
-                        <AvatarFallback>{member.name[0]}</AvatarFallback>
-                      </Avatar>
-                    ))}
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border-2 border-background text-sm font-medium">
-                      +45
+          {/* Scrollable Content Container */}
+          <div className={`flex-1 overflow-y-auto ${!showSitesList ? "py-0" : ""}`}>
+            {/* Conditional Content */}
+            {showSitesList ? (
+              // Sites List View
+              renderSitesList()
+            ) : (
+              <>
+                {/* Community Info */}
+                <div className="px-3 py-2 space-y-2 border-b">
+                  <h2 className="text-base font-semibold">Community</h2>
+                  <p className="text-xs text-muted-foreground">
+                    This is a detailed description of our fitness community where members can share their journey, achievements, and support each other.
+                  </p>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start p-0 h-auto hover:bg-transparent"
+                    onClick={() => {
+                      navigate("/community/members");
+                    }}
+                  >
+                    <div className="flex -space-x-2">
+                      {MOCK_MEMBERS.map((member, i) => (
+                        <Avatar 
+                          key={i} 
+                          className="h-6 w-6 border-2 border-background ring-0"
+                        >
+                          <AvatarImage 
+                            src={member.image} 
+                            alt={member.name}
+                            className="object-cover"
+                          />
+                          <AvatarFallback>{member.name[0]}</AvatarFallback>
+                        </Avatar>
+                      ))}
+                      <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center border-2 border-background text-xs font-medium">
+                        +45
+                      </div>
                     </div>
-                  </div>
-                </Button>
-              </div>
+                  </Button>
+                  
+                  <SheetClose asChild>
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start h-8 text-sm px-2 mt-2"
+                      onClick={() => handleNavigation("/community/guidelines")}
+                    >
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      Guidelines
+                    </Button>
+                  </SheetClose>
+                </div>
 
-              {/* Navigation Menu */}
-              {renderNavigationMenu()}
-            </>
-          )}
+                {/* Navigation Menu */}
+                {renderNavigationMenu()}
+                
+                {/* Circles Menu - Categorized by Access Groups */}
+                {renderCirclesMenu()}
+              </>
+            )}
+          </div>
 
           {/* Live Button */}
-          <div className="p-4 mt-auto border-t">
-            <Button className="w-full" variant="outline">
+          <div className="p-3 border-t flex-shrink-0">
+            <Button className="w-full h-8 text-sm" variant="outline">
               <span className="relative flex h-2 w-2 mr-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>

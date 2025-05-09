@@ -27,24 +27,24 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 220 3% 16%; /* #28292D */
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 220 3% 16%; /* #28292D */
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 220 3% 16%; /* #28292D */
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 231 5% 21%; /* #323337 */
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 231 5% 21%; /* #323337 */
     --muted-foreground: 240 5% 64.9%;
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 231 5% 21%; /* #323337 */
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 220 3% 22%; /* Slightly lighter border for contrast */
+    --input: 231 5% 21%; /* #323337 */
     --ring: 212.7 26.8% 83.9%;
   }
 }
@@ -63,5 +63,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  
+  /* Optional class for intentional mobile view constraint */
+  .mobile-constraint {
+    max-width: 375px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }

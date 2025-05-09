@@ -554,7 +554,7 @@ const Community = () => {
   const currentPath = location.pathname;
   const [activeFilter, setActiveFilter] = useState("all");
   const [isPinned, setIsPinned] = useState(true);
-  const [currentSort, setCurrentSort] = useState<SortOption>("latest");
+  const [currentSort, setCurrentSort] = useState<SortOption>("newest");
 
   const filteredPosts = MOCK_POSTS.filter(post => 
     activeFilter === "all" || post.category === activeFilter
@@ -598,11 +598,11 @@ const Community = () => {
           <>
             <CreatePost />
             <div className="space-y-4">
+              {isPinned && <FeedPost {...PINNED_POST} onUnpin={handleUnpin} />}
               <SortOptions 
                 currentSort={currentSort}
                 onSortChange={setCurrentSort}
               />
-              {isPinned && <FeedPost {...PINNED_POST} onUnpin={handleUnpin} />}
               {sortedPosts.map((post) => (
                 <FeedPost key={post.index} {...post} />
               ))}

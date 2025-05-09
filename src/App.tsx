@@ -20,6 +20,8 @@ import MessagesPage from "./pages/Messages";
 import ChatPage from "./pages/Chat";
 import ComingSoonPage from "./pages/ComingSoon";
 import LibraryPage from "./pages/Library";
+import WelcomePage from "./pages/Welcome";
+import ResourcesPage from "./pages/Resources";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { MenuPreferencesProvider } from "@/context/MenuPreferencesContext";
 
@@ -62,6 +64,16 @@ const App = () => (
               <Route path="/community/meetups" element={
                 <MainLayout>
                   <Community />
+                </MainLayout>
+              } />
+              <Route path="/community/resources" element={
+                <MainLayout>
+                  <ResourcesPage />
+                </MainLayout>
+              } />
+              <Route path="/community/welcome" element={
+                <MainLayout>
+                  <WelcomePage />
                 </MainLayout>
               } />
               <Route path="/community/leaderboard" element={

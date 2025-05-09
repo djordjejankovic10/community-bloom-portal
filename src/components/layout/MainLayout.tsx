@@ -14,7 +14,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const hideBottomNav = path.match(/\/messages\/[^/]+/);
   
   return (
-    <div className={`min-h-screen bg-background flex flex-col ${!hideBottomNav ? 'pb-16' : ''}`}>
+    <div className={`min-h-screen bg-background flex flex-col w-full ${!hideBottomNav ? 'pb-16' : ''}`}>
       {children}
       {!hideBottomNav && <BottomNav />}
     </div>

@@ -35,4 +35,5 @@ export type PostProps = {
   isDetail?: boolean;
   originalPost?: PostProps; // For reposts
   repostComment?: string; // Optional comment on repost
+  category?: string; // The circle/category the post belongs to
 };

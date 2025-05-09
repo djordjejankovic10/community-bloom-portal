@@ -50,9 +50,9 @@ const LibraryHeader = () => {
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-2">
-              <div className="rounded-full overflow-hidden w-8 h-8 border-2 border-primary flex-shrink-0">
+              <div className="rounded-lg overflow-hidden w-6 h-6 border border-primary flex-shrink-0">
                 <img 
-                  src="/site-logos/circular-logo.png" 
+                  src="https://images.unsplash.com/photo-1493690283958-32df2c86326e?w=400&h=400&fit=crop" 
                   alt="ES Fitness Logo" 
                   className="w-full h-full object-cover"
                 />
@@ -61,8 +61,8 @@ const LibraryHeader = () => {
                 onClick={toggleBottomSheet}
                 className="flex items-center gap-1"
               >
-                <h1 className="text-lg font-bold text-foreground">ES Fitness</h1>
-                <ChevronDown className="w-4 h-4 text-foreground" />
+                <h1 className="text-base font-bold text-foreground">ES Fitness</h1>
+                <ChevronDown className="w-3.5 h-3.5 text-foreground" />
               </button>
             </div>
           </div>
@@ -78,14 +78,14 @@ const LibraryHeader = () => {
               onClick={() => navigate("/messages")}
             >
               <MessageCircle className="w-4 h-4" />
-              <NotificationBadge count={4} className="-top-1 -right-1 min-w-[16px] h-[16px] text-[9px]" />
+              <NotificationBadge count={4} />
             </button>
             <button 
               className="p-1 text-primary hover:text-primary/80 transition-colors relative flex items-center justify-center"
               onClick={() => navigate("/notifications")}
             >
               <BellIcon className="w-4 h-4" />
-              <NotificationBadge count={unreadCount} className="-top-1 -right-1 min-w-[16px] h-[16px] text-[9px]" />
+              <NotificationBadge count={unreadCount} />
             </button>
             <button 
               className="ml-1"
@@ -120,8 +120,8 @@ const LibraryHeader = () => {
             {/* Current Site */}
             <div className="mb-6 p-3 bg-muted/30 rounded-lg border border-border">
               <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src="/site-logos/circular-logo.png" alt="ES Fitness" />
+                <Avatar className="h-10 w-10 rounded-lg">
+                  <AvatarImage src="https://images.unsplash.com/photo-1493690283958-32df2c86326e?w=400&h=400&fit=crop" alt="ES Fitness" />
                   <AvatarFallback>ES</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">

@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Image, Camera, Mic, LineChart, ArrowLeft, X, Repeat2, AtSign, Search, Sparkles, RotateCcw, CheckCircle } from "lucide-react";
+import { Image, Camera, Mic, LineChart, ArrowLeft, X, Repeat2, AtSign, Search, Sparkles, RotateCcw, CheckCircle, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useRef, useEffect } from "react";
@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { AIBottomSheet } from "@/components/ai/AIBottomSheet";
+import { BottomSheet } from "@/components/messages/BottomSheet";
 
 const CIRCLES = [
   "General",
@@ -80,9 +81,55 @@ const MOCK_MENTIONS: MentionItem[] = [
   { id: 'member-3', type: 'member', title: 'Maya Patel', subtitle: '@recoverycoach', image: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&h=300&fit=crop' },
 ];
 
+// Add a CircleBottomSheet component
+const CircleBottomSheet = ({ 
+  isOpen, 
+  onClose, 
+  selectedCircle, 
+  onSelect 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  selectedCircle: string | null; 
+  onSelect: (circle: string) => void;
+}) => {
+  return (
+    <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[50vh]">
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Select Circle</h2>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        <div className="space-y-2">
+          {CIRCLES.map((circle) => (
+            <Button
+              key={circle}
+              variant="ghost"
+              className={`w-full justify-start text-left h-auto py-3 ${selectedCircle === circle ? 'bg-muted' : ''}`}
+              onClick={() => {
+                onSelect(circle);
+                onClose();
+              }}
+            >
+              {circle}
+              {selectedCircle === circle && (
+                <CheckCircle className="h-4 w-4 ml-auto text-primary" />
+              )}
+            </Button>
+          ))}
+        </div>
+      </div>
+    </BottomSheet>
+  );
+};
+
 const CreatePostPage = () => {
   const [content, setContent] = useState("");
-  const [selectedCircle, setSelectedCircle] = useState(CIRCLES[0]);
+  const [selectedCircle, setSelectedCircle] = useState<string | null>(null);
+  const [isCircleSheetOpen, setIsCircleSheetOpen] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -330,289 +377,298 @@ const CreatePostPage = () => {
   const isPostButtonEnabled = (content.trim().length > 0 || uploadedImages.length > 0 || isRepost);
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background" style={{width: '100vw'}}>
-      <div className="flex items-center justify-between border-b p-3 shrink-0" style={{width: '100%'}}>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="flex items-center gap-4 p-3 border-b">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-9 w-9" 
           onClick={() => navigate(-1)}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div className="font-semibold">{isRepost ? "Repost" : "New note"}</div>
-        <Button
+        <h1 className="text-xl font-semibold flex-1">
+          {isRepost ? 'Repost' : 'New Post'}
+        </h1>
+        <Button 
+          variant="default" 
           size="sm"
-          className="rounded-full px-4"
-          disabled={!isPostButtonEnabled}
+          disabled={!content && !originalPost}
           onClick={handlePost}
         >
-          {isRepost ? (
-            <>
-              <Repeat2 className="h-4 w-4 mr-2" />
-              Repost
-            </>
-          ) : "Post"}
+          Post
         </Button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-3 space-y-4" style={{width: '100%'}}>
-        {!isRepost && (
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Select Circle</label>
-            <div className="w-1/2">
-              <Select value={selectedCircle} onValueChange={setSelectedCircle}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a circle" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CIRCLES.map((circle) => (
-                    <SelectItem key={circle} value={circle}>
-                      {circle}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        )}
-        
-        <div className="flex flex-col">
-          <div className="flex gap-3">
-            <Avatar className="w-10 h-10 flex-shrink-0">
-              <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
-              <AvatarFallback>DJ</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 flex flex-col">
-              <textarea
-                ref={textareaRef}
-                placeholder={isRepost ? "Add a comment (optional)" : "What's on your mind?"}
-                className="w-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm min-h-[120px]"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
+      </header>
+      
+      <div className="flex-1 overflow-y-auto w-full">
+        <div className="max-w-3xl w-full mx-auto">
+          <div className="p-2 sm:p-4">
+            <div className="mb-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 gap-1 text-xs"
+                onClick={() => setIsCircleSheetOpen(true)}
+              >
+                {selectedCircle || "Select a circle"}
+                <ChevronDown className="h-3 w-3 ml-1" />
+              </Button>
+              
+              <CircleBottomSheet 
+                isOpen={isCircleSheetOpen}
+                onClose={() => setIsCircleSheetOpen(false)}
+                selectedCircle={selectedCircle}
+                onSelect={setSelectedCircle}
               />
               
-              {/* Display original post if this is a repost */}
               {isRepost && originalPost && (
-                <div className="relative border rounded-lg overflow-hidden mt-2 mb-4">
+                <div className="ml-auto">
                   <Button
-                    variant="secondary"
+                    variant="ghost"
                     size="icon"
-                    className="absolute top-2 right-2 h-6 w-6 z-10"
+                    className="h-8 w-8 text-red-500"
                     onClick={handleRemoveOriginalPost}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                  <FeedPost {...originalPost} isEmbedded={true} />
-                </div>
-              )}
-
-              {/* Display thumbnails for mentioned content */}
-              {mentionedContent.length > 0 && (
-                <div className="space-y-2 mt-2">
-                  {mentionedContent.map((item) => (
-                    <div key={item.id} className="relative border rounded-lg overflow-hidden bg-muted/20">
-                      <div className="flex p-3">
-                        {item.image ? (
-                          <div className="w-20 h-16 rounded overflow-hidden bg-muted flex-shrink-0 mr-3">
-                            <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                          </div>
-                        ) : (
-                          <div className="w-20 h-16 rounded bg-primary/10 flex items-center justify-center flex-shrink-0 mr-3">
-                            <span className="text-primary font-medium text-xl">{item.type[0].toUpperCase()}</span>
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium">{item.title}</div>
-                          {item.subtitle && (
-                            <div className="text-xs text-muted-foreground">{item.subtitle}</div>
-                          )}
-                          <div className="text-xs mt-1 text-primary capitalize">{item.type}</div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 self-start"
-                          onClick={() => handleRemoveMentionedContent(item.id)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {uploadedImages.length > 0 && (
-                <div className="grid grid-cols-3 gap-2 mt-2">
-                  {uploadedImages.map((image) => (
-                    <div key={image.id} className="relative aspect-square">
-                      <img 
-                        src={image.url} 
-                        alt="Upload preview" 
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute top-1 right-1 h-6 w-6"
-                        onClick={() => removeImage(image.id)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1 px-1 overflow-x-auto scrollbar-none">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-11 w-11 flex-shrink-0"
-              onClick={handleImageClick}
-            >
-              <Image className="h-6 w-6 text-muted-foreground" />
-            </Button>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              className="hidden" 
-              accept="image/*" 
-              multiple 
-              onChange={handleImageUpload}
-            />
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-11 w-11 flex-shrink-0"
-              onClick={() => {}}
-            >
-              <Camera className="h-6 w-6 text-muted-foreground" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-11 w-11 flex-shrink-0"
-              onClick={() => {}}
-            >
-              <Mic className="h-6 w-6 text-muted-foreground" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-11 w-11 flex-shrink-0"
-              onClick={() => {}}
-            >
-              <LineChart className="h-6 w-6 text-muted-foreground" />
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-11 w-11 flex-shrink-0"
-              onClick={() => {
-                handleMentionClick();
-                setIsMentionOpen(!isMentionOpen);
-              }}
-            >
-              <AtSign className="h-6 w-6 text-muted-foreground" />
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-11 w-11 flex-shrink-0"
-              onClick={handleAIClick}
-            >
-              <Sparkles className="h-6 w-6 text-primary" />
-            </Button>
-            
-            {/* Custom mention menu that stays within viewport */}
-            {isMentionOpen && (
-              <div className="fixed inset-x-0 bottom-16 mx-4 bg-background border rounded-lg shadow-lg z-50" style={{ maxHeight: '40vh' }}>
-                <div className="flex justify-between items-center p-3 border-b">
-                  <div className="text-sm font-medium">Mention</div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-6 w-6" 
-                    onClick={() => setIsMentionOpen(false)}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                
-                <div className="p-3 border-b">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search for lessons, courses, etc."
-                      className="pl-8"
-                      value={mentionSearch}
-                      onChange={(e) => setMentionSearch(e.target.value)}
-                    />
-                  </div>
-                </div>
-                
-                <div className="overflow-y-auto" style={{ maxHeight: 'calc(40vh - 110px)' }}>
-                  {filteredMentions.length === 0 ? (
-                    <div className="p-4 text-center text-muted-foreground">
-                      No results found
-                    </div>
-                  ) : (
-                    filteredMentions.map((item) => (
-                      <div 
-                        key={item.id} 
-                        className="flex items-center gap-3 p-3 hover:bg-muted cursor-pointer transition-colors"
-                        onClick={() => {
-                          handleSelectMention(item);
-                          setIsMentionOpen(false);
-                        }}
+              )}
+            </div>
+            
+            <div className="flex flex-col w-full">
+              <div className="flex gap-3">
+                <Avatar className="w-10 h-10 flex-shrink-0">
+                  <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
+                  <AvatarFallback>DJ</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 flex flex-col w-full">
+                  <textarea
+                    ref={textareaRef}
+                    placeholder={isRepost ? "Add a comment (optional)" : "What's on your mind?"}
+                    className="w-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm min-h-[120px]"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                  />
+                  
+                  {isRepost && originalPost && (
+                    <div className="relative border rounded-lg overflow-hidden mt-2 mb-4">
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="absolute top-2 right-2 h-6 w-6 z-10"
+                        onClick={handleRemoveOriginalPost}
                       >
-                        {item.image ? (
-                          <div className="w-10 h-10 rounded overflow-hidden bg-muted flex-shrink-0">
-                            <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                        <X className="h-3 w-3" />
+                      </Button>
+                      <FeedPost {...originalPost} isEmbedded={true} />
+                    </div>
+                  )}
+    
+                  {mentionedContent.length > 0 && (
+                    <div className="space-y-2 mt-2">
+                      {mentionedContent.map((item) => (
+                        <div key={item.id} className="relative border rounded-lg overflow-hidden bg-muted/20">
+                          <div className="flex p-3">
+                            {item.image ? (
+                              <div className="w-20 h-16 rounded overflow-hidden bg-muted flex-shrink-0 mr-3">
+                                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                              </div>
+                            ) : (
+                              <div className="w-20 h-16 rounded bg-primary/10 flex items-center justify-center flex-shrink-0 mr-3">
+                                <span className="text-primary font-medium text-xl">{item.type[0].toUpperCase()}</span>
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium">{item.title}</div>
+                              {item.subtitle && (
+                                <div className="text-xs text-muted-foreground">{item.subtitle}</div>
+                              )}
+                              <div className="text-xs mt-1 text-primary capitalize">{item.type}</div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 self-start"
+                              onClick={() => handleRemoveMentionedContent(item.id)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                           </div>
-                        ) : (
-                          <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <span className="text-primary font-medium">{item.type[0].toUpperCase()}</span>
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate">{item.title}</div>
-                          {item.subtitle && (
-                            <div className="text-xs text-muted-foreground truncate">{item.subtitle}</div>
-                          )}
                         </div>
-                        <div className="text-xs px-2 py-1 rounded-full bg-muted capitalize">
-                          {item.type}
+                      ))}
+                    </div>
+                  )}
+    
+                  {uploadedImages.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                      {uploadedImages.map((image) => (
+                        <div key={image.id} className="relative aspect-square">
+                          <img 
+                            src={image.url} 
+                            alt="Upload preview" 
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                          <Button
+                            variant="secondary"
+                            size="icon"
+                            className="absolute top-1 right-1 h-6 w-6"
+                            onClick={() => removeImage(image.id)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
                         </div>
-                      </div>
-                    ))
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>
-            )}
-            
-            {/* AI Assistant bottom sheet */}
-            <AIBottomSheet
-              isOpen={isAIOpen}
-              onClose={() => setIsAIOpen(false)}
-              mode="post"
-              aiGeneratedContent={aiGeneratedContent}
-              aiNotes={aiNotes}
-              isGenerating={isGenerating}
-              onAISubmit={handleAISubmit}
-              onRegenerateContent={handleRegenerateContent}
-              onConfirmContent={handleConfirmAIContent}
-              onNotesChange={(notes) => setAINotes(notes)}
-            />
+    
+              <div className="flex items-center gap-1 overflow-x-auto scrollbar-none mt-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-11 w-11 flex-shrink-0"
+                  onClick={handleImageClick}
+                >
+                  <Image className="h-6 w-6 text-muted-foreground" />
+                </Button>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/*" 
+                  multiple 
+                  onChange={handleImageUpload}
+                />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-11 w-11 flex-shrink-0"
+                  onClick={() => {}}
+                >
+                  <Camera className="h-6 w-6 text-muted-foreground" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-11 w-11 flex-shrink-0"
+                  onClick={() => {}}
+                >
+                  <Mic className="h-6 w-6 text-muted-foreground" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-11 w-11 flex-shrink-0"
+                  onClick={() => {}}
+                >
+                  <LineChart className="h-6 w-6 text-muted-foreground" />
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-11 w-11 flex-shrink-0"
+                  onClick={() => {
+                    handleMentionClick();
+                    setIsMentionOpen(!isMentionOpen);
+                  }}
+                >
+                  <AtSign className="h-6 w-6 text-muted-foreground" />
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-11 w-11 flex-shrink-0"
+                  onClick={handleAIClick}
+                >
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      
+      {isMentionOpen && (
+        <div className="fixed inset-x-0 bottom-16 mx-0 sm:mx-4 bg-background border rounded-lg shadow-lg z-50" style={{ maxHeight: '40vh' }}>
+          <div className="flex justify-between items-center p-3 border-b">
+            <div className="text-sm font-medium">Mention</div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6" 
+              onClick={() => setIsMentionOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <div className="p-3 border-b">
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search for lessons, courses, etc."
+                className="pl-8"
+                value={mentionSearch}
+                onChange={(e) => setMentionSearch(e.target.value)}
+              />
+            </div>
+          </div>
+          
+          <div className="overflow-y-auto" style={{ maxHeight: 'calc(40vh - 110px)' }}>
+            {filteredMentions.length === 0 ? (
+              <div className="p-4 text-center text-muted-foreground">
+                No results found
+              </div>
+            ) : (
+              filteredMentions.map((item) => (
+                <div 
+                  key={item.id} 
+                  className="flex items-center gap-3 p-3 hover:bg-muted cursor-pointer transition-colors"
+                  onClick={() => {
+                    handleSelectMention(item);
+                    setIsMentionOpen(false);
+                  }}
+                >
+                  {item.image ? (
+                    <div className="w-10 h-10 rounded overflow-hidden bg-muted flex-shrink-0">
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary font-medium">{item.type[0].toUpperCase()}</span>
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium truncate">{item.title}</div>
+                    {item.subtitle && (
+                      <div className="text-xs text-muted-foreground truncate">{item.subtitle}</div>
+                    )}
+                  </div>
+                  <div className="text-xs px-2 py-1 rounded-full bg-muted capitalize">
+                    {item.type}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+      
+      <AIBottomSheet
+        isOpen={isAIOpen}
+        onClose={() => setIsAIOpen(false)}
+        mode="post"
+        aiGeneratedContent={aiGeneratedContent}
+        aiNotes={aiNotes}
+        isGenerating={isGenerating}
+        onAISubmit={handleAISubmit}
+        onRegenerateContent={handleRegenerateContent}
+        onConfirmContent={handleConfirmAIContent}
+        onNotesChange={(notes) => setAINotes(notes)}
+      />
     </div>
   );
 };

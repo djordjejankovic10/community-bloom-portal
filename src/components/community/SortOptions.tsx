@@ -1,4 +1,4 @@
-import { Filter, ArrowUpDown, SlidersHorizontal, ListFilter } from "lucide-react";
+import { Filter, ArrowUpDown, SlidersHorizontal, ListFilter, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -27,17 +27,17 @@ export const SortOptions = ({ currentSort, onSortChange }: SortOptionsProps) => 
       case "oldest":
         return "Oldest first";
       default:
-        return "Sort by";
+        return "Newest first";
     }
   };
 
   return (
-    <div className="px-4 py-2 border-b flex justify-end">
+    <div className="px-4 py-2 flex justify-end">
       <Drawer>
         <DrawerTrigger asChild>
           <Button variant="ghost" size="sm" className="text-muted-foreground">
-            <SlidersHorizontal className="h-4 w-4 mr-2" />
             {getSortLabel(currentSort)}
+            <ChevronDown className="h-4 w-4 ml-2" />
           </Button>
         </DrawerTrigger>
         <DrawerContent>
