@@ -1,15 +1,14 @@
-import { BellIcon, MessageCircle, Search, User, ChevronDown, X, Plus } from "lucide-react";
-import { CommunityMenu } from "./CommunityMenu";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { MOCK_NOTIFICATIONS } from "@/data/mockNotifications";
-import { NotificationBadge } from "@/components/notifications/NotificationBadge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useMenuPreferences, Site } from "@/context/MenuPreferencesContext";
-import { MOCK_SITES } from "@/data/mock-sites";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { BellIcon, MessageCircle, Search, ChevronDown, X, Menu } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { MOCK_NOTIFICATIONS } from '@/data/mockNotifications';
+import { NotificationBadge } from '@/components/notifications/NotificationBadge';
+import { useMenuPreferences, Site } from '@/context/MenuPreferencesContext';
+import { MOCK_SITES } from '@/data/mock-sites';
 
-export const CommunityHeader = () => {
+const LibraryHeader = () => {
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
@@ -47,8 +46,10 @@ export const CommunityHeader = () => {
       <header className="sticky top-0 bg-background border-b border-border z-50">
         <div className="flex justify-between items-center px-2 py-2">
           <div className="flex items-center">
-            <CommunityMenu />
-            <div className="flex items-center gap-2 ml-1">
+            <Button variant="ghost" size="icon" className="h-9 w-9 mr-1">
+              <Menu className="h-5 w-5" />
+            </Button>
+            <div className="flex items-center gap-2">
               <div className="rounded-full overflow-hidden w-8 h-8 border-2 border-primary flex-shrink-0">
                 <img 
                   src="/site-logos/circular-logo.png" 
@@ -125,7 +126,7 @@ export const CommunityHeader = () => {
                 </Avatar>
                 <div className="flex flex-col">
                   <span className="font-medium">ES Fitness</span>
-                  <span className="text-xs text-muted-foreground">www.esfitness.com</span>
+                  <span className="text-xs text-muted-foreground">Library • www.esfitness.com</span>
                 </div>
               </div>
             </div>
@@ -169,7 +170,7 @@ export const CommunityHeader = () => {
                   // For now we just close the sheet
                 }}
               >
-                <Plus className="h-4 w-4" />
+                <X className="h-4 w-4" />
                 Add New Community
               </Button>
             </div>
@@ -179,3 +180,103 @@ export const CommunityHeader = () => {
     </>
   );
 };
+
+// Library navigation tabs component
+const LibraryTabs = () => {
+  return (
+    <div className="border-b border-border">
+      <nav className="overflow-x-auto flex gap-8 px-4">
+        <a
+          href="#courses"
+          className="relative py-4 whitespace-nowrap text-foreground border-b-2 border-primary"
+        >
+          Courses
+        </a>
+        <a
+          href="#coaching"
+          className="relative py-4 whitespace-nowrap text-muted-foreground hover:text-foreground"
+        >
+          Coaching
+        </a>
+        <a
+          href="#podcasts"
+          className="relative py-4 whitespace-nowrap text-muted-foreground hover:text-foreground"
+        >
+          Podcasts
+        </a>
+      </nav>
+    </div>
+  );
+};
+
+const LibraryContent = () => {
+  return (
+    <>
+      <section id="courses">
+        <h2 className="sr-only">Courses</h2>
+        <div className="space-y-6 p-4">
+          <section>
+            <h3 className="text-lg font-semibold mb-3">Recent Courses</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {[1, 2, 3, 4].map((item) => (
+                <div key={item} className="rounded-lg overflow-hidden border border-border">
+                  <div className="aspect-video bg-muted relative">
+                    <img 
+                      src={`https://images.unsplash.com/photo-15871935${item}1454-1cb2f99b2d8b?w=400&h=300&fit=crop`} 
+                      alt={`Course ${item}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-2 right-2 bg-background rounded-full p-1">
+                      <div className="h-2 w-2 bg-primary rounded-full"></div>
+                    </div>
+                  </div>
+                  <div className="p-2">
+                    <h4 className="font-medium text-sm truncate">Fitness Course {item}</h4>
+                    <p className="text-xs text-muted-foreground">5 videos • 2h 30m</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+          
+          <section>
+            <h3 className="text-lg font-semibold mb-3">Saved Videos</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {[5, 6, 7, 8].map((item) => (
+                <div key={item} className="rounded-lg overflow-hidden border border-border">
+                  <div className="aspect-video bg-muted">
+                    <img 
+                      src={`https://images.unsplash.com/photo-15751${item}814086-f385e2e2ad1b?w=400&h=300&fit=crop`} 
+                      alt={`Video ${item}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-2">
+                    <h4 className="font-medium text-sm truncate">Exercise Tutorial {item}</h4>
+                    <p className="text-xs text-muted-foreground">15 minutes</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </section>
+    </>
+  );
+};
+
+const LibraryPage = () => {
+  return (
+    <div className="flex flex-col flex-1 min-w-[375px]">
+      <LibraryHeader />
+      <LibraryTabs />
+      {/* Invisible placeholder to maintain layout width */}
+      <div className="w-full min-w-[375px] h-2 bg-secondary/50"></div>
+      <main className="w-full">
+        <LibraryContent />
+      </main>
+    </div>
+  );
+};
+
+export default LibraryPage; 

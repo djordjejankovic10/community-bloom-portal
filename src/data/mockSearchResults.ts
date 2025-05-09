@@ -6,7 +6,10 @@ import {
   PostSearchResult,
   MemberSearchResult,
   ChallengeSearchResult,
-  EventSearchResult
+  EventSearchResult,
+  CircleSearchResult,
+  MeetupSearchResult,
+  RecordingSearchResult
 } from "@/types/search";
 
 // Groups
@@ -230,6 +233,108 @@ const eventResults: EventSearchResult[] = [
   }
 ];
 
+// Circles
+const circleResults: CircleSearchResult[] = [
+  {
+    id: "circ1",
+    type: "circle",
+    title: "Fitness Pros Circle",
+    description: "An exclusive circle for fitness professionals to network and share knowledge.",
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+    linkTo: "/circles/fitness-pros",
+    memberCount: 75
+  },
+  {
+    id: "circ2",
+    type: "circle",
+    title: "Wellness Creators",
+    description: "A circle for content creators focused on health and wellness topics.",
+    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop",
+    linkTo: "/circles/wellness-creators",
+    memberCount: 48
+  },
+  {
+    id: "circ3",
+    type: "circle",
+    title: "Nutrition Experts",
+    description: "Connect with nutritionists, dietitians, and food scientists.",
+    image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=300&fit=crop",
+    linkTo: "/circles/nutrition-experts",
+    memberCount: 92
+  }
+];
+
+// Recordings
+const recordingResults: RecordingSearchResult[] = [
+  {
+    id: "rec1",
+    type: "recording",
+    title: "Mobility Training Workshop",
+    description: "A recorded workshop on improving mobility for better athletic performance.",
+    image: "https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?w=400&h=300&fit=crop",
+    linkTo: "/recordings/mobility-workshop",
+    duration: "45:22",
+    date: "2025-03-15"
+  },
+  {
+    id: "rec2",
+    type: "recording",
+    title: "Nutrition for Athletes Webinar",
+    description: "Expert panel discussing nutrition strategies for athletes at different levels.",
+    image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=300&fit=crop",
+    linkTo: "/recordings/nutrition-webinar",
+    duration: "1:12:47",
+    date: "2025-04-02"
+  },
+  {
+    id: "rec3",
+    type: "recording",
+    title: "Guided Meditation Session",
+    description: "A calming guided meditation focused on recovery and mindfulness for athletes.",
+    image: "https://images.unsplash.com/photo-1536623958193-eaf5a988479d?w=400&h=300&fit=crop",
+    linkTo: "/recordings/meditation-session",
+    duration: "22:15",
+    date: "2025-04-28"
+  }
+];
+
+// Meetups
+const meetupResults: MeetupSearchResult[] = [
+  {
+    id: "meet1",
+    type: "meetup",
+    title: "Downtown Fitness Meetup",
+    description: "Weekly meetup for fitness enthusiasts in the downtown area. All levels welcome!",
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+    linkTo: "/meetups/downtown-fitness",
+    date: "Every Saturday",
+    location: "Central Park, Main Entrance",
+    attendees: 28
+  },
+  {
+    id: "meet2",
+    type: "meetup",
+    title: "Yoga by the Beach",
+    description: "Join us for sunrise yoga sessions by the beach every Sunday morning.",
+    image: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=400&h=300&fit=crop",
+    linkTo: "/meetups/beach-yoga",
+    date: "Every Sunday",
+    location: "Ocean View Beach, Pier 9",
+    attendees: 35
+  },
+  {
+    id: "meet3",
+    type: "meetup",
+    title: "Nutrition & Cooking Club",
+    description: "Monthly meetup focusing on healthy cooking techniques and meal prep.",
+    image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=300&fit=crop",
+    linkTo: "/meetups/cooking-club",
+    date: "First Saturday monthly",
+    location: "Community Center, Kitchen Area",
+    attendees: 22
+  }
+];
+
 // Combine all results
 export const ALL_SEARCH_RESULTS: SearchResult[] = [
   ...groupResults,
@@ -237,7 +342,10 @@ export const ALL_SEARCH_RESULTS: SearchResult[] = [
   ...postResults,
   ...memberResults,
   ...challengeResults,
-  ...eventResults
+  ...eventResults,
+  ...circleResults,
+  ...recordingResults,
+  ...meetupResults
 ];
 
 // Function to filter results by type

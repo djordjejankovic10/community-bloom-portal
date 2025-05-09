@@ -20,8 +20,8 @@ type MenuPreferencesContextType = {
 const MenuPreferencesContext = createContext<MenuPreferencesContextType | undefined>(undefined);
 
 export const MenuPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Default to true (showing sites list)
-  const [showSitesList, setShowSitesList] = useState(true);
+  // Default to false (not showing sites list)
+  const [showSitesList, setShowSitesList] = useState(false);
   // Initialize with mock sites
   const [sites, setSites] = useState<Site[]>(MOCK_SITES as Site[]);
 

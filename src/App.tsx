@@ -19,6 +19,7 @@ import SearchPage from "./pages/Search";
 import MessagesPage from "./pages/Messages";
 import ChatPage from "./pages/Chat";
 import ComingSoonPage from "./pages/ComingSoon";
+import LibraryPage from "./pages/Library";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { MenuPreferencesProvider } from "@/context/MenuPreferencesContext";
 
@@ -45,7 +46,7 @@ const App = () => (
               } />
               <Route path="/library" element={
                 <MainLayout>
-                  <ComingSoonPage />
+                  <LibraryPage />
                 </MainLayout>
               } />
               <Route path="/community" element={

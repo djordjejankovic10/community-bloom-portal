@@ -4,7 +4,10 @@ export type SearchResultType =
   | "post" 
   | "member" 
   | "challenge" 
-  | "event";
+  | "event"
+  | "circle"
+  | "recording"
+  | "meetup";
 
 export interface BaseSearchResult {
   id: string;
@@ -13,7 +16,7 @@ export interface BaseSearchResult {
   description?: string;
   image?: string;
   linkTo: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean | null>;
 }
 
 export interface GroupSearchResult extends BaseSearchResult {
@@ -60,10 +63,31 @@ export interface EventSearchResult extends BaseSearchResult {
   attendees: number;
 }
 
+export interface CircleSearchResult extends BaseSearchResult {
+  type: "circle";
+  memberCount: number;
+}
+
+export interface RecordingSearchResult extends BaseSearchResult {
+  type: "recording";
+  duration: string;
+  date: string;
+}
+
+export interface MeetupSearchResult extends BaseSearchResult {
+  type: "meetup";
+  date: string;
+  location: string;
+  attendees: number;
+}
+
 export type SearchResult = 
   | GroupSearchResult 
   | ChannelSearchResult 
   | PostSearchResult 
   | MemberSearchResult 
   | ChallengeSearchResult 
-  | EventSearchResult;
+  | EventSearchResult
+  | CircleSearchResult
+  | RecordingSearchResult
+  | MeetupSearchResult;

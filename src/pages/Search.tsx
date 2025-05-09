@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search as SearchIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SearchResultItem } from "@/components/search/SearchResultItem";
 import { SearchResult, SearchResultType } from "@/types/search";
 import { searchResults } from "@/data/mockSearchResults";
@@ -51,8 +50,8 @@ const SearchPage = () => {
     }
   };
   
-  const handleTabChange = (value: string) => {
-    setActiveTab(value as SearchResultType | "all");
+  const handleTabChange = (value: SearchResultType | "all") => {
+    setActiveTab(value);
   };
   
   const getResultCountByType = (type: SearchResultType): number => {
@@ -147,44 +146,69 @@ const SearchPage = () => {
           </div>
         )}
         
-        <div className="px-1">
-          <Tabs
-            defaultValue="all"
-            value={activeTab}
-            onValueChange={handleTabChange}
-            className="w-full"
-          >
-            <TabsList className="w-full justify-start overflow-x-auto py-1 px-1">
-              <TabsTrigger value="all" className="text-xs px-3 py-1.5 whitespace-nowrap">
-                All
-                {query.trim() && totalResults > 0 && ` (${totalResults})`}
-              </TabsTrigger>
-              <TabsTrigger value="group" className="text-xs px-3 py-1.5 whitespace-nowrap">
-                Groups
-                {query.trim() && getResultCountByType("group") > 0 && ` (${getResultCountByType("group")})`}
-              </TabsTrigger>
-              <TabsTrigger value="channel" className="text-xs px-3 py-1.5 whitespace-nowrap">
-                Channels
-                {query.trim() && getResultCountByType("channel") > 0 && ` (${getResultCountByType("channel")})`}
-              </TabsTrigger>
-              <TabsTrigger value="post" className="text-xs px-3 py-1.5 whitespace-nowrap">
-                Posts
-                {query.trim() && getResultCountByType("post") > 0 && ` (${getResultCountByType("post")})`}
-              </TabsTrigger>
-              <TabsTrigger value="member" className="text-xs px-3 py-1.5 whitespace-nowrap">
-                Members
-                {query.trim() && getResultCountByType("member") > 0 && ` (${getResultCountByType("member")})`}
-              </TabsTrigger>
-              <TabsTrigger value="challenge" className="text-xs px-3 py-1.5 whitespace-nowrap">
-                Challenges
-                {query.trim() && getResultCountByType("challenge") > 0 && ` (${getResultCountByType("challenge")})`}
-              </TabsTrigger>
-              <TabsTrigger value="event" className="text-xs px-3 py-1.5 whitespace-nowrap">
-                Events
-                {query.trim() && getResultCountByType("event") > 0 && ` (${getResultCountByType("event")})`}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+        <div className="px-2 py-2 overflow-x-auto">
+          <div className="flex gap-1 min-w-max">
+            <button
+              onClick={() => handleTabChange("all")}
+              className={`px-4 py-2 text-sm rounded-md whitespace-nowrap ${
+                activeTab === "all" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => handleTabChange("post")}
+              className={`px-4 py-2 text-sm rounded-md whitespace-nowrap ${
+                activeTab === "post" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              Posts
+            </button>
+            <button
+              onClick={() => handleTabChange("circle")}
+              className={`px-4 py-2 text-sm rounded-md whitespace-nowrap ${
+                activeTab === "circle" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              Circles
+            </button>
+            <button
+              onClick={() => handleTabChange("meetup")}
+              className={`px-4 py-2 text-sm rounded-md whitespace-nowrap ${
+                activeTab === "meetup" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              Meetups
+            </button>
+            <button
+              onClick={() => handleTabChange("member")}
+              className={`px-4 py-2 text-sm rounded-md whitespace-nowrap ${
+                activeTab === "member" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              Members
+            </button>
+            <button
+              onClick={() => handleTabChange("recording")}
+              className={`px-4 py-2 text-sm rounded-md whitespace-nowrap ${
+                activeTab === "recording" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              Recordings
+            </button>
+          </div>
         </div>
         
         <Separator />
