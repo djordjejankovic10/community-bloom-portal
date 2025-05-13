@@ -159,6 +159,20 @@ export const PostReplies = ({
   const reactionButtonRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const reactionMenuRef = useRef<HTMLDivElement>(null);
   
+  // State to track expanded reply threads
+  const [expandedThreads, setExpandedThreads] = useState<Record<number, boolean>>({});
+  
+  // Default number of replies to show initially
+  const DEFAULT_REPLIES_SHOWN = 3;
+  
+  // Function to toggle thread expansion
+  const toggleThreadExpansion = (index: number) => {
+    setExpandedThreads(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+  
   // Get background color based on nesting level for visual variety
   const getBubbleColor = (replyIndex: number, nestedLevel: number) => {
     // Alternate between a few different subtle colors
@@ -308,13 +322,6 @@ export const PostReplies = ({
                 marginLeft: `${leftIndent}px`
               }}
             >
-              {/* Add "Replying to @username" for direct replies */}
-              {level === 1 && parentAuthor && (
-                <div className="text-xs text-muted-foreground ml-8 mb-1">
-                  Replying to @{parentAuthor.toLowerCase().replace(/\s/g, '')}
-                </div>
-              )}
-              
               {/* Custom comment display for cleaner UI */}
               <div 
                 className={cn(
@@ -646,12 +653,45 @@ export const PostReplies = ({
               
               {/* Nested replies (if any) */}
               {reply.replies && reply.replies.length > 0 && (
-                <PostReplies 
-                  replies={reply.replies} 
-                  parentAuthor={reply.author.firstName + " " + reply.author.lastName}
-                  level={actualLevel + 1}
-                  isLastReply={isLast}
-                />
+                <>
+                  {/* Only show first 3 replies by default or all if expanded */}
+                  <PostReplies 
+                    replies={expandedThreads[index] 
+                      ? reply.replies 
+                      : reply.replies.slice(0, DEFAULT_REPLIES_SHOWN)} 
+                    parentAuthor={reply.author.firstName + " " + reply.author.lastName}
+                    level={actualLevel + 1}
+                    isLastReply={isLast}
+                  />
+                  
+                  {/* Show "Show more replies" button if there are more than 3 replies and thread is not expanded */}
+                  {!expandedThreads[index] && reply.replies.length > DEFAULT_REPLIES_SHOWN && (
+                    <div 
+                      className="flex items-center gap-1 ml-8 mt-2 mb-3 cursor-pointer text-xs text-primary hover:text-primary/80"
+                      style={{ marginLeft: `${leftIndent + 28}px` }}
+                      onClick={() => toggleThreadExpansion(index)}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                      <span>Show {reply.replies.length - DEFAULT_REPLIES_SHOWN} more {reply.replies.length - DEFAULT_REPLIES_SHOWN === 1 ? 'reply' : 'replies'}</span>
+                    </div>
+                  )}
+                  
+                  {/* Show "Show less" button if thread is expanded */}
+                  {expandedThreads[index] && reply.replies.length > DEFAULT_REPLIES_SHOWN && (
+                    <div 
+                      className="flex items-center gap-1 ml-8 mt-2 mb-3 cursor-pointer text-xs text-primary hover:text-primary/80"
+                      style={{ marginLeft: `${leftIndent + 28}px` }}
+                      onClick={() => toggleThreadExpansion(index)}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 transform rotate-180">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                      <span>Show less</span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
