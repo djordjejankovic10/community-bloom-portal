@@ -1,0 +1,16 @@
+# Intro 
+This project is a prototype for our new native communities application. 
+It will primarily be used as a reference point for Native mobile engineers to build out a subsection of another active application that houses a set of community screens. 
+
+# Important notes
+- This project has 2 origins. Whenever a push is made to one, it should also be pushed to the other to keep them in sync.
+- The app should always be built with mobile in mind as the screens and UI will be translated and converted into native Android and iOS code by engineering teams. 
+
+# Coding Practices 
+- Document the code thoroughly whenever you work through tasks
+    - If at all possible Within that documentation, add user experience (UX) notes that outline what users experience when on that screen or using that code specifically
+- When working on new functionality, create branches and follow standard git protocols since other engineers will be working on this project and we want to mitigate the risk of merge conflicts     
+
+# Reference URLs:
+- Origin 1 == https://github.com/djordjejankovic10/community-bloom-portal
+- Origin 2 == https://github.com/Kajabi/BMA-Prototype-Native-Communities
