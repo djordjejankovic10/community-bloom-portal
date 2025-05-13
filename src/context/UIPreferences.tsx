@@ -15,7 +15,7 @@ const UIPreferencesContext = createContext<UIPreferencesContextType>({
 
 export const UIPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Use state to track navigation visibility
-  const [showNav, setShowNav] = useState(true);
+  const [showNav, setShowNav] = useState(false);
 
   // Define toggle function
   const toggle = () => {
