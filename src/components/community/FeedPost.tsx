@@ -551,7 +551,14 @@ export const FeedPost = ({
                   isContentTruncated && !showFullContent ? 'line-clamp-10 max-h-[300px] overflow-hidden' : ''
                 )}
               >
-                {content}
+                {/* Display different captions based on reply status unless in detail view */}
+                {!isReply && !isDetail && replies && replies.length > 0 ? (
+                  replies.some(reply => reply.replies && reply.replies.length > 0) ? 
+                    "This post has threaded replies" : 
+                    "This post has replies"
+                ) : (
+                  content
+                )}
               </p>
               
               {isContentTruncated && !showFullContent && !isEmbedded && (
