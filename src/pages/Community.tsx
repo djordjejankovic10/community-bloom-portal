@@ -8,6 +8,24 @@ import { SortOptions } from "@/components/community/SortOptions";
 import { UIPreferencesProvider } from "@/context/UIPreferences";
 import { NavigationToggle } from "@/components/community/NavigationToggle";
 import { ConditionalCommunityTabs } from "@/components/community/ConditionalCommunityTabs";
+import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { BookOpen, Plus, Filter } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+// Helper function to get category icons
+const getCategoryIconName = (category: string): string => {
+  if (!category) return "message-circle";
+  
+  const lowerCase = category.toLowerCase();
+  if (lowerCase === 'weight-training') return "dumbbell";
+  if (lowerCase === 'cardio') return "heart";
+  if (lowerCase === 'yoga') return "stretch-vertical";
+  if (lowerCase === 'recovery') return "battery";
+  if (lowerCase === 'nutrition') return "apple";
+  if (lowerCase === 'keto-diet') return "utensils";
+  return "message-circle"; // Default icon
+};
 
 export const MOCK_POSTS = [
   // Long post example with "See more" button
@@ -81,13 +99,79 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
     timestamp: "2h",
     metrics: {
       likes: 287,
-      comments: 42,
-      shares: 18
+      comments: 42
     },
     media: {
       type: "image" as const,
       url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop"
-    }
+    },
+    replies: [
+      {
+        author: {
+          firstName: "Michael",
+          lastName: "Carter",
+          handle: "mikefitness",
+          avatar: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop",
+          role: "founder" as const
+        },
+        content: "This is absolutely inspiring, Sarah! Your dedication is exactly what our community is all about. Would love to feature your journey in our next newsletter if you're open to it.",
+        timestamp: "1h 45m",
+        metrics: {
+          likes: 89,
+          comments: 2
+        },
+        replies: [
+          {
+            author: {
+              firstName: "Sarah",
+              lastName: "Williams",
+              handle: "sarahfit",
+              avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
+              role: "admin" as const
+            },
+            content: "Absolutely! I'd be honored. Just DM me the details.",
+            timestamp: "1h 30m",
+            metrics: {
+              likes: 24,
+              comments: 0
+            }
+          }
+        ]
+      },
+      {
+        author: {
+          firstName: "Tanya",
+          lastName: "Rodriguez",
+          handle: "tanyafitlife",
+          avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop"
+        },
+        content: "Thank you for sharing such a detailed account of your journey! Question: did you follow a specific meal plan during these 30 days or just focus on general nutrition principles?",
+        timestamp: "1h 20m",
+        metrics: {
+          likes: 42,
+          comments: 1
+        },
+        category: "nutrition"
+      },
+      {
+        author: {
+          firstName: "David",
+          lastName: "Kim",
+          handle: "davidkim",
+          avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop"
+        },
+        content: "That plateau on day 18 is so relatable! I've hit that wall in every fitness program I've tried. Would love to know more about how you pushed through it mentally.",
+        timestamp: "55m",
+        metrics: {
+          likes: 35,
+          comments: 0
+        },
+        media: {
+          type: "image" as const,
+          url: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400&h=300&fit=crop"
+        }
+      }
+    ]
   },
   // Repost example
   {
@@ -102,9 +186,53 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
     timestamp: "15m",
     metrics: {
       likes: 42,
-      comments: 5,
-      shares: 2
+      comments: 5
     },
+    replies: [
+      {
+        author: {
+          firstName: "Jamie",
+          lastName: "Lee",
+          handle: "jamierunner",
+          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop"
+        },
+        content: "Same here! I noticed way fewer injuries once I started taking post-run stretching seriously. What's your favorite stretch?",
+        timestamp: "12m",
+        metrics: {
+          likes: 8,
+          comments: 1
+        }
+      },
+      {
+        author: {
+          firstName: "Alex",
+          lastName: "Johnson",
+          handle: "alexj",
+          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+        },
+        content: "@jamierunner Definitely the standing quad stretch and seated hamstring stretch. Game changers!",
+        timestamp: "8m",
+        metrics: {
+          likes: 4,
+          comments: 0
+        }
+      },
+      {
+        author: {
+          firstName: "Emma",
+          lastName: "Davis",
+          handle: "nutritioncoach",
+          avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=400&h=400&fit=crop",
+          role: "admin" as const
+        },
+        content: "Thanks for sharing, Alex! It's always great to see members adding their own experiences to the tips shared here.",
+        timestamp: "5m",
+        metrics: {
+          likes: 12,
+          comments: 0
+        }
+      }
+    ],
     originalPost: {
       author: {
         firstName: "Emma",
@@ -118,8 +246,7 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
       timestamp: "5h",
       metrics: {
         likes: 1243,
-        comments: 234,
-        shares: 89
+        comments: 234
       },
       media: {
         type: "link" as const,
@@ -144,8 +271,7 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
     timestamp: "2h",
     metrics: {
       likes: 842,
-      comments: 156,
-      shares: 45,
+      comments: 156
     },
     media: {
       type: "link" as const,
@@ -165,10 +291,136 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
         timestamp: "1h",
         metrics: {
           likes: 156,
-          comments: 12,
-          shares: 1,
+          comments: 12
         },
+        replies: [
+          {
+            author: {
+              firstName: "John",
+              lastName: "Smith",
+              handle: "fitnesspro",
+              avatar: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=400&h=400&fit=crop",
+              role: "founder" as const
+            },
+            content: "That's an impressive goal, Sarah! Let me know if you want any feedback on your technique. It's all about that hip hinge.",
+            timestamp: "55m",
+            metrics: {
+              likes: 45,
+              comments: 0
+            },
+            replies: [
+              {
+                author: {
+                  firstName: "Sarah",
+                  lastName: "Johnson",
+                  handle: "gymlife",
+                  avatar: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop",
+                },
+                content: "Definitely would appreciate that! I struggle with keeping my back straight at heavier weights. Any specific cues you recommend?",
+                timestamp: "45m",
+                metrics: {
+                  likes: 12,
+                  comments: 0
+                },
+                replies: [
+                  {
+                    author: {
+                      firstName: "John",
+                      lastName: "Smith",
+                      handle: "fitnesspro",
+                      avatar: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=400&h=400&fit=crop",
+                      role: "founder" as const
+                    },
+                    content: "Try thinking 'proud chest' and 'bend the bar around your legs'. Also, film yourself from the side to check your form - you'll be surprised how helpful this is!",
+                    timestamp: "39m",
+                    metrics: {
+                      likes: 21,
+                      comments: 0
+                    }
+                  },
+                  {
+                    author: {
+                      firstName: "Alex",
+                      lastName: "Rodriguez",
+                      handle: "alexfitness",
+                      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+                    },
+                    content: "I struggled with the same issue. What helped me was doing pause deadlifts with lighter weight to build positional strength. @gymlife give it a try!",
+                    timestamp: "32m",
+                    metrics: {
+                      likes: 8,
+                      comments: 0
+                    }
+                  }
+                ]
+              },
+              {
+                author: {
+                  firstName: "Emma",
+                  lastName: "Davis",
+                  handle: "nutritioncoach",
+                  avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=400&h=400&fit=crop",
+                  role: "admin" as const
+                },
+                content: "Great conversation here! Proper form is so crucial not just for performance but for staying injury-free. @John_Smith your tutorials have helped so many in the community!",
+                timestamp: "28m",
+                metrics: {
+                  likes: 19,
+                  comments: 0
+                }
+              }
+            ]
+          }
+        ]
       },
+      {
+        author: {
+          firstName: "Marcus",
+          lastName: "Chen",
+          handle: "liftmaster",
+          avatar: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=400&h=400&fit=crop"
+        },
+        content: "Congrats on the PR! What's your warm-up routine before heavy deadlifts? I've been struggling with getting properly activated.",
+        timestamp: "1h 45m",
+        metrics: {
+          likes: 78,
+          comments: 1
+        }
+      },
+      {
+        author: {
+          firstName: "John",
+          lastName: "Smith",
+          handle: "fitnesspro",
+          avatar: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=400&h=400&fit=crop",
+          role: "founder" as const
+        },
+        content: "@liftmaster I do 5 minutes light cardio, then band pull-aparts, kettlebell swings, and light Romanian deadlifts. I find activating glutes and hamstrings first makes a huge difference.",
+        timestamp: "1h 30m",
+        metrics: {
+          likes: 92,
+          comments: 0
+        },
+        category: "weight-training"
+      },
+      {
+        author: {
+          firstName: "Priya",
+          lastName: "Patel",
+          handle: "priyalifts",
+          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"
+        },
+        content: "Your tips helped me correct my deadlift form and I'm finally seeing progress without low back pain! Currently at 225lbs and aiming for 275 by summer 💪",
+        timestamp: "30m",
+        metrics: {
+          likes: 64,
+          comments: 0
+        },
+        media: {
+          type: "image" as const,
+          url: "https://images.unsplash.com/photo-1517344884509-a0c97ec11bcc?w=400&h=300&fit=crop"
+        }
+      }
     ],
   },
   {
@@ -186,8 +438,7 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
     timestamp: "5h",
     metrics: {
       likes: 1243,
-      comments: 234,
-      shares: 89,
+      comments: 234
     },
     media: {
       type: "link" as const,
@@ -196,6 +447,100 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
       domain: "verywellfit.com",
       thumbnail: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=600&h=400&fit=crop",
     },
+    replies: [
+      {
+        author: {
+          firstName: "Rachel",
+          lastName: "Green",
+          handle: "rachelg",
+          avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop"
+        },
+        content: "I've been intimidated by yoga for so long, but these poses look manageable! Do you think it's better to start with a class or follow along with videos at home?",
+        timestamp: "4h 30m",
+        metrics: {
+          likes: 67,
+          comments: 1
+        }
+      },
+      {
+        author: {
+          firstName: "Emma",
+          lastName: "Davis",
+          handle: "nutritioncoach",
+          avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=400&h=400&fit=crop",
+          role: "admin" as const
+        },
+        content: "@rachelg Great question! If you're completely new, I'd recommend starting with a beginner class so an instructor can check your form. Once you're comfortable with the basics, home practice with videos is perfect for consistency!",
+        timestamp: "4h 15m",
+        metrics: {
+          likes: 48,
+          comments: 0
+        }
+      },
+      {
+        author: {
+          firstName: "Jason",
+          lastName: "Wong",
+          handle: "jasonw",
+          avatar: "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=400&h=400&fit=crop"
+        },
+        content: "I've been doing yoga as part of my recovery days between heavy lifting sessions and it's been a game changer. Improved my flexibility and actually helped with my squat depth!",
+        timestamp: "3h 20m",
+        metrics: {
+          likes: 94,
+          comments: 2
+        },
+        category: "weight-training",
+        replies: [
+          {
+            author: {
+              firstName: "Lisa",
+              lastName: "Park",
+              handle: "lisastrong",
+              avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&h=400&fit=crop"
+            },
+            content: "I've had the same experience! What specific poses have you found most helpful for squat mobility?",
+            timestamp: "3h",
+            metrics: {
+              likes: 28,
+              comments: 0
+            }
+          },
+          {
+            author: {
+              firstName: "Jason",
+              lastName: "Wong",
+              handle: "jasonw",
+              avatar: "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=400&h=400&fit=crop"
+            },
+            content: "@lisastrong Pigeon pose, lizard pose, and deep yogic squats (malasana) have been the most effective for me. I do them 3x a week for about 15 minutes.",
+            timestamp: "2h 45m",
+            metrics: {
+              likes: 37,
+              comments: 0
+            }
+          }
+        ]
+      },
+      {
+        author: {
+          firstName: "Amir",
+          lastName: "Hassan",
+          handle: "amiryoga",
+          avatar: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+        },
+        content: "This guide is great! One tip I'd add for beginners: don't compare yourself to others in class or online. Yoga is about YOUR journey and progress. Some days you'll be more flexible than others, and that's perfectly okay.",
+        timestamp: "2h",
+        metrics: {
+          likes: 112,
+          comments: 0
+        },
+        media: {
+          type: "image" as const,
+          url: "https://images.unsplash.com/photo-1532798442725-41036acc7489?w=400&h=300&fit=crop"
+        }
+      }
+    ]
   },
   {
     index: 3,
@@ -611,7 +956,7 @@ const Community = () => {
               </div>
               {sortedPosts.map((post) => (
                 <FeedPost key={post.index} {...post} />
-              ))}
+            ))}
             </div>
           </>
         );
@@ -631,12 +976,12 @@ const Community = () => {
   return (
     <UIPreferencesProvider>
       <div className="flex flex-col flex-1">
-        <CommunityHeader />
+      <CommunityHeader />
         <ConditionalCommunityTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-        <main>
-          {renderContent()}
-        </main>
-      </div>
+      <main>
+        {renderContent()}
+      </main>
+    </div>
     </UIPreferencesProvider>
   );
 };

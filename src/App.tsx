@@ -12,8 +12,6 @@ import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import { MembersList } from "@/components/community/MembersList";
-// Repost functionality now integrated into CreatePost
-import RepostDemo from "./pages/RepostDemo";
 import NotificationsPage from "./pages/Notifications";
 import SearchPage from "./pages/Search";
 import MessagesPage from "./pages/Messages";
@@ -38,12 +36,11 @@ const App = () => (
             <Routes>
               {/* CreatePost routes rendered outside MainLayout for full width */}
               <Route path="/community/post/create" element={<CreatePost />} />
-              <Route path="/community/repost/:postId" element={<CreatePost />} />
               
               {/* All other routes rendered inside MainLayout */}
               <Route path="/" element={
                 <MainLayout>
-                  <ComingSoonPage />
+                  <Community />
                 </MainLayout>
               } />
               <Route path="/library" element={
@@ -84,11 +81,6 @@ const App = () => (
               <Route path="/community/post/:postId" element={
                 <MainLayout>
                   <PostDetail />
-                </MainLayout>
-              } />
-              <Route path="/community/repost-demo" element={
-                <MainLayout>
-                  <RepostDemo />
                 </MainLayout>
               } />
               <Route path="/profile" element={

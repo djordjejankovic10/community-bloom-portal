@@ -44,7 +44,17 @@ const Profile = () => {
     setPrimaryColor(color);
     // Convert hex to HSL
     const root = document.documentElement;
-    root.style.setProperty('--primary', convertHexToHSL(color));
+    
+    // Apply different color adjustments for dark mode
+    if (theme === 'dark') {
+      // For dark mode: preserve hue, reduce lightness, increase saturation
+      // This follows Superhuman's recommendation for deepening colors in dark themes
+      const darkModeHSL = convertHexToHSLDarkMode(color);
+      root.style.setProperty('--primary', darkModeHSL);
+    } else {
+      // For light mode: use standard conversion
+      root.style.setProperty('--primary', convertHexToHSL(color));
+    }
   };
 
   // Convert hex color to HSL format
@@ -84,11 +94,61 @@ const Profile = () => {
     // Return the HSL values in the format Tailwind CSS uses
     return `${h.toFixed(1)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
   };
+  
+  // Special version for dark mode that deepens colors
+  const convertHexToHSLDarkMode = (hex: string) => {
+    // Remove the # if present
+    hex = hex.replace('#', '');
+    
+    // Convert hex to RGB
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+    
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
+
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      
+      h *= 60;
+    }
+    
+    // Dark mode adjustments:
+    // 1. Preserve hue
+    // 2. Increase saturation by 10-15% (capped at 100%)
+    // 3. Reduce lightness by 10-15% (to avoid too bright colors)
+    const adjustedS = Math.min(s * 1.15, 1); // Increase saturation by 15%
+    const adjustedL = Math.max(l * 0.85, 0.3); // Reduce lightness but keep it visible
+    
+    // Return the HSL values in the format Tailwind CSS uses
+    return `${h.toFixed(1)} ${(adjustedS * 100).toFixed(1)}% ${(adjustedL * 100).toFixed(1)}%`;
+  };
 
   // Set initial color on mount
   useEffect(() => {
     handleColorChange(primaryColor);
   }, []);
+  
+  // Update color when theme changes
+  useEffect(() => {
+    handleColorChange(primaryColor);
+  }, [theme]);
 
   const colorOptions = [
     { value: "#9b87f5", label: "Primary Purple" },

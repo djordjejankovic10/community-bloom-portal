@@ -3,11 +3,8 @@ import { Separator } from "@/components/ui/separator";
 import { 
   Heart, 
   MessageCircle, 
-  Repeat2, 
-  Share, 
   MoreVertical, 
   Link2, 
-  Share2, 
   FileText, 
   AlertOctagon, 
   Play, 
@@ -31,9 +28,15 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { PostProps } from "@/types/post";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Type of reaction
-type ReactionType = 'like' | 'love' | 'laugh' | 'wow' | 'sad';
+type ReactionType = 'inspired' | 'love' | 'haha' | 'wow' | 'sad' | 'angry';
 
 // Type for a user who reacted to a post
 type ReactionUser = {
@@ -46,11 +49,12 @@ type ReactionUser = {
 
 // Reactions count type
 type ReactionsCount = {
-  like: number;
+  inspired: number;
   love: number;
-  laugh: number;
+  haha: number;
   wow: number;
   sad: number;
+  angry: number;
 };
 
 // Mock data for current user
@@ -59,40 +63,46 @@ const CURRENT_USER: ReactionUser = {
   handle: "@currentuser",
   avatar: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=200&h=200&fit=crop&crop=faces&auto=format",
   role: "",
-  reactionType: 'like'
+  reactionType: 'inspired'
 };
 
 // Reaction icons and colors
 const REACTION_DATA = {
-  like: { 
-    icon: <ThumbsUp className="h-full w-full" />, 
+  inspired: { 
+    icon: <ThumbsUp className="h-4 w-4" />, 
     color: "text-blue-500",
     bgColor: "bg-blue-500",
-    label: "Like"
+    label: "Inspired"
   },
   love: { 
-    icon: <Heart className="h-full w-full" />, 
+    icon: <Heart className="h-4 w-4" />, 
     color: "text-red-500",
     bgColor: "bg-red-500",
     label: "Love"
   },
-  laugh: {
-    icon: <span className="text-[10px]">😂</span>,
+  haha: {
+    icon: <span className="text-base">😂</span>,
     color: "text-yellow-500",
     bgColor: "bg-yellow-500",
     label: "Haha"
   },
   wow: {
-    icon: <span className="text-[10px]">😮</span>,
+    icon: <span className="text-base">😮</span>,
     color: "text-yellow-500",
     bgColor: "bg-yellow-500", 
     label: "Wow"
   },
   sad: {
-    icon: <span className="text-[10px]">😢</span>,
+    icon: <span className="text-base">😢</span>,
     color: "text-yellow-500",
     bgColor: "bg-yellow-500",
     label: "Sad"
+  },
+  angry: {
+    icon: <span className="text-base">😡</span>,
+    color: "text-red-600",
+    bgColor: "bg-red-600",
+    label: "Angry"
   }
 };
 
@@ -104,7 +114,7 @@ const generateReactors = (count: number): ReactionUser[] => {
       handle: "@davidj",
       avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces&auto=format",
       role: "Founder",
-      reactionType: 'like'
+      reactionType: 'inspired'
     },
     {
       name: "Sarah Williams",
@@ -118,7 +128,7 @@ const generateReactors = (count: number): ReactionUser[] => {
       handle: "@mikefit",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces&auto=format",
       role: "",
-      reactionType: 'laugh'
+      reactionType: 'haha'
     },
     {
       name: "Emma Davis",
@@ -139,7 +149,7 @@ const generateReactors = (count: number): ReactionUser[] => {
       handle: "@lisap",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces&auto=format",
       role: "",
-      reactionType: 'like'
+      reactionType: 'inspired'
     },
     {
       name: "Ryan Smith",
@@ -153,7 +163,7 @@ const generateReactors = (count: number): ReactionUser[] => {
       handle: "@taylorw",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=faces&auto=format",
       role: "",
-      reactionType: 'like'
+      reactionType: 'inspired'
     }
   ];
 
@@ -162,7 +172,22 @@ const generateReactors = (count: number): ReactionUser[] => {
   return shuffled.slice(0, Math.min(count, users.length));
 };
 
-export const FeedPost = ({ author, content, timestamp, metrics: initialMetrics, media, replies, index, pinned, onUnpin, isEmbedded = false, isDetail = false, originalPost, category }: PostProps) => {
+export const FeedPost = ({ 
+  author, 
+  content, 
+  timestamp, 
+  metrics: initialMetrics, 
+  media, 
+  replies, 
+  index, 
+  pinned, 
+  onUnpin, 
+  isEmbedded = false, 
+  isDetail = false, 
+  originalPost, 
+  category,
+  isReply = false 
+}: PostProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -175,12 +200,17 @@ export const FeedPost = ({ author, content, timestamp, metrics: initialMetrics, 
   const [metrics, setMetrics] = useState(initialMetrics);
   const [activeFilter, setActiveFilter] = useState<ReactionType | 'all'>('all');
   const [reactionsCount, setReactionsCount] = useState<ReactionsCount>({
-    like: Math.floor(initialMetrics.likes * 0.7),
+    inspired: Math.floor(initialMetrics.likes * 0.7),
     love: Math.floor(initialMetrics.likes * 0.2),
-    laugh: Math.floor(initialMetrics.likes * 0.05),
+    haha: Math.floor(initialMetrics.likes * 0.05),
     wow: Math.floor(initialMetrics.likes * 0.03),
     sad: Math.floor(initialMetrics.likes * 0.02),
+    angry: 0
   });
+  const [isLongPressed, setIsLongPressed] = useState(false);
+  const [reactionMenuPosition, setReactionMenuPosition] = useState({ x: 0, y: 0 });
+  const reactionButtonRef = useRef<HTMLButtonElement>(null);
+  const reactionMenuRef = useRef<HTMLDivElement>(null);
   
   // Calculate total reactions
   const totalReactions = Object.values(reactionsCount).reduce((sum, count) => sum + count, 0);
@@ -197,8 +227,8 @@ export const FeedPost = ({ author, content, timestamp, metrics: initialMetrics, 
   const handleReactionToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // Simply toggle between 'like' and null (no reaction)
-    const nextReaction: ReactionType | null = userReaction === null ? 'like' : null;
+    // Simply toggle between 'inspired' and null (no reaction)
+    const nextReaction: ReactionType | null = userReaction === null ? 'inspired' : null;
     
     setUserReaction(nextReaction);
     
@@ -288,8 +318,8 @@ export const FeedPost = ({ author, content, timestamp, metrics: initialMetrics, 
   }, [content, isEmbedded, isDetail]);
 
   const handleClick = () => {
-    // Skip navigation for embedded posts or replies
-    if (isEmbedded || replies) return;
+    // Skip navigation for embedded posts only
+    if (isEmbedded) return;
     
     // If this is a repost with an original post that has an index, navigate to that original post
     if (originalPost && typeof originalPost.index === 'number') {
@@ -310,16 +340,6 @@ export const FeedPost = ({ author, content, timestamp, metrics: initialMetrics, 
     });
   };
 
-  const handleShareLink = async () => {
-    try {
-      await navigator.share({
-        url: window.location.href,
-      });
-    } catch (err) {
-      console.log('Share failed:', err);
-    }
-  };
-
   const handleCopyText = () => {
     navigator.clipboard.writeText(content);
     toast({
@@ -333,17 +353,106 @@ export const FeedPost = ({ author, content, timestamp, metrics: initialMetrics, 
     });
   };
 
+  // Determine if post should use compact styling
+  const isCompact = isReply || isEmbedded;
+
+  // Handle long-press on reaction button
+  const handleLongPress = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Set long press state to true to show the menu
+    setIsLongPressed(true);
+    
+    // Close the menu automatically after 3 seconds if no selection is made
+    const timer = setTimeout(() => {
+      if (isLongPressed) setIsLongPressed(false);
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  };
+  
+  // Handle selection of a specific reaction
+  const handleReactionSelect = (reaction: ReactionType, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // If the user clicks the same reaction they already had, remove it
+    const nextReaction = userReaction === reaction ? null : reaction;
+    
+    setUserReaction(nextReaction);
+    
+    // Update reaction counts
+    setReactionsCount(prev => {
+      const newCounts = {...prev};
+      
+      // Remove previous reaction if existed
+      if (userReaction) {
+        newCounts[userReaction] = Math.max(0, newCounts[userReaction] - 1);
+      }
+      
+      // Add new reaction if selected
+      if (nextReaction) {
+        newCounts[nextReaction] = newCounts[nextReaction] + 1;
+      }
+      
+      return newCounts;
+    });
+    
+    // Update metrics
+    setMetrics(prev => {
+      const newLikesCount = nextReaction ? totalReactions + 1 : totalReactions - 1;
+      return {
+        ...prev,
+        likes: newLikesCount
+      };
+    });
+    
+    // Update reactors list
+    if (nextReaction) {
+      // Add current user to the beginning of reactors list with the new reaction
+      const updatedUser = {...CURRENT_USER, reactionType: nextReaction};
+      setReactors(prev => {
+        const filtered = prev.filter(reactor => reactor.handle !== CURRENT_USER.handle);
+        return [updatedUser, ...filtered];
+      });
+    } else {
+      // Remove current user from reactors
+      setReactors(prev => {
+        return prev.filter(reactor => reactor.handle !== CURRENT_USER.handle);
+      });
+    }
+    
+    // Close the reaction menu
+    setIsLongPressed(false);
+  };
+  
+  // Close reaction menu when clicking outside
+  useEffect(() => {
+    if (!isLongPressed) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (reactionMenuRef.current && !reactionMenuRef.current.contains(event.target as Node)) {
+        setIsLongPressed(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isLongPressed]);
+
   return (
     <div className={cn(
       "w-full max-w-full block",
-      isEmbedded ? "" : "border-b",
+      isEmbedded ? "" : (!isReply && "border-b"),
       pinned && "bg-secondary/30 border-l-2 border-l-primary"
     )}>
       <div 
         className={cn(
           "w-full max-w-full", 
-          isEmbedded ? "p-2" : "p-4 pb-0",
-          !isEmbedded && "hover:bg-accent cursor-pointer",
+          isEmbedded ? "p-2" : (isReply ? "p-3 pb-1" : "p-4 pb-0"),
+          !isEmbedded && "hover:bg-accent/10 cursor-pointer",
           "transition-colors relative"
         )}
         onClick={isEmbedded ? undefined : handleClick}
@@ -355,171 +464,173 @@ export const FeedPost = ({ author, content, timestamp, metrics: initialMetrics, 
           </div>
         )}
         
-        {!isEmbedded && <div className="absolute top-4 right-4">
+        {(!isEmbedded && !isReply) && <div className="absolute top-4 right-4">
           <Drawer>
             <DrawerTrigger asChild onClick={(e) => e.stopPropagation()}>
               <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreVertical className="h-4 w-4" />
+                <MoreVertical className="h-5 w-5" />
               </Button>
             </DrawerTrigger>
-            <DrawerContent>
-              <div className="p-2 space-y-2">
-                <div className="mx-auto h-1 w-12 rounded-full bg-muted mb-4" />
-                {pinned && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onUnpin?.();
-                    }}
-                    className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors"
+            <DrawerContent onClick={(e) => e.stopPropagation()}>
+              <div className="p-4">
+                <h3 className="font-medium text-lg mb-4">Post options</h3>
+                <div className="space-y-2">
+                  {onUnpin && pinned && (
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start text-left text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                      onClick={onUnpin}
+                    >
+                      <Pin className="h-5 w-5 mr-3" />
+                      Unpin post
+                    </Button>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-left" 
+                    onClick={handleCopyLink}
                   >
-                    <Pin className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">Unpin post</span>
-                  </button>
-                )}
-                <button
-                  onClick={handleCopyLink}
-                  className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors"
-                >
-                  <Link2 className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">Copy link</span>
-                </button>
-                <button
-                  onClick={handleShareLink}
-                  className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors"
-                >
-                  <Share2 className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">Share link</span>
-                </button>
-                <button
-                  onClick={handleCopyText}
-                  className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors"
-                >
-                  <FileText className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">Copy text</span>
-                </button>
-                <Separator className="my-1" />
-                <button
-                  onClick={handleReport}
-                  className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors text-destructive"
-                >
-                  <AlertOctagon className="h-4 w-4" />
-                  <span className="text-sm font-medium">Report</span>
-                </button>
+                    <Link2 className="h-5 w-5 mr-3" />
+                    Copy link to post
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-left" 
+                    onClick={handleCopyText}
+                  >
+                    <FileText className="h-5 w-5 mr-3" />
+                    Copy text
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-left text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20" 
+                    onClick={handleReport}
+                  >
+                    <AlertOctagon className="h-5 w-5 mr-3" />
+                    Report
+                  </Button>
+                </div>
               </div>
             </DrawerContent>
           </Drawer>
         </div>}
         
         <div className="flex gap-3 w-full max-w-full">
-          <Avatar className="w-8 h-8 flex-shrink-0">
+          <Avatar className={cn("flex-shrink-0", isReply ? "w-7 h-7" : "w-8 h-8")}>
             <AvatarImage src={author.avatar} />
             <AvatarFallback>{author.firstName[0]}</AvatarFallback>
           </Avatar>
           
           <div className="flex-1 w-full max-w-full">
             <div className="flex items-center flex-wrap gap-x-1 gap-y-0.5">
-              <span className="font-medium text-foreground text-sm">
+              <span className={cn("font-medium text-foreground", isReply ? "text-xs" : "text-sm")}>
                 {author.firstName} {author.lastName}
               </span>
-              <span className="text-muted-foreground text-xs whitespace-nowrap">· {timestamp}</span>
+              <span className={cn("text-muted-foreground whitespace-nowrap", isReply ? "text-[10px]" : "text-xs")}>· {timestamp}</span>
             </div>
             <div className="flex items-center gap-1 mt-0.5 mb-1">
-              <Badge variant="outline" className="text-[10px] px-1 py-0 bg-accent/50 flex items-center">
-                {getCategoryIcon(category)}
-                {formatCategory(category)}
-              </Badge>
+              {category && (
+                <Badge variant="outline" className={cn("px-1 py-0 bg-accent/50 flex items-center", isReply ? "text-[9px]" : "text-[10px]")}>
+                  {getCategoryIcon(category)}
+                  {formatCategory(category)}
+                </Badge>
+              )}
               {author.role && (
-                <Badge variant="default" className="text-[10px] px-1 py-0">
+                <Badge variant={isReply ? "outline" : "default"} className={cn("px-1 py-0", isReply ? "text-[9px]" : "text-[10px]")}>
                   {author.role}
                 </Badge>
               )}
             </div>
-          </div>
-        </div>
-        
-        <div className="w-full max-w-full mt-2">
-          <p 
-            ref={contentRef}
-            className={`text-base text-foreground py-[10px] my-[3px] ${isContentTruncated && !showFullContent ? 'line-clamp-10 max-h-[300px] overflow-hidden' : ''}`}
-          >
-            {content}
-          </p>
-          {isContentTruncated && !showFullContent && !isEmbedded && (
-            <Button 
-              variant="ghost" 
-              className="text-primary hover:text-primary/80 p-0 h-auto font-medium mt-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (typeof index === 'number') {
-                  navigate(`/community/post/${index}`);
-                } else if (originalPost && typeof originalPost.index === 'number') {
-                  navigate(`/community/post/${originalPost.index}`);
-                }
-              }}
-            >
-              See more
-            </Button>
-          )}
-        </div>
-        
-        {media && (
-          <div className="mt-2 rounded-lg overflow-hidden w-full max-w-full">
-            {media.type === "image" ? (
-              <img
-                src={media.url}
-                alt=""
-                className="w-full h-auto rounded-lg"
-              />
-            ) : media.type === "video" ? (
-              <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
-                <img
-                  src={media.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-12 w-12 rounded-full bg-background/80 hover:bg-background/90"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Handle video playback here
-                      console.log("Play video:", media.url);
-                    }}
-                  >
-                    <Play className="h-6 w-6" />
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <a
-                href={media.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block border rounded-lg overflow-hidden hover:bg-accent"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {media.thumbnail && (
-                  <img
-                    src={media.thumbnail}
-                    alt=""
-                    className="w-full h-[160px] object-cover"
-                  />
+          
+            <div className="w-full max-w-full">
+              <p 
+                ref={contentRef}
+                className={cn(
+                  isReply ? "text-sm" : "text-base", 
+                  "text-foreground py-[10px] my-[3px]",
+                  isContentTruncated && !showFullContent ? 'line-clamp-10 max-h-[300px] overflow-hidden' : ''
                 )}
-                <div className="p-2">
-                  <div className="text-foreground font-medium text-sm">
-                    {media.title}
+              >
+                {content}
+              </p>
+              
+              {isContentTruncated && !showFullContent && !isEmbedded && (
+                <Button 
+                  variant="ghost" 
+                  className="text-primary hover:text-primary/80 p-0 h-auto font-medium mt-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (typeof index === 'number') {
+                      navigate(`/community/post/${index}`);
+                    } else if (originalPost && typeof originalPost.index === 'number') {
+                      navigate(`/community/post/${originalPost.index}`);
+                    }
+                  }}
+                >
+                  See more
+                </Button>
+              )}
+            </div>
+            
+            {media && (
+              <div className="mt-2 rounded-lg overflow-hidden w-full max-w-full">
+                {media.type === "image" ? (
+                  <img
+                    src={media.url}
+                    alt=""
+                    className="w-full h-auto rounded-lg"
+                  />
+                ) : media.type === "video" ? (
+                  <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
+                    <img
+                      src={media.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-12 w-12 rounded-full bg-background/80 hover:bg-background/90"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Handle video playback here
+                          console.log("Play video:", media.url);
+                        }}
+                      >
+                        <Play className="h-6 w-6" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="text-muted-foreground text-xs">
-                    {media.domain}
-                  </div>
-                </div>
-              </a>
+                ) : (
+                  <a
+                    href={media.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block border rounded-lg overflow-hidden hover:bg-accent"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {media.thumbnail && (
+                      <img
+                        src={media.thumbnail}
+                        alt=""
+                        className="w-full h-[160px] object-cover"
+                      />
+                    )}
+                    <div className="p-2">
+                      <div className="text-foreground font-medium text-sm">
+                        {media.title}
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        {media.domain}
+                      </div>
+                    </div>
+                  </a>
+                )}
+              </div>
             )}
           </div>
-        )}
+        </div>
         
         {originalPost && !isEmbedded && (
           <div className="mt-3 border rounded-lg overflow-hidden w-full max-w-full">
@@ -604,127 +715,166 @@ export const FeedPost = ({ author, content, timestamp, metrics: initialMetrics, 
         )}
       </div>
       
-      {!isEmbedded && (
-        <div className="w-full max-w-full block">
-          <div className="flex items-center justify-between w-full max-w-full px-4 mt-2 mb-1 text-muted-foreground text-sm">
-            <Drawer open={reactionsOpen} onOpenChange={setReactionsOpen}>
-              <DrawerTrigger asChild>
-                <div className="flex items-center gap-2 hover:text-foreground transition-colors cursor-pointer">
-                  <div className="flex -space-x-1">
-                    {reactionsCount.like > 0 && (
-                      <div className="h-5 w-5 rounded-full flex items-center justify-center bg-blue-500 text-white border-2 border-background">
-                        <ThumbsUp className="h-3 w-3" />
-                      </div>
-                    )}
-                    {reactionsCount.love > 0 && (
-                      <div className="h-5 w-5 rounded-full flex items-center justify-center bg-red-500 text-white border-2 border-background">
-                        <Heart className="h-3 w-3" />
-                      </div>
-                    )}
-                    {reactionsCount.laugh > 0 && (
-                      <div className="h-5 w-5 rounded-full flex items-center justify-center bg-yellow-500 text-white border-2 border-background">
-                        <span className="text-[10px]">😂</span>
-                      </div>
-                    )}
-                  </div>
-                  <span>{totalReactions}</span>
+      {/* Display reaction counters (only if not in detail view) */}
+      {!isEmbedded && !isReply && !isDetail && (
+        <div className="flex items-center justify-between w-full max-w-full px-4 mt-2 text-muted-foreground text-sm">
+          <Drawer open={reactionsOpen} onOpenChange={setReactionsOpen}>
+            <DrawerTrigger asChild>
+              <div className="flex items-center gap-2 hover:text-foreground transition-colors cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                <div className="flex -space-x-1">
+                  {reactionsCount.inspired > 0 && (
+                    <div className="h-5 w-5 rounded-full flex items-center justify-center bg-blue-500 text-white border-2 border-background">
+                      <ThumbsUp className="h-3 w-3" />
+                    </div>
+                  )}
+                  {reactionsCount.love > 0 && (
+                    <div className="h-5 w-5 rounded-full flex items-center justify-center bg-red-500 text-white border-2 border-background">
+                      <Heart className="h-3 w-3" />
+                    </div>
+                  )}
+                  {reactionsCount.haha > 0 && (
+                    <div className="h-5 w-5 rounded-full flex items-center justify-center bg-yellow-500 text-white border-2 border-background">
+                      <span className="text-xs">😂</span>
+                    </div>
+                  )}
+                  {reactionsCount.wow > 0 && (
+                    <div className="h-5 w-5 rounded-full flex items-center justify-center bg-yellow-500 text-white border-2 border-background">
+                      <span className="text-xs">😮</span>
+                    </div>
+                  )}
+                  {reactionsCount.sad > 0 && (
+                    <div className="h-5 w-5 rounded-full flex items-center justify-center bg-yellow-500 text-white border-2 border-background">
+                      <span className="text-xs">😢</span>
+                    </div>
+                  )}
+                  {reactionsCount.angry > 0 && (
+                    <div className="h-5 w-5 rounded-full flex items-center justify-center bg-red-600 text-white border-2 border-background">
+                      <span className="text-xs">😡</span>
+                    </div>
+                  )}
                 </div>
-              </DrawerTrigger>
-              <DrawerContent className="min-h-[50vh]">
-                <div className="p-4 h-full min-h-[50vh] flex flex-col">
-                  <div className="flex mb-4 border-b overflow-x-auto">
-                    <button 
-                      onClick={() => setActiveFilter('all')}
-                      className={cn(
-                        "px-4 py-2 text-sm font-medium",
-                        activeFilter === 'all' 
-                          ? "border-b-2 border-primary text-primary" 
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      All {totalReactions}
-                    </button>
-                    
-                    {Object.entries(reactionsCount).map(([reaction, count]) => {
-                      if (count === 0) return null;
-                      const reactionKey = reaction as ReactionType;
-                      return (
-                        <button 
-                          key={reaction}
-                          onClick={() => setActiveFilter(reactionKey)}
-                          className={cn(
-                            "px-4 py-2 text-sm font-medium flex items-center gap-1",
-                            activeFilter === reactionKey 
-                              ? "border-b-2 border-primary text-primary" 
-                              : "text-muted-foreground"
-                          )}
-                        >
-                          <div className={cn(
-                            "h-4 w-4 rounded-full flex items-center justify-center text-white",
-                            REACTION_DATA[reactionKey].bgColor
-                          )}>
-                            {REACTION_DATA[reactionKey].icon}
-                          </div>
-                          <span>{count}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                <span>{totalReactions}</span>
+              </div>
+            </DrawerTrigger>
+            <DrawerContent className="min-h-[50vh]" onClick={(e) => e.stopPropagation()}>
+              <div className="p-4 h-full min-h-[50vh] flex flex-col">
+                <div className="flex mb-4 border-b overflow-x-auto">
+                  <button 
+                    onClick={() => setActiveFilter('all')}
+                    className={cn(
+                      "px-4 py-2 text-sm font-medium",
+                      activeFilter === 'all' 
+                        ? "border-b-2 border-primary text-primary" 
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    All {totalReactions}
+                  </button>
                   
-                  <div className="space-y-3 flex-1 overflow-y-auto">
-                    {filteredReactors.map((user, i) => (
-                      <div key={i} className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="relative">
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage src={user.avatar} />
-                              <AvatarFallback>{user.name[0]}</AvatarFallback>
-                            </Avatar>
-                            <div className={cn(
-                              "absolute -bottom-1 -right-1 h-5 w-5 rounded-full flex items-center justify-center text-white border-2 border-background",
-                              REACTION_DATA[user.reactionType].bgColor
-                            )}>
-                              {REACTION_DATA[user.reactionType].icon}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="font-medium text-sm">{user.name}</div>
-                            <div className="text-xs text-muted-foreground">{user.handle}</div>
+                  {Object.entries(reactionsCount).map(([reaction, count]) => {
+                    if (count === 0) return null;
+                    const reactionKey = reaction as ReactionType;
+                    return (
+                      <button 
+                        key={reaction}
+                        onClick={() => setActiveFilter(reactionKey)}
+                        className={cn(
+                          "px-4 py-2 text-sm font-medium flex items-center gap-1",
+                          activeFilter === reactionKey 
+                            ? "border-b-2 border-primary text-primary" 
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        <div className={cn(
+                          "h-4 w-4 rounded-full flex items-center justify-center text-white",
+                          REACTION_DATA[reactionKey].bgColor
+                        )}>
+                          {REACTION_DATA[reactionKey].icon}
+                        </div>
+                        <span>{count}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                <div className="space-y-3 flex-1 overflow-y-auto">
+                  {filteredReactors.map((user, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={user.avatar} />
+                            <AvatarFallback>{user.name[0]}</AvatarFallback>
+                          </Avatar>
+                          <div className={cn(
+                            "absolute -bottom-1 -right-1 h-5 w-5 rounded-full flex items-center justify-center text-white border-2 border-background",
+                            REACTION_DATA[user.reactionType].bgColor
+                          )}>
+                            {REACTION_DATA[user.reactionType].icon}
                           </div>
                         </div>
-                        {user.role && (
-                          <Badge variant="outline" className="text-[10px]">
-                            {user.role}
-                          </Badge>
-                        )}
+                        <div>
+                          <div className="font-medium text-sm">{user.name}</div>
+                          <div className="text-xs text-muted-foreground">{user.handle}</div>
+                        </div>
                       </div>
-                    ))}
-                    
-                    {filteredReactors.length < 5 && (
-                      <div className="min-h-[30vh]"></div>
-                    )}
-                  </div>
+                      {user.role && (
+                        <Badge variant="outline" className="text-[10px]">
+                          {user.role}
+                        </Badge>
+                      )}
+                    </div>
+                  ))}
+                  
+                  {filteredReactors.length < 5 && (
+                    <div className="min-h-[30vh]"></div>
+                  )}
                 </div>
-              </DrawerContent>
-            </Drawer>
-            <div className="flex items-center gap-2">
-              <span>{metrics.comments} comments</span>
-              {metrics.shares > 0 && (
-                <>
-                  <span>•</span>
-                  <span>{metrics.shares} shares</span>
-                </>
-              )}
-            </div>
+              </div>
+            </DrawerContent>
+          </Drawer>
+          <div className="flex items-center gap-2">
+            <span>{metrics.comments} comments</span>
           </div>
-          
-          <div className="grid grid-cols-3 w-full max-w-full">
+        </div>
+      )}
+      
+      {/* Action buttons (keep these in all views) */}
+      {!isEmbedded && !isReply && (
+        <div className="py-3">
+          <div className="grid grid-cols-2 w-full max-w-full">
             <button 
+              ref={reactionButtonRef}
               className={cn(
-                "flex items-center justify-center gap-2 py-2 rounded-md transition-colors text-sm w-full",
-                userReaction ? "text-primary" : "text-muted-foreground hover:bg-accent"
+                "flex items-center justify-center gap-2 py-2 transition-colors text-sm w-full relative",
+                userReaction ? "text-primary" : "text-muted-foreground"
               )}
               onClick={handleReactionToggle}
+              onContextMenu={handleLongPress}
+              onMouseDown={(e) => {
+                const timer = setTimeout(() => {
+                  if (e.button === 0) { // Only for left click
+                    handleLongPress(e);
+                  }
+                }, 500);
+                
+                const handleMouseUp = () => {
+                  clearTimeout(timer);
+                  window.removeEventListener('mouseup', handleMouseUp);
+                };
+                
+                window.addEventListener('mouseup', handleMouseUp);
+              }}
+              onTouchStart={(e) => {
+                const timer = setTimeout(() => handleLongPress(e), 500);
+                
+                const handleTouchEnd = () => {
+                  clearTimeout(timer);
+                  window.removeEventListener('touchend', handleTouchEnd);
+                };
+                
+                window.addEventListener('touchend', handleTouchEnd);
+              }}
             >
               {userReaction ? (
                 <>
@@ -734,13 +884,52 @@ export const FeedPost = ({ author, content, timestamp, metrics: initialMetrics, 
               ) : (
                 <>
                   <ThumbsUp className="h-5 w-5" />
-                  <span>Like</span>
+                  <span>Inspired</span>
                 </>
+              )}
+              
+              {/* Reaction selection menu */}
+              {isLongPressed && (
+                <div
+                  ref={reactionMenuRef}
+                  className="fixed transform -translate-x-1/2 bg-background rounded-full shadow-lg p-2 z-[100] animate-in fade-in-0 zoom-in-95 border"
+                  style={{ 
+                    left: '50%',
+                    bottom: '100px',
+                    width: 'max-content',
+                    maxWidth: '90vw',
+                    overflow: 'hidden'
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center gap-1 overflow-x-auto py-1 px-1">
+                    <TooltipProvider delayDuration={200}>
+                      {Object.entries(REACTION_DATA).map(([key, data]) => (
+                        <Tooltip key={key}>
+                          <TooltipTrigger asChild>
+                            <button
+                              className={cn(
+                                "h-11 w-11 sm:h-9 sm:w-9 rounded-full flex-shrink-0 flex items-center justify-center hover:bg-accent transition-transform hover:scale-125",
+                                userReaction === key && `${data.color} animate-pulse`
+                              )}
+                              onClick={(e) => handleReactionSelect(key as ReactionType, e)}
+                            >
+                              <div className="h-5 w-5 flex items-center justify-center">{data.icon}</div>
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">
+                            <p>{data.label}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </TooltipProvider>
+                  </div>
+                </div>
               )}
             </button>
             
             <button 
-              className="flex items-center justify-center gap-2 py-2 rounded-md text-muted-foreground hover:bg-accent transition-colors text-sm w-full"
+              className="flex items-center justify-center gap-2 py-2 text-muted-foreground transition-colors text-sm w-full"
               onClick={(e) => {
                 e.stopPropagation();
                 if (typeof index === 'number') {
@@ -751,24 +940,30 @@ export const FeedPost = ({ author, content, timestamp, metrics: initialMetrics, 
               <MessageCircle className="h-5 w-5" />
               <span>Comment</span>
             </button>
-            
-            <button 
-              className="flex items-center justify-center gap-2 py-2 rounded-md text-muted-foreground hover:bg-accent transition-colors text-sm w-full"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (typeof index === 'number') {
-                  navigate(`/community/repost/${index}`);
-                }
-              }}
-            >
-              <Repeat2 className="h-5 w-5" />
-              <span>Repost</span>
-            </button>
           </div>
         </div>
       )}
+
+      {/* Add reply button for threaded replies */}
+      {isReply && !isEmbedded && (
+        <div className="ml-8 mb-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-7 text-xs text-muted-foreground hover:text-foreground"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (typeof index === 'number') {
+                navigate(`/community/post/${index}?replyTo=${author.firstName.toLowerCase()}_${author.lastName.toLowerCase()}`);
+              }
+            }}
+          >
+            Reply
+          </Button>
+        </div>
+      )}
       
-      {!isEmbedded && <Separator className="w-full max-w-full" />}
+      {!isEmbedded && !isReply && <Separator className="w-full max-w-full" />}
     </div>
   );
 };

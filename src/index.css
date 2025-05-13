@@ -26,26 +26,49 @@
     --radius: 0.5rem;
   }
 
+  /* 
+   * Dark theme optimized following recommendations from Superhuman:
+   * 1. Avoid pure black/white (prevent eyestrain and halation)
+   * 2. Use layered surfaces (lighter surfaces for elements closer to user)
+   * 3. Maintain contrast while reducing eye fatigue
+   */
   .dark {
-    --background: 220 3% 16%; /* #28292D */
-    --foreground: 210 40% 98%;
+    /* Base surface - slightly off-black to avoid black smearing and improve depth */
+    --background: 220 3% 13%; /* Deeper background (#212225) */
+    --foreground: 210 30% 90%; /* Reduced from 98% to 90% to prevent halation */
+    
+    /* Card is slightly lighter than background (closer to user) */
     --card: 220 3% 16%; /* #28292D */
-    --card-foreground: 210 40% 98%;
-    --popover: 220 3% 16%; /* #28292D */
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
+    --card-foreground: 210 30% 90%;
+    
+    /* Popover is even lighter (closest to user) */
+    --popover: 220 3% 18%; /* #2D2E32 */
+    --popover-foreground: 210 30% 90%;
+    
+    /* Use slightly cooler white with lower brightness for text */
+    --primary: 210 30% 90%;
     --primary-foreground: 222.2 47.4% 11.2%;
+    
+    /* Secondary elements recede slightly */
     --secondary: 231 5% 21%; /* #323337 */
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: 210 25% 90%;
+    
+    /* Muted elements blend with background better */
     --muted: 231 5% 21%; /* #323337 */
     --muted-foreground: 240 5% 64.9%;
+    
+    /* Accent surfaces match secondary for consistency */
     --accent: 231 5% 21%; /* #323337 */
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --accent-foreground: 210 25% 90%;
+    
+    /* Destructive colors with increased saturation but decreased lightness */
+    --destructive: 0 70% 30%;
+    --destructive-foreground: 0 0% 95%;
+    
+    /* Border is slightly lighter than background for subtle separation */
     --border: 220 3% 22%; /* Slightly lighter border for contrast */
     --input: 231 5% 21%; /* #323337 */
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 212.7 26.8% 80%; /* Slightly less bright ring */
   }
 }
 

@@ -1,7 +1,10 @@
 export type PostMetrics = {
   likes: number;
   comments: number;
-  shares: number;
+  shares?: number;
+  // Track user reactions
+  userReacted?: boolean;
+  userReactionType?: 'inspired' | 'love' | 'haha' | 'wow' | 'sad' | 'angry';
 };
 
 export type PostMedia = {
@@ -33,7 +36,9 @@ export type PostProps = {
   onUnpin?: () => void;
   isEmbedded?: boolean;
   isDetail?: boolean;
+  isReply?: boolean;
   originalPost?: PostProps; // For reposts
   repostComment?: string; // Optional comment on repost
   category?: string; // The circle/category the post belongs to
+  parentId?: number; // ID of parent post for replies
 };

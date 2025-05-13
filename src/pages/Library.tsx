@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BellIcon, MessageCircle, Search, ChevronDown, X, Menu } from 'lucide-react';
+import { BellIcon, MessageCircle, Search, ChevronDown, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { MOCK_NOTIFICATIONS } from '@/data/mockNotifications';
@@ -46,10 +46,7 @@ const LibraryHeader = () => {
       <header className="sticky top-0 bg-background border-b border-border z-50">
         <div className="flex justify-between items-center px-2 py-2">
           <div className="flex items-center">
-            <Button variant="ghost" size="icon" className="h-9 w-9 mr-1">
-              <Menu className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pl-1">
               <div className="rounded-lg overflow-hidden w-6 h-6 border border-primary flex-shrink-0">
                 <img 
                   src="https://images.unsplash.com/photo-1493690283958-32df2c86326e?w=400&h=400&fit=crop" 

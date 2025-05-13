@@ -14,6 +14,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { AIBottomSheet } from "@/components/ai/AIBottomSheet";
 import { BottomSheet } from "@/components/messages/BottomSheet";
+import { CircleIcon, ChevronDownIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Globe } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 const CIRCLES = [
   "General",
@@ -129,30 +134,41 @@ const CircleBottomSheet = ({
 const CreatePostPage = () => {
   const [content, setContent] = useState("");
   const [selectedCircle, setSelectedCircle] = useState<string | null>(null);
-  const [isCircleSheetOpen, setIsCircleSheetOpen] = useState(false);
+  const [isCircleOpen, setIsCircleOpen] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
-  const navigate = useNavigate();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const params = useParams<{ postId?: string }>();
-  
-  // For repost functionality
-  const [originalPost, setOriginalPost] = useState<PostProps | null>(null);
-  const [isRepost, setIsRepost] = useState(false);
-
-  // For mention functionality
   const [isMentionOpen, setIsMentionOpen] = useState(false);
-  const [mentionSearch, setMentionSearch] = useState("");
+  const [mentionSearch, setMentionSearch] = useState('');
   const [mentionedContent, setMentionedContent] = useState<MentionedContent[]>([]);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  // For AI functionality
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [aiNotes, setAINotes] = useState("");
   const [aiGeneratedContent, setAIGeneratedContent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const params = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
+  // Track textarea height for autoresizing
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [content]);
+
+  // Detect @ symbol for mentions
+  useEffect(() => {
+    const mentionMatch = content.match(/@(\w*)$/);
+    if (mentionMatch) {
+      setMentionSearch(mentionMatch[1]);
+      setIsMentionOpen(true);
+    } else {
+      setIsMentionOpen(false);
+    }
+  }, [content]);
+  
   const handleImageClick = () => {
-    if (uploadedImages.length >= 10) return;
     fileInputRef.current?.click();
   };
 
@@ -188,38 +204,14 @@ const CreatePostPage = () => {
     });
   };
 
-  // Load the original post if this is a repost
-  useEffect(() => {
-    if (params.postId) {
-      const postIdNum = parseInt(params.postId);
-      const foundPost = MOCK_POSTS.find(post => post.index === postIdNum);
-      if (foundPost) {
-        setOriginalPost(foundPost);
-        setIsRepost(true);
-      }
-    }
-  }, [params.postId]);
-
   const handlePost = () => {
-    if (isRepost && originalPost) {
-      // Handle repost logic
-      console.log("Reposting with comment:", content);
-      console.log("Original post:", originalPost);
-    } else {
-      // Handle regular post logic
-      console.log("Posting content:", content);
-      console.log("Selected circle:", selectedCircle);
-      console.log("Uploaded images:", uploadedImages);
-    }
+    // Handle regular post logic
+    console.log("Posting content:", content);
+    console.log("Selected circle:", selectedCircle);
+    console.log("Uploaded images:", uploadedImages);
     
     // Navigate back to feed
     navigate("/community");
-  };
-
-  const handleRemoveOriginalPost = () => {
-    setOriginalPost(null);
-    setIsRepost(false);
-    navigate('/create');
   };
 
   // Filter mentions based on search query
@@ -374,222 +366,163 @@ const CreatePostPage = () => {
     setMentionedContent(mentionedContent.filter(mention => mention.id !== id));
   };
 
-  const isPostButtonEnabled = (content.trim().length > 0 || uploadedImages.length > 0 || isRepost);
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <header className="flex items-center gap-4 p-3 border-b">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-9 w-9" 
+      <div className="flex items-center justify-between border-b p-3 shrink-0">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
           onClick={() => navigate(-1)}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-xl font-semibold flex-1">
-          {isRepost ? 'Repost' : 'New Post'}
-        </h1>
-        <Button 
-          variant="default" 
+        <div className="font-semibold">Create Post</div>
+        <Button
           size="sm"
-          disabled={!content && !originalPost}
+          className="rounded-full px-4"
+          disabled={!content.trim() && uploadedImages.length === 0}
           onClick={handlePost}
         >
           Post
         </Button>
-      </header>
-      
-      <div className="flex-1 overflow-y-auto w-full">
-        <div className="max-w-3xl w-full mx-auto">
-          <div className="p-2 sm:p-4">
-            <div className="mb-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-8 gap-1 text-xs"
-                onClick={() => setIsCircleSheetOpen(true)}
-              >
-                {selectedCircle || "Select a circle"}
-                <ChevronDown className="h-3 w-3 ml-1" />
-              </Button>
-              
-              <CircleBottomSheet 
-                isOpen={isCircleSheetOpen}
-                onClose={() => setIsCircleSheetOpen(false)}
-                selectedCircle={selectedCircle}
-                onSelect={setSelectedCircle}
-              />
-              
-              {isRepost && originalPost && (
-                <div className="ml-auto">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-red-500"
-                    onClick={handleRemoveOriginalPost}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-3 space-y-4">
+        <div className="flex gap-3">
+          <Avatar className="w-10 h-10 flex-shrink-0">
+            <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
+            <AvatarFallback>DJ</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 space-y-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full text-xs font-normal h-7 gap-1"
+              onClick={() => setIsCircleOpen(true)}
+            >
+              {selectedCircle ? (
+                <>
+                  <CircleIcon size={14} /> {selectedCircle}
+                </>
+              ) : (
+                <>
+                  <CircleIcon size={14} /> Select circle
+                </>
               )}
-            </div>
+              <ChevronDownIcon size={14} />
+            </Button>
             
-            <div className="flex flex-col w-full">
-              <div className="flex gap-3">
-                <Avatar className="w-10 h-10 flex-shrink-0">
-                  <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
-                  <AvatarFallback>DJ</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 flex flex-col w-full">
-                  <textarea
-                    ref={textareaRef}
-                    placeholder={isRepost ? "Add a comment (optional)" : "What's on your mind?"}
-                    className="w-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm min-h-[120px]"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                  />
-                  
-                  {isRepost && originalPost && (
-                    <div className="relative border rounded-lg overflow-hidden mt-2 mb-4">
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute top-2 right-2 h-6 w-6 z-10"
-                        onClick={handleRemoveOriginalPost}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                      <FeedPost {...originalPost} isEmbedded={true} />
-                    </div>
-                  )}
-    
-                  {mentionedContent.length > 0 && (
-                    <div className="space-y-2 mt-2">
-                      {mentionedContent.map((item) => (
-                        <div key={item.id} className="relative border rounded-lg overflow-hidden bg-muted/20">
-                          <div className="flex p-3">
-                            {item.image ? (
-                              <div className="w-20 h-16 rounded overflow-hidden bg-muted flex-shrink-0 mr-3">
-                                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                              </div>
-                            ) : (
-                              <div className="w-20 h-16 rounded bg-primary/10 flex items-center justify-center flex-shrink-0 mr-3">
-                                <span className="text-primary font-medium text-xl">{item.type[0].toUpperCase()}</span>
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium">{item.title}</div>
-                              {item.subtitle && (
-                                <div className="text-xs text-muted-foreground">{item.subtitle}</div>
-                              )}
-                              <div className="text-xs mt-1 text-primary capitalize">{item.type}</div>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6 self-start"
-                              onClick={() => handleRemoveMentionedContent(item.id)}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-    
-                  {uploadedImages.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
-                      {uploadedImages.map((image) => (
-                        <div key={image.id} className="relative aspect-square">
-                          <img 
-                            src={image.url} 
-                            alt="Upload preview" 
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                          <Button
-                            variant="secondary"
-                            size="icon"
-                            className="absolute top-1 right-1 h-6 w-6"
-                            onClick={() => removeImage(image.id)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+            <textarea
+              ref={textareaRef}
+              className="w-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
+              placeholder="What's on your mind?"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={1}
+            />
+            
+            {/* Display uploaded images */}
+            {uploadedImages.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                {uploadedImages.map((img) => (
+                  <div key={img.id} className="relative group">
+                    <img
+                      src={img.url}
+                      alt=""
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1 h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => removeImage(img.id)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
               </div>
-    
-              <div className="flex items-center gap-1 overflow-x-auto scrollbar-none mt-2">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-11 w-11 flex-shrink-0"
-                  onClick={handleImageClick}
-                >
-                  <Image className="h-6 w-6 text-muted-foreground" />
-                </Button>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  className="hidden" 
-                  accept="image/*" 
-                  multiple 
-                  onChange={handleImageUpload}
-                />
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-11 w-11 flex-shrink-0"
-                  onClick={() => {}}
-                >
-                  <Camera className="h-6 w-6 text-muted-foreground" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-11 w-11 flex-shrink-0"
-                  onClick={() => {}}
-                >
-                  <Mic className="h-6 w-6 text-muted-foreground" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-11 w-11 flex-shrink-0"
-                  onClick={() => {}}
-                >
-                  <LineChart className="h-6 w-6 text-muted-foreground" />
-                </Button>
-                
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-11 w-11 flex-shrink-0"
-                  onClick={() => {
-                    handleMentionClick();
-                    setIsMentionOpen(!isMentionOpen);
-                  }}
-                >
-                  <AtSign className="h-6 w-6 text-muted-foreground" />
-                </Button>
-                
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-11 w-11 flex-shrink-0"
-                  onClick={handleAIClick}
-                >
-                  <Sparkles className="h-6 w-6 text-primary" />
-                </Button>
+            )}
+            
+            {/* Display mentioned content */}
+            {mentionedContent.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {mentionedContent.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-1 bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"
+                  >
+                    <span>@{item.title}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 rounded-full hover:bg-primary/20"
+                      onClick={() => handleRemoveMentionedContent(item.id)}
+                    >
+                      <X className="h-2 w-2" />
+                    </Button>
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
+
+      <Separator />
+
+      <div className="flex justify-between p-3 shrink-0 bg-background">
+        <div className="flex gap-4">
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            multiple
+            onChange={handleImageUpload}
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 rounded-full"
+            onClick={handleImageClick}
+          >
+            <Image className="h-5 w-5 text-emerald-500" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 rounded-full"
+            onClick={handleMentionClick}
+          >
+            <AtSign className="h-5 w-5 text-blue-500" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 rounded-full"
+            onClick={handleAIClick}
+          >
+            <Sparkles className="h-5 w-5 text-purple-500" />
+          </Button>
+        </div>
+        
+        <Badge
+          variant="outline"
+          className="flex items-center gap-1 h-7 px-3 rounded-full text-xs font-normal"
+        >
+          <Globe className="h-3 w-3" />
+          <span>Public</span>
+        </Badge>
+      </div>
+
+      <CircleBottomSheet
+        isOpen={isCircleOpen}
+        onClose={() => setIsCircleOpen(false)}
+        selectedCircle={selectedCircle}
+        onSelect={setSelectedCircle}
+      />
       
       {isMentionOpen && (
         <div className="fixed inset-x-0 bottom-16 mx-0 sm:mx-4 bg-background border rounded-lg shadow-lg z-50" style={{ maxHeight: '40vh' }}>
