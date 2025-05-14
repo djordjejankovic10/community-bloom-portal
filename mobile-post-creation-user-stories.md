@@ -308,9 +308,8 @@ As a mobile app user, I want to add comments and replies to posts so I can parti
   - Input field expands as content is added (up to 5 lines, then scrollable)
   - Send button that's disabled until content is entered
 - Reply functionality:
-  - Reply button on comments initiates a reply
-  - Reply interface visually indicates which comment is being replied to
-  - Reply input shows quoted preview of original comment
+  - Reply button on comments initiates a reply in a full screen bottom sheet
+  - Reply interface includes which comment is being replied to
   - User can cancel reply to return to standard commenting
   - Replies appear properly threaded in the comment view
 - Comment/reply submission:
