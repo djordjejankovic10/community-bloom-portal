@@ -378,7 +378,7 @@ export const PostReplies = ({
                         )}
                       </div>
                       
-                      <div className="text-sm">{reply.content}</div>
+                      <div className="text-base text-foreground py-[10px] my-[3px]">{reply.content}</div>
                       
                       {/* Reply media - now inside the bubble */}
                       {reply.media && (
