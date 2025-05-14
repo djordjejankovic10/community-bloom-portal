@@ -129,6 +129,7 @@ interface PostRepliesProps {
   parentAuthor?: string;
   level?: number;
   isLastReply?: boolean;
+  onReply?: (author: string, content: string, avatar?: string) => void;
 }
 
 export const PostReplies = ({
@@ -136,6 +137,7 @@ export const PostReplies = ({
   parentAuthor,
   level = 0,
   isLastReply = false,
+  onReply,
 }: PostRepliesProps) => {
   const navigate = useNavigate();
   
@@ -528,8 +530,17 @@ export const PostReplies = ({
                         
                         <button 
                           className="flex items-center text-xs text-muted-foreground hover:text-foreground hover:underline transition-colors"
-                          onClick={() => {
-                            if (typeof reply.index === 'number') {
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onReply) {
+                              // Use the onReply callback if provided
+                              onReply(
+                                `${reply.author.firstName} ${reply.author.lastName}`,
+                                reply.content,
+                                reply.author.avatar
+                              );
+                            } else if (typeof reply.index === 'number') {
+                              // Fall back to the old behavior if onReply not provided
                               navigate(`/community/post/${reply.index}?replyTo=${reply.author.firstName.toLowerCase()}_${reply.author.lastName.toLowerCase()}`);
                             }
                           }}
@@ -663,6 +674,7 @@ export const PostReplies = ({
                     parentAuthor={reply.author.firstName + " " + reply.author.lastName}
                     level={actualLevel + 1}
                     isLastReply={isLast}
+                    onReply={onReply}
                   />
                   
                   {/* Show "Show more replies" button if there are more than 3 replies and thread is not expanded */}

@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Image, Camera, Mic, LineChart, ArrowLeft, X, Repeat2, AtSign, Search, Sparkles, RotateCcw, CheckCircle, ChevronDown } from "lucide-react";
+import { Image, Camera, Mic, LineChart, ArrowLeft, X, Repeat2, AtSign, Search, Sparkles, RotateCcw, CheckCircle, ChevronDown, FileText, Link } from "lucide-react";
+import { Book, BookOpen, Calendar, Trophy, Users, UserCircle, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useRef, useEffect } from "react";
@@ -19,6 +20,8 @@ import { Badge } from "@/components/ui/badge";
 import { Globe } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { MediaUploader, MediaItem, MediaUploaderRef } from "@/components/ui/media-uploader";
+import { cn } from "@/lib/utils";
 
 const CIRCLES = [
   "General",
@@ -29,10 +32,7 @@ const CIRCLES = [
   "Recovery",
 ];
 
-type UploadedImage = {
-  id: string;
-  url: string;
-};
+type UploadedImage = MediaItem;
 
 type MentionType = 'lesson' | 'course' | 'module' | 'meetup' | 'challenge' | 'circle' | 'member';
 
@@ -121,7 +121,7 @@ const CircleBottomSheet = ({
             >
               {circle}
               {selectedCircle === circle && (
-                <CheckCircle className="h-4 w-4 ml-auto text-primary" />
+                <CircleIcon className="h-4 w-4 ml-auto text-primary" />
               )}
             </Button>
           ))}
@@ -131,11 +131,223 @@ const CircleBottomSheet = ({
   );
 };
 
+// Replace the MentionDropdown component with a MentionBottomSheet component
+// Simple React component for the mention bottom sheet
+const MentionBottomSheet = ({ 
+  isOpen, 
+  onClose,
+  search,
+  onSearchChange,
+  mentions,
+  onSelect
+}: { 
+  isOpen: boolean;
+  onClose: () => void;
+  search: string;
+  onSearchChange: (value: string) => void;
+  mentions: MentionItem[];
+  onSelect: (item: MentionItem) => void;
+}) => {
+  // Group mentions by type
+  const groupedMentions = mentions.reduce((groups, mention) => {
+    const type = mention.type;
+    if (!groups[type]) {
+      groups[type] = [];
+    }
+    groups[type].push(mention);
+    return groups;
+  }, {} as Record<MentionType, MentionItem[]>);
+
+  // Sort group keys by predefined order
+  const typeOrder: MentionType[] = ['member', 'course', 'lesson', 'module', 'meetup', 'challenge', 'circle'];
+  const sortedGroups = Object.keys(groupedMentions)
+    .sort((a, b) => {
+      const aIndex = typeOrder.indexOf(a as MentionType);
+      const bIndex = typeOrder.indexOf(b as MentionType);
+      return aIndex - bIndex;
+    }) as MentionType[];
+
+  // Format type label for display
+  const formatTypeLabel = (type: string): string => {
+    return type.charAt(0).toUpperCase() + type.slice(1) + 's';
+  };
+
+  // Get icon for each type
+  const getTypeIcon = (type: MentionType) => {
+    switch (type) {
+      case 'lesson':
+        return <Video className="h-4 w-4" />;
+      case 'course':
+        return <BookOpen className="h-4 w-4" />;
+      case 'module':
+        return <Book className="h-4 w-4" />;
+      case 'meetup':
+        return <Calendar className="h-4 w-4" />;
+      case 'challenge':
+        return <Trophy className="h-4 w-4" />;
+      case 'circle':
+        return <Users className="h-4 w-4" />;
+      case 'member':
+        return <UserCircle className="h-4 w-4" />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[70vh]">
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-lg font-semibold">Mention</h2>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        {/* Search area */}
+        <div className="sticky top-0 bg-background mb-4">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              className="pl-8"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => onSearchChange(e.target.value)}
+              autoFocus
+            />
+          </div>
+        </div>
+        
+        {/* Results */}
+        <div className="overflow-y-auto">
+          {mentions.length > 0 ? (
+            <div className="space-y-4">
+              {sortedGroups.map(type => (
+                <div key={type} className="space-y-1">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1 px-2 flex items-center gap-1">
+                    {getTypeIcon(type)}
+                    {formatTypeLabel(type)}
+                  </h3>
+                  {groupedMentions[type].map((mention) => (
+                    <Button
+                      key={mention.id}
+                      variant="ghost"
+                      className="w-full justify-start px-3 py-2 h-auto"
+                      onClick={() => onSelect(mention)}
+                    >
+                      <div className="flex items-center gap-3">
+                        {mention.image ? (
+                          <img
+                            src={mention.image}
+                            alt=""
+                            className="w-10 h-10 rounded object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <span className="text-primary">{mention.title[0]}</span>
+                          </div>
+                        )}
+                        <div className="text-left">
+                          <div className="font-medium">{mention.title}</div>
+                          {mention.subtitle && (
+                            <div className="text-xs text-muted-foreground">
+                              {mention.subtitle}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="px-3 py-4 text-center text-muted-foreground">
+              No results found
+            </div>
+          )}
+        </div>
+      </div>
+    </BottomSheet>
+  );
+};
+
+// Create a rich media preview component for mentions
+const MentionPreview = ({ item, onRemove }: { item: MentionedContent; onRemove: (id: string) => void }) => {
+  // Only show rich preview for content types (not members)
+  if (item.type === 'member') {
+    return null;
+  }
+
+  // Get appropriate icon for the type
+  const getTypeIcon = () => {
+    switch (item.type) {
+      case 'lesson':
+        return <Video className="h-4 w-4 text-muted-foreground" />;
+      case 'course':
+        return <BookOpen className="h-4 w-4 text-muted-foreground" />;
+      case 'module':
+        return <Book className="h-4 w-4 text-muted-foreground" />;
+      case 'meetup':
+        return <Calendar className="h-4 w-4 text-muted-foreground" />;
+      case 'challenge':
+        return <Trophy className="h-4 w-4 text-muted-foreground" />;
+      case 'circle':
+        return <Users className="h-4 w-4 text-muted-foreground" />;
+      default:
+        return <AtSign className="h-4 w-4 text-muted-foreground" />;
+    }
+  };
+
+  return (
+    <div className="mt-2 border rounded-lg overflow-hidden hover:bg-accent/5 transition-colors relative">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-6 w-6 rounded-full absolute top-2 right-2 bg-background/80 z-10"
+        onClick={() => onRemove(item.id)}
+      >
+        <X className="h-3 w-3" />
+      </Button>
+      <div className="flex">
+        {item.image ? (
+          <div className="w-24 h-24 flex-shrink-0">
+            <img
+              src={item.image}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ) : (
+          <div className="w-24 h-24 bg-primary/5 flex items-center justify-center flex-shrink-0">
+            {getTypeIcon()}
+          </div>
+        )}
+        <div className="p-3 flex-1">
+          <div className="flex items-center gap-1.5 mb-1">
+            {getTypeIcon()}
+            <span className="text-xs text-muted-foreground font-medium uppercase">
+              {item.type}
+            </span>
+          </div>
+          <h4 className="font-medium text-sm line-clamp-2">{item.title}</h4>
+          {item.subtitle && (
+            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+              {item.subtitle}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CreatePostPage = () => {
   const [content, setContent] = useState("");
   const [selectedCircle, setSelectedCircle] = useState<string | null>(null);
   const [isCircleOpen, setIsCircleOpen] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<MediaItem[]>([]);
+  const [showMediaUploader, setShowMediaUploader] = useState(false);
   const [isMentionOpen, setIsMentionOpen] = useState(false);
   const [mentionSearch, setMentionSearch] = useState('');
   const [mentionedContent, setMentionedContent] = useState<MentionedContent[]>([]);
@@ -144,10 +356,13 @@ const CreatePostPage = () => {
   const [aiGeneratedContent, setAIGeneratedContent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const params = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const mediaUploaderRef = useRef<MediaUploaderRef>(null);
+  const [atCharPosition, setAtCharPosition] = useState<number | null>(null);
+  const textareaDivRef = useRef<HTMLDivElement>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
 
   // Track textarea height for autoresizing
   useEffect(() => {
@@ -160,59 +375,26 @@ const CreatePostPage = () => {
   // Detect @ symbol for mentions
   useEffect(() => {
     const mentionMatch = content.match(/@(\w*)$/);
-    if (mentionMatch) {
-      setMentionSearch(mentionMatch[1]);
-      setIsMentionOpen(true);
-    } else {
-      setIsMentionOpen(false);
-    }
-  }, [content]);
-  
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files) return;
-
-    const remainingSlots = 10 - uploadedImages.length;
-    const filesToProcess = Array.from(files).slice(0, remainingSlots);
-
-    const newImages = filesToProcess.map(file => ({
-      id: crypto.randomUUID(),
-      url: URL.createObjectURL(file)
-    }));
-
-    setUploadedImages(prev => [...prev, ...newImages]);
-
-    // Reset input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const removeImage = (idToRemove: string) => {
-    setUploadedImages(prev => {
-      const filtered = prev.filter(img => img.id !== idToRemove);
-      // Cleanup URL object
-      const removedImage = prev.find(img => img.id === idToRemove);
-      if (removedImage) {
-        URL.revokeObjectURL(removedImage.url);
-      }
-      return filtered;
-    });
-  };
-
-  const handlePost = () => {
-    // Handle regular post logic
-    console.log("Posting content:", content);
-    console.log("Selected circle:", selectedCircle);
-    console.log("Uploaded images:", uploadedImages);
     
-    // Navigate back to feed
-    navigate("/community");
-  };
+    if (mentionMatch) {
+      // Found a mention at the end of the text
+      setMentionSearch(mentionMatch[1]);
+      
+      // Get position of the text caret
+      if (textareaRef.current) {
+        const pos = textareaRef.current.selectionStart;
+        const matchStartPos = pos - mentionMatch[0].length;
+        
+        setAtCharPosition(matchStartPos);
+        setIsMentionOpen(true);
+      }
+    } else if (atCharPosition !== null && !content.includes('@')) {
+      // No mention being typed, close the dropdown
+      setIsMentionOpen(false);
+      setAtCharPosition(null);
+    }
+    
+  }, [content]);
 
   // Filter mentions based on search query
   const filteredMentions = MOCK_MENTIONS.filter(mention => {
@@ -224,29 +406,92 @@ const CreatePostPage = () => {
     );
   });
 
+  // Handle media uploader toggling
+  const toggleMediaUploader = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setShowMediaUploader(true);
+    setTimeout(() => {
+      mediaUploaderRef.current?.openMediaPicker();
+    }, 50);
+  };
+
   // Handle mention button click
-  const handleMentionClick = () => {
-    setIsMentionOpen(true);
-    // Add @ symbol to content if not already there
+  const handleMentionClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Focus the textarea
     if (textareaRef.current) {
+      textareaRef.current.focus();
+      
       const currentPosition = textareaRef.current.selectionStart;
       const textBefore = content.substring(0, currentPosition);
+      const textAfter = content.substring(currentPosition);
       
-      // Check if we're already typing a mention
+      // Insert @ at cursor position if not already there
       if (!textBefore.endsWith('@')) {
-        const textAfter = content.substring(currentPosition);
+        // Insert the @ symbol
         setContent(textBefore + '@' + textAfter);
         
-        // Move cursor after the @ symbol
+        // Store the position of the @ character
+        setAtCharPosition(currentPosition);
+        
+        // Using a timeout to ensure state updates have happened
         setTimeout(() => {
+          // Move cursor position after the @ symbol
           if (textareaRef.current) {
-            const newPosition = currentPosition + 1;
-            textareaRef.current.focus();
-            textareaRef.current.setSelectionRange(newPosition, newPosition);
+            const newCursorPos = currentPosition + 1;
+            textareaRef.current.selectionStart = newCursorPos;
+            textareaRef.current.selectionEnd = newCursorPos;
+            
+            // Open the mention dropdown
+            setIsMentionOpen(true);
           }
-        }, 0);
+        }, 50);
+      } else {
+        // If @ is already at cursor, just open the dropdown
+        setIsMentionOpen(true);
       }
     }
+  };
+
+  // Handle selecting a mention item
+  const handleSelectMention = (item: MentionItem) => {
+    // Add the selected mention to the list of mentioned content
+    setMentionedContent([...mentionedContent, item]);
+    
+    // Replace the @ with the mention text in the content
+    if (textareaRef.current && atCharPosition !== null) {
+      const textBefore = content.substring(0, atCharPosition);
+      const textAfter = content.substring(textareaRef.current.selectionStart);
+      
+      // Add the mention with a space after it
+      const newContent = textBefore + `@${item.title} ` + textAfter;
+      setContent(newContent);
+      
+      // Close the mention popover
+      setIsMentionOpen(false);
+      setMentionSearch('');
+      setAtCharPosition(null);
+      
+      // Move cursor after the inserted mention
+      const newPosition = textBefore.length + `@${item.title} `.length;
+      
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+          textareaRef.current.selectionStart = newPosition;
+          textareaRef.current.selectionEnd = newPosition;
+        }
+      }, 10);
+    }
+  };
+
+  // Handle post logic
+  const handlePost = () => {
+    // Handle regular post logic
+    console.log("Posting content:", content);
+    console.log("Selected circle:", selectedCircle);
+    console.log("Uploaded images:", uploadedImages);
+    
+    // Navigate back to feed
+    navigate("/community");
   };
 
   // AI feature handlers
@@ -332,35 +577,6 @@ const CreatePostPage = () => {
     }
   };
 
-  // Handle selecting a mention item
-  const handleSelectMention = (item: MentionItem) => {
-    // Add the selected mention to the list of mentioned content
-    setMentionedContent([...mentionedContent, item]);
-    
-    // Replace the @ with the mention text in the content
-    if (textareaRef.current) {
-      const currentPosition = textareaRef.current.selectionStart;
-      const textBefore = content.substring(0, currentPosition).replace(/@[^\s]*$/, '');
-      const textAfter = content.substring(currentPosition);
-      
-      // Add the mention with a space after it
-      setContent(textBefore + `@${item.title} ` + textAfter);
-      
-      // Close the mention popover
-      setIsMentionOpen(false);
-      setMentionSearch('');
-      
-      // Focus and move cursor after the inserted mention
-      setTimeout(() => {
-        if (textareaRef.current) {
-          const newPosition = textBefore.length + `@${item.title} `.length;
-          textareaRef.current.focus();
-          textareaRef.current.setSelectionRange(newPosition, newPosition);
-        }
-      }, 0);
-    }
-  };
-
   // Remove a mentioned content
   const handleRemoveMentionedContent = (id: string) => {
     setMentionedContent(mentionedContent.filter(mention => mention.id !== id));
@@ -389,12 +605,12 @@ const CreatePostPage = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-4">
-        <div className="flex gap-3">
+        <div className="flex gap-3" ref={composerRef}>
           <Avatar className="w-10 h-10 flex-shrink-0">
             <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
             <AvatarFallback>DJ</AvatarFallback>
           </Avatar>
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 space-y-2" ref={textareaDivRef}>
             <Button
               variant="outline"
               size="sm"
@@ -422,48 +638,28 @@ const CreatePostPage = () => {
               rows={1}
             />
             
-            {/* Display uploaded images */}
-            {uploadedImages.length > 0 && (
-              <div className="grid grid-cols-2 gap-2 pt-2">
-                {uploadedImages.map((img) => (
-                  <div key={img.id} className="relative group">
-                    <img
-                      src={img.url}
-                      alt=""
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-1 right-1 h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => removeImage(img.id)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
+            {/* Media uploader component */}
+            {showMediaUploader && (
+              <MediaUploader 
+                mediaItems={uploadedImages}
+                onChange={setUploadedImages}
+                maxItems={10}
+                previewSize="lg"
+                ref={mediaUploaderRef}
+              />
             )}
             
             {/* Display mentioned content */}
             {mentionedContent.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {mentionedContent.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-1 bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"
-                  >
-                    <span>@{item.title}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 rounded-full hover:bg-primary/20"
-                      onClick={() => handleRemoveMentionedContent(item.id)}
-                    >
-                      <X className="h-2 w-2" />
-                    </Button>
-                  </div>
-                ))}
+              <div className="space-y-2 mt-2">
+                {/* Then show rich previews for content types */}
+                <div className="space-y-2">
+                  {mentionedContent
+                    .filter(item => item.type !== 'member')
+                    .map(item => (
+                      <MentionPreview key={item.id} item={item} onRemove={handleRemoveMentionedContent} />
+                    ))}
+                </div>
               </div>
             )}
           </div>
@@ -474,29 +670,21 @@ const CreatePostPage = () => {
 
       <div className="flex justify-between p-3 shrink-0 bg-background">
         <div className="flex gap-4">
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept="image/*"
-            multiple
-            onChange={handleImageUpload}
-          />
           <Button
             variant="ghost"
             size="icon"
             className="h-9 w-9 rounded-full"
-            onClick={handleImageClick}
+            onClick={(e) => toggleMediaUploader(e)}
           >
-            <Image className="h-5 w-5 text-emerald-500" />
+            <Image className="h-5 w-5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             className="h-9 w-9 rounded-full"
-            onClick={handleMentionClick}
+            onClick={(e) => handleMentionClick(e)}
           >
-            <AtSign className="h-5 w-5 text-blue-500" />
+            <AtSign className="h-5 w-5" />
           </Button>
           <Button
             variant="ghost"
@@ -504,19 +692,36 @@ const CreatePostPage = () => {
             className="h-9 w-9 rounded-full"
             onClick={handleAIClick}
           >
-            <Sparkles className="h-5 w-5 text-purple-500" />
+            <Sparkles className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 rounded-full"
+          >
+            <FileText className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 rounded-full"
+          >
+            <Link className="h-5 w-5" />
           </Button>
         </div>
-        
-        <Badge
-          variant="outline"
-          className="flex items-center gap-1 h-7 px-3 rounded-full text-xs font-normal"
-        >
-          <Globe className="h-3 w-3" />
-          <span>Public</span>
-        </Badge>
       </div>
 
+      {/* Custom mention dropdown */}
+      <MentionBottomSheet
+        isOpen={isMentionOpen}
+        onClose={() => setIsMentionOpen(false)}
+        search={mentionSearch}
+        onSearchChange={setMentionSearch}
+        mentions={filteredMentions}
+        onSelect={handleSelectMention}
+      />
+
+      {/* Other bottom sheets and modals */}
       <CircleBottomSheet
         isOpen={isCircleOpen}
         onClose={() => setIsCircleOpen(false)}
@@ -524,83 +729,17 @@ const CreatePostPage = () => {
         onSelect={setSelectedCircle}
       />
       
-      {isMentionOpen && (
-        <div className="fixed inset-x-0 bottom-16 mx-0 sm:mx-4 bg-background border rounded-lg shadow-lg z-50" style={{ maxHeight: '40vh' }}>
-          <div className="flex justify-between items-center p-3 border-b">
-            <div className="text-sm font-medium">Mention</div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-6 w-6" 
-              onClick={() => setIsMentionOpen(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <div className="p-3 border-b">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search for lessons, courses, etc."
-                className="pl-8"
-                value={mentionSearch}
-                onChange={(e) => setMentionSearch(e.target.value)}
-              />
-            </div>
-          </div>
-          
-          <div className="overflow-y-auto" style={{ maxHeight: 'calc(40vh - 110px)' }}>
-            {filteredMentions.length === 0 ? (
-              <div className="p-4 text-center text-muted-foreground">
-                No results found
-              </div>
-            ) : (
-              filteredMentions.map((item) => (
-                <div 
-                  key={item.id} 
-                  className="flex items-center gap-3 p-3 hover:bg-muted cursor-pointer transition-colors"
-                  onClick={() => {
-                    handleSelectMention(item);
-                    setIsMentionOpen(false);
-                  }}
-                >
-                  {item.image ? (
-                    <div className="w-10 h-10 rounded overflow-hidden bg-muted flex-shrink-0">
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                    </div>
-                  ) : (
-                    <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <span className="text-primary font-medium">{item.type[0].toUpperCase()}</span>
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{item.title}</div>
-                    {item.subtitle && (
-                      <div className="text-xs text-muted-foreground truncate">{item.subtitle}</div>
-                    )}
-                  </div>
-                  <div className="text-xs px-2 py-1 rounded-full bg-muted capitalize">
-                    {item.type}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-      
       <AIBottomSheet
         isOpen={isAIOpen}
         onClose={() => setIsAIOpen(false)}
         mode="post"
-        aiGeneratedContent={aiGeneratedContent}
         aiNotes={aiNotes}
+        onNotesChange={(notes) => setAINotes(notes)}
+        aiGeneratedContent={aiGeneratedContent}
         isGenerating={isGenerating}
         onAISubmit={handleAISubmit}
         onRegenerateContent={handleRegenerateContent}
         onConfirmContent={handleConfirmAIContent}
-        onNotesChange={(notes) => setAINotes(notes)}
       />
     </div>
   );
