@@ -515,20 +515,21 @@ export const FeedPost = ({
           </Drawer>
         </div>}
         
-        <div className="flex gap-3 w-full max-w-full">
+        {/* Author header section */}
+        <div className="flex gap-3 mb-3">
           <Avatar className={cn("flex-shrink-0", isReply ? "w-7 h-7" : "w-8 h-8")}>
             <AvatarImage src={author.avatar} />
             <AvatarFallback>{author.firstName[0]}</AvatarFallback>
           </Avatar>
           
-          <div className="flex-1 w-full max-w-full">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center flex-wrap gap-x-1 gap-y-0.5">
               <span className={cn("font-medium text-foreground", isReply ? "text-xs" : "text-sm")}>
                 {author.firstName} {author.lastName}
               </span>
               <span className={cn("text-muted-foreground whitespace-nowrap", isReply ? "text-[10px]" : "text-xs")}>· {timestamp}</span>
             </div>
-            <div className="flex items-center gap-1 mt-0.5 mb-1">
+            <div className="flex items-center gap-1 mt-0.5">
               {category && (
                 <Badge variant="outline" className={cn("px-1 py-0 bg-accent/50 flex items-center", isReply ? "text-[9px]" : "text-[10px]")}>
                   {getCategoryIcon(category)}
@@ -541,183 +542,101 @@ export const FeedPost = ({
                 </Badge>
               )}
             </div>
-          
-            <div className="w-full max-w-full">
-              <p 
-                ref={contentRef}
-                className={cn(
-                  isReply ? "text-sm" : "text-base", 
-                  "text-foreground py-[10px] my-[3px]",
-                  isContentTruncated && !showFullContent ? 'line-clamp-10 max-h-[300px] overflow-hidden' : ''
-                )}
-              >
-                {/* Display different captions based on reply status unless in detail view */}
-                {!isReply && !isDetail && replies && replies.length > 0 ? (
-                  replies.some(reply => reply.replies && reply.replies.length > 0) ? 
-                    "This post has threaded replies" : 
-                    "This post has replies"
-                ) : (
-                  content
-                )}
-              </p>
-              
-              {isContentTruncated && !showFullContent && !isEmbedded && (
-                <Button 
-                  variant="ghost" 
-                  className="text-primary hover:text-primary/80 p-0 h-auto font-medium mt-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (typeof index === 'number') {
-                      navigate(`/community/post/${index}`);
-                    } else if (originalPost && typeof originalPost.index === 'number') {
-                      navigate(`/community/post/${originalPost.index}`);
-                    }
-                  }}
-                >
-                  See more
-                </Button>
-              )}
-            </div>
-            
-            {media && (
-              <div className="mt-2 rounded-lg overflow-hidden w-full max-w-full">
-                {media.type === "image" ? (
-                  <img
-                    src={media.url}
-                    alt=""
-                    className="w-full h-auto rounded-lg"
-                  />
-                ) : media.type === "video" ? (
-                  <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
-                    <img
-                      src={media.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-12 w-12 rounded-full bg-background/80 hover:bg-background/90"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Handle video playback here
-                          console.log("Play video:", media.url);
-                        }}
-                      >
-                        <Play className="h-6 w-6" />
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <a
-                    href={media.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block border rounded-lg overflow-hidden hover:bg-accent"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {media.thumbnail && (
-                      <img
-                        src={media.thumbnail}
-                        alt=""
-                        className="w-full h-[160px] object-cover"
-                      />
-                    )}
-                    <div className="p-2">
-                      <div className="text-foreground font-medium text-sm">
-                        {media.title}
-                      </div>
-                      <div className="text-muted-foreground text-xs">
-                        {media.domain}
-                      </div>
-                    </div>
-                  </a>
-                )}
-              </div>
-            )}
           </div>
         </div>
         
-        {originalPost && !isEmbedded && (
-          <div className="mt-3 border rounded-lg overflow-hidden w-full max-w-full">
-            <div className="p-3">
-              <div className="flex gap-3 w-full">
-                <Avatar className="w-8 h-8 flex-shrink-0">
-                  <AvatarImage src={originalPost.author.avatar} />
-                  <AvatarFallback>{originalPost.author.firstName[0]}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center flex-wrap gap-x-1 gap-y-0.5">
-                    <span className="font-medium text-foreground text-sm">
-                      {originalPost.author.firstName} {originalPost.author.lastName}
-                    </span>
-                    {originalPost.author.role && (
-                      <Badge variant="default" className="text-[10px] px-1 py-0">
-                        {originalPost.author.role}
-                      </Badge>
-                    )}
-                    <span className="text-muted-foreground text-xs whitespace-nowrap">· {originalPost.timestamp}</span>
-                  </div>
-                  <p className="mt-0.5 text-base text-foreground">{originalPost.content}</p>
-                  {originalPost.media && (
-                    <div className="mt-2 rounded-lg overflow-hidden">
-                      {originalPost.media.type === "image" ? (
-                        <img
-                          src={originalPost.media.url}
-                          alt=""
-                          className="w-full h-auto rounded-lg"
-                        />
-                      ) : originalPost.media.type === "video" ? (
-                        <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
-                          <img
-                            src={originalPost.media.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-10 w-10 rounded-full bg-background/80 hover:bg-background/90"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                // Handle video playback here
-                                console.log("Play video:", originalPost.media?.url);
-                              }}
-                            >
-                              <Play className="h-5 w-5" />
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <a
-                          href={originalPost.media.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block border rounded-lg overflow-hidden hover:bg-accent"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <img
-                            src={originalPost.media.url}
-                            alt=""
-                            className="w-full h-auto"
-                          />
-                          <div className="p-2">
-                            <div className="text-foreground font-medium text-sm">
-                              {originalPost.media.title}
-                            </div>
-                            <div className="text-muted-foreground text-xs">
-                              {originalPost.media.domain}
-                            </div>
-                          </div>
-                        </a>
-                      )}
-                    </div>
-                  )}
+        {/* Post content - now at the container level, not nested */}
+        <p 
+          ref={contentRef}
+          className={cn(
+            isReply ? "text-sm" : "text-base", 
+            "text-foreground py-1.5 my-1",
+            isContentTruncated && !showFullContent ? 'line-clamp-10 max-h-[300px] overflow-hidden' : ''
+          )}
+        >
+          {/* Display different captions based on reply status unless in detail view */}
+          {!isReply && !isDetail && replies && replies.length > 0 ? (
+            replies.some(reply => reply.replies && reply.replies.length > 0) ? 
+              "This post has threaded replies" : 
+              "This post has replies"
+          ) : (
+            content
+          )}
+        </p>
+        
+        {isContentTruncated && !showFullContent && !isEmbedded && (
+          <Button 
+            variant="ghost" 
+            className="text-primary hover:text-primary/80 p-0 h-auto font-medium mt-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (typeof index === 'number') {
+                navigate(`/community/post/${index}`);
+              } else if (originalPost && typeof originalPost.index === 'number') {
+                navigate(`/community/post/${originalPost.index}`);
+              }
+            }}
+          >
+            See more
+          </Button>
+        )}
+        
+        {/* Media content - now at the container level, not nested */}
+        {media && (
+          <div className="mt-2 rounded-lg overflow-hidden">
+            {media.type === "image" ? (
+              <img
+                src={media.url}
+                alt=""
+                className="w-full h-auto rounded-lg"
+              />
+            ) : media.type === "video" ? (
+              <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
+                <img
+                  src={media.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-12 w-12 rounded-full bg-background/80 hover:bg-background/90"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Handle video playback here
+                      console.log("Play video:", media.url);
+                    }}
+                  >
+                    <Play className="h-6 w-6" />
+                  </Button>
                 </div>
               </div>
-            </div>
+            ) : (
+              <a
+                href={media.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block border rounded-lg overflow-hidden hover:bg-accent"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {media.thumbnail && (
+                  <img
+                    src={media.thumbnail}
+                    alt=""
+                    className="w-full h-[160px] object-cover"
+                  />
+                )}
+                <div className="p-2">
+                  <div className="text-foreground font-medium text-sm">
+                    {media.title}
+                  </div>
+                  <div className="text-muted-foreground text-xs">
+                    {media.domain}
+                  </div>
+                </div>
+              </a>
+            )}
           </div>
         )}
       </div>
