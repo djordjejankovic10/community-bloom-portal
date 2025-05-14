@@ -288,6 +288,11 @@ As a mobile app user, I want to view comments on posts so I can follow community
   - For many comments, show "View all comments" button initially with limited preview
   - Infinite scroll for loading older comments with loading indicator
   - Reply threads show proper indentation to visualize conversation hierarchy
+    - Show only 3 immediate replies by default for each comment
+    - Display a "Show replies" button below the third reply when more replies exist
+    - Button shows count of remaining replies (e.g., "Show 5 more replies")
+    - Loading indicator appears when fetching additional replies
+    - Once expanded, all replies in that thread remain visible
   - Empty state when post has no comments with appropriate message
   - Proper handling of media attachments in comments (images, videos, files)
   - Long-press on comment shows options menu (react, reply, copy text, report)
@@ -645,6 +650,7 @@ As a mobile app user, I want to attach different types of files to my posts so I
 
 **Technical Requirements Across All Stories:**
 - Implement proper keyboard handling with KeyboardAvoidingView or equivalent
+- Implement native components whenever possible in the first pass of feature development
 - Support insets for notches, dynamic islands, and rounded corners on all devices
 - Support both light and dark mode with appropriate contrast ratios (4.5:1 minimum)
 - Maintain responsive layouts across device sizes (iPhone SE to Max, small Android to tablets)

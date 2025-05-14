@@ -175,14 +175,15 @@ export const PostReplies = ({
   
   // Get background color based on nesting level for visual variety
   const getBubbleColor = (replyIndex: number, nestedLevel: number) => {
-    // Alternate between a few different subtle colors
-    if (nestedLevel === 0) return "bg-accent/20 dark:bg-accent/10";
-    if (nestedLevel === 1) return "bg-accent/40 dark:bg-accent/20";
+    // For light mode, preserve different shades based on nesting level
+    // For dark mode, use consistent #383838 hex color for all bubbles
+    if (nestedLevel === 0) return "bg-secondary/80 dark:[&]:bg-[#383838]";
+    if (nestedLevel === 1) return "bg-secondary/90 dark:[&]:bg-[#383838]";
     
-    // For deeper levels, use index to alternate between colors
+    // For deeper levels in light mode, use index to alternate
     return replyIndex % 2 === 0 
-      ? "bg-accent/30 dark:bg-accent/15" 
-      : "bg-accent/50 dark:bg-accent/25";
+      ? "bg-secondary/70 dark:[&]:bg-[#383838]" 
+      : "bg-secondary dark:[&]:bg-[#383838]";
   };
   
   // Handle reaction for a specific reply
@@ -329,7 +330,7 @@ export const PostReplies = ({
                   level > 0 && "rounded-lg overflow-hidden"
                 )}
               >
-                <Avatar className="w-8 h-8 mt-0.5 flex-shrink-0">
+                <Avatar className="w-8 h-8 mt-0 flex-shrink-0">
                   <AvatarImage src={reply.author.avatar} />
                   <AvatarFallback>{reply.author.firstName[0]}</AvatarFallback>
                 </Avatar>
@@ -337,7 +338,7 @@ export const PostReplies = ({
                 <div className="flex-1">
                   <div className="flex flex-col">
                     <div className={cn(
-                      "rounded-2xl p-3 pb-2",
+                      "rounded-2xl pt-2 pb-2 px-3",
                       getBubbleColor(index, level)
                     )}>
                       <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
@@ -378,7 +379,7 @@ export const PostReplies = ({
                         )}
                       </div>
                       
-                      <div className="text-base text-foreground py-[10px] my-[3px]">{reply.content}</div>
+                      <div className="text-base text-foreground">{reply.content}</div>
                       
                       {/* Reply media - now inside the bubble */}
                       {reply.media && (
@@ -387,10 +388,10 @@ export const PostReplies = ({
                             <img
                               src={reply.media.url}
                               alt=""
-                              className="max-w-[240px] h-auto rounded-lg"
+                              className="w-full h-auto rounded-lg"
                             />
                           ) : reply.media.type === "video" ? (
-                            <div className="relative max-w-[240px] aspect-video bg-muted rounded-lg overflow-hidden">
+                            <div className="relative w-full aspect-video bg-muted rounded-lg overflow-hidden">
                               <img
                                 src={reply.media.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
                                 alt=""
@@ -418,7 +419,7 @@ export const PostReplies = ({
                               href={reply.media.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="block max-w-[240px] border rounded-lg overflow-hidden hover:bg-accent"
+                              className="block w-full border rounded-lg overflow-hidden hover:bg-accent"
                               onClick={(e) => e.stopPropagation()}
                             >
                               {reply.media.thumbnail && (
