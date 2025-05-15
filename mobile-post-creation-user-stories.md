@@ -395,12 +395,14 @@ As a mobile app user, I want to see photos and image content in feed posts so I 
     - Posts can contain up to 6 images total (part of the overall 6 file maximum per post)
 - For posts with both text and photos:
   - Text appears above photos
-  - Same text truncation rules apply (up to 3 lines visible)
+  - Same text truncation rules apply (up to 3 lines visible) with "show more" logic.
+  - "Show more" button appears below the text and triggers full content view.
+  - Full content view displays the entire text
 - Photo handling includes:
   - Progressive loading with low-resolution placeholders
   - Proper handling of portrait vs. landscape orientations
     - Always preserve aspect ratio - Never stretch or distort images
-    - Portrait images (taller than wide) must scale to either 300px maximum height or container width (whichever constraint is hit first), while landscape images (wider than tall) must scale to fit the full container width with height determined by aspect ratio. Test: Compare side-by-side rendering of portrait and landscape images to verify consistent, appropriate scaling.
+    - Portrait images (taller than wide) must scale to either 600px maximum height or container width (whichever constraint is hit first), while landscape images (wider than tall) must scale to fit the full container width with height determined by aspect ratio. Test: Compare side-by-side rendering of portrait and landscape images to verify consistent, appropriate scaling.
     - All images must be centered horizontally with consistent 8dp rounded corners and proper padding (16dp on sides), with no unnecessary white space or abrupt layout shifts when loading. 
 Test edge cases - Very tall/narrow images, panoramas, etc.
   - Proper error states for failed image loads

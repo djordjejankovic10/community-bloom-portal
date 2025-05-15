@@ -38,11 +38,7 @@ const App = () => (
               <Route path="/community/post/create" element={<CreatePost />} />
               
               {/* All other routes rendered inside MainLayout */}
-              <Route path="/" element={
-                <MainLayout>
-                  <Community />
-                </MainLayout>
-              } />
+              <Route path="/" element={<Index />} />
               <Route path="/library" element={
                 <MainLayout>
                   <LibraryPage />

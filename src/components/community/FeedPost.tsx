@@ -313,17 +313,32 @@ export const FeedPost = ({
     }
   };
   
-  // Check if content is longer than 10 lines
+  // Check if content is longer than the threshold (9 lines for text-only posts, 3 lines for posts with media)
   useEffect(() => {
-    if (contentRef.current) {
-      const lineHeight = parseInt(window.getComputedStyle(contentRef.current).lineHeight);
-      const height = contentRef.current.scrollHeight;
-      const lines = Math.floor(height / (lineHeight || 20)); // fallback to 20px if lineHeight is not available
-      
-      // Only truncate if not in detail view
-      setIsContentTruncated(!isEmbedded && !isDetail && lines > 10);
-    }
-  }, [content, isEmbedded, isDetail]);
+    // Use a short timeout to ensure the content has been rendered and measured correctly
+    const timer = setTimeout(() => {
+      if (contentRef.current) {
+        const styles = window.getComputedStyle(contentRef.current);
+        const lineHeight = parseInt(styles.lineHeight) || 20; // fallback to 20px if lineHeight is not available
+        const height = contentRef.current.scrollHeight;
+        const lines = Math.floor(height / lineHeight);
+        
+        // Different truncation rules based on whether post has media
+        const lineThreshold = media ? 3 : 9;
+        
+        // Only truncate if not in detail view and content exceeds the threshold
+        const shouldTruncate = !isEmbedded && !isDetail && lines > lineThreshold;
+        setIsContentTruncated(shouldTruncate);
+        
+        // For debugging
+        console.log(`Post content: ${content.substring(0, 30)}...`);
+        console.log(`Lines detected: ${lines}, Threshold: ${lineThreshold}, Should truncate: ${shouldTruncate}`);
+        console.log(`Has media: ${!!media}, Content height: ${height}px, Line height: ${lineHeight}px`);
+      }
+    }, 100); // Short delay to ensure content is rendered
+    
+    return () => clearTimeout(timer);
+  }, [content, isEmbedded, isDetail, media]);
 
   const handleClick = () => {
     // Skip navigation for embedded posts only
@@ -679,7 +694,8 @@ export const FeedPost = ({
           className={cn(
             isReply ? "text-sm" : "text-base", 
             "text-foreground py-1.5 my-1",
-            isContentTruncated && !showFullContent ? 'line-clamp-10 max-h-[300px] overflow-hidden' : ''
+            isContentTruncated && !showFullContent ? 
+              (media ? 'line-clamp-3 max-h-[4.5em] overflow-hidden' : 'line-clamp-9 max-h-[13.5em] overflow-hidden') : ''
           )}
         >
           {/* Display different captions based on reply status unless in detail view */}
@@ -693,20 +709,18 @@ export const FeedPost = ({
         </p>
         
         {isContentTruncated && !showFullContent && !isEmbedded && (
-          <Button 
-            variant="ghost" 
-            className="text-primary hover:text-primary/80 p-0 h-auto font-medium mt-1"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (typeof index === 'number') {
-                navigate(`/community/post/${index}`);
-              } else if (originalPost && typeof originalPost.index === 'number') {
-                navigate(`/community/post/${originalPost.index}`);
-              }
-            }}
-          >
-            See more
-          </Button>
+          <div className="flex justify-end w-full">
+            <Button 
+              variant="ghost" 
+              className="text-primary hover:text-primary/80 p-0 h-auto font-medium mt-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowFullContent(true);
+              }}
+            >
+              Show more
+            </Button>
+          </div>
         )}
         
         {/* Media content - now at the container level, not nested */}

@@ -28,6 +28,49 @@ const getCategoryIconName = (category: string): string => {
 };
 
 export const MOCK_POSTS = [
+  // Text-only post with long content to demonstrate the 9-line truncation rule
+  {
+    index: 14,
+    category: "weight-training",
+    author: {
+      firstName: "David",
+      lastName: "Rodriguez",
+      handle: "davidfit",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop"
+    },
+    content: `LINE 1: This text-only post demonstrates the 9-line truncation rule.
+
+LINE 2: You should see exactly 9 lines before the "Show more" button appears.
+
+LINE 3: Each numbered line helps us verify the truncation is working correctly.
+
+LINE 4: The text should be cut off after the 9th line of content.
+
+LINE 5: We're using both line-clamp CSS and max-height to ensure proper truncation.
+
+LINE 6: This line should still be visible before truncation occurs.
+
+LINE 7: Only two more lines will be visible after this one.
+
+LINE 8: This is the second-to-last visible line before truncation.
+
+LINE 9: This is the last visible line before the content gets truncated.
+
+LINE 10: This line should NOT be visible until "Show more" is clicked.
+
+LINE 11: This line should also be hidden until expanded.
+
+LINE 12: The "Show more" button should appear after line 9, not after this line.
+
+LINE 13: When you click "Show more", all of these lines will become visible.
+
+LINE 14: Thanks for testing the text truncation feature!`,
+    timestamp: "15m",
+    metrics: {
+      likes: 45,
+      comments: 8
+    }
+  },
   // Example post with Instagram story-sized image (9:16 aspect ratio)
   {
     index: 13,
