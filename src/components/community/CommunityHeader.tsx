@@ -45,10 +45,10 @@ export const CommunityHeader = () => {
   return (
     <>
       <header className="sticky top-0 bg-background border-b border-border z-50">
-        <div className="flex justify-between items-center px-2 py-2">
+        <div className="flex justify-between items-center px-3 py-2">
           <div className="flex items-center">
             <CommunityMenu />
-            <div className="flex items-center gap-2 ml-1">
+            <div className="flex items-center gap-2 ml-2">
               <div className="rounded-lg overflow-hidden w-6 h-6 border border-primary flex-shrink-0">
                 <img 
                   src="https://images.unsplash.com/photo-1493690283958-32df2c86326e?w=400&h=400&fit=crop" 
@@ -65,32 +65,32 @@ export const CommunityHeader = () => {
               </button>
             </div>
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-3 items-center">
             <button 
-              className="p-1 text-primary hover:text-primary/80 transition-colors flex items-center justify-center"
+              className="h-7 w-7 text-primary hover:text-primary/80 transition-colors flex items-center justify-center rounded-full"
               onClick={() => navigate("/search")}
             >
-              <Search className="w-4 h-4" />
+              <Search className="w-5 h-5" />
             </button>
             <button 
-              className="p-1 text-primary hover:text-primary/80 transition-colors relative flex items-center justify-center"
+              className="h-7 w-7 text-primary hover:text-primary/80 transition-colors relative flex items-center justify-center rounded-full"
               onClick={() => navigate("/messages")}
             >
-              <MessageCircle className="w-4 h-4" />
+              <MessageCircle className="w-5 h-5" />
               <NotificationBadge count={4} />
             </button>
             <button 
-              className="p-1 text-primary hover:text-primary/80 transition-colors relative flex items-center justify-center"
+              className="h-7 w-7 text-primary hover:text-primary/80 transition-colors relative flex items-center justify-center rounded-full"
               onClick={() => navigate("/notifications")}
             >
-              <BellIcon className="w-4 h-4" />
+              <BellIcon className="w-5 h-5" />
               <NotificationBadge count={unreadCount} />
             </button>
             <button 
-              className="ml-1"
+              className="h-7 w-7 flex items-center justify-center"
               onClick={() => navigate("/profile")}
             >
-              <Avatar className="h-7 w-7 border-2 border-primary">
+              <Avatar className="h-6 w-6 border-2 border-primary">
                 <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
                 <AvatarFallback>DJ</AvatarFallback>
               </Avatar>

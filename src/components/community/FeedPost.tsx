@@ -14,7 +14,9 @@ import {
   Battery,
   Apple,
   Utensils,
-  ThumbsUp
+  ThumbsUp,
+  Plus,
+  Minus
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -188,6 +190,12 @@ export const FeedPost = ({
   category,
   isReply = false 
 }: PostProps) => {
+  // State for full-screen photo viewer
+  const [isPhotoViewerOpen, setIsPhotoViewerOpen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -442,16 +450,136 @@ export const FeedPost = ({
     };
   }, [isLongPressed]);
 
+  // Handle zoom in/out
+  const handleZoom = (increase: boolean) => {
+    setZoomLevel(prev => {
+      const newZoom = increase ? prev * 1.2 : prev / 1.2;
+      // Limit zoom range between 0.5 and 5
+      return Math.min(Math.max(newZoom, 0.5), 5);
+    });
+  };
+
+  // Handle mouse/touch events for dragging
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    if (zoomLevel <= 1) return; // Only allow dragging when zoomed in
+    
+    setIsDragging(true);
+    
+    // Get current position
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    
+    setStartPosition({ x: clientX - position.x, y: clientY - position.y });
+  };
+
+  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging || zoomLevel <= 1) return;
+    
+    // Get current position
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    
+    setPosition({
+      x: clientX - startPosition.x,
+      y: clientY - startPosition.y
+    });
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Close photo viewer on escape key
+  useEffect(() => {
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isPhotoViewerOpen) {
+        setIsPhotoViewerOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscKey);
+    return () => window.removeEventListener('keydown', handleEscKey);
+  }, [isPhotoViewerOpen]);
+
   return (
     <div className={cn(
       "w-full max-w-full block",
       isEmbedded ? "" : (!isReply && "border-b"),
       pinned && "bg-secondary/30 border-l-2 border-l-primary"
     )}>
+      {/* Full-screen photo viewer */}
+      {isPhotoViewerOpen && media && media.type === "image" && (
+        <div 
+          className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+          onClick={() => setIsPhotoViewerOpen(false)}
+          onMouseDown={handleDragStart}
+          onMouseMove={handleDragMove}
+          onMouseUp={handleDragEnd}
+          onMouseLeave={handleDragEnd}
+          onTouchStart={handleDragStart}
+          onTouchMove={handleDragMove}
+          onTouchEnd={handleDragEnd}
+        >
+          <div className="absolute top-4 right-4 z-10 flex gap-4">
+            {/* Zoom controls */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full bg-black/50 text-white hover:bg-black/70"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleZoom(true);
+              }}
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full bg-black/50 text-white hover:bg-black/70"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleZoom(false);
+              }}
+            >
+              <Minus className="h-6 w-6" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full bg-black/50 text-white hover:bg-black/70"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsPhotoViewerOpen(false);
+              }}
+            >
+              <span className="text-2xl font-bold">×</span>
+            </Button>
+          </div>
+          
+          <img
+            src={media.url}
+            alt=""
+            className="max-h-screen max-w-screen object-contain"
+            style={{
+              transform: `translate(${position.x}px, ${position.y}px) scale(${zoomLevel})`,
+              cursor: zoomLevel > 1 ? 'grab' : 'default',
+              transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+            }}
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image
+          />
+          
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center text-white text-sm">
+            <div className="bg-black/50 px-3 py-1 rounded-full">
+              {Math.round(zoomLevel * 100)}%
+            </div>
+          </div>
+        </div>
+      )}
       <div 
         className={cn(
           "w-full max-w-full", 
-          isEmbedded ? "p-2" : (isReply ? "p-3 pb-1" : "p-4 pb-0"),
+          isEmbedded ? "p-2" : (isReply ? "p-3 pb-1" : "pt-1 px-4 pb-0"),
           !isEmbedded && "hover:bg-accent/10 cursor-pointer",
           "transition-colors relative"
         )}
@@ -550,7 +678,7 @@ export const FeedPost = ({
           ref={contentRef}
           className={cn(
             isReply ? "text-sm" : "text-base", 
-            "text-foreground py-3 my-1",
+            "text-foreground py-1.5 my-1",
             isContentTruncated && !showFullContent ? 'line-clamp-10 max-h-[300px] overflow-hidden' : ''
           )}
         >
@@ -585,11 +713,21 @@ export const FeedPost = ({
         {media && (
           <div className="mt-2 pb-1.5 rounded-lg overflow-hidden">
             {media.type === "image" ? (
-              <img
-                src={media.url}
-                alt=""
-                className="w-full h-auto rounded-lg"
-              />
+              <div className="relative w-full">
+                <img
+                  src={media.url}
+                  alt=""
+                  className="max-h-[600px] w-full rounded-lg object-contain cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Open the full-screen photo viewer
+                    setIsPhotoViewerOpen(true);
+                    // Reset zoom and position when opening
+                    setZoomLevel(1);
+                    setPosition({ x: 0, y: 0 });
+                  }}
+                />
+              </div>
             ) : media.type === "video" ? (
               <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
                 <img

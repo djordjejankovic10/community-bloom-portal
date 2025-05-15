@@ -1,6 +1,6 @@
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Plus, X, Dumbbell, Heart, StretchVertical, Battery, Apple, Utensils, BookOpen } from "lucide-react";
+import { Menu, Plus, X, Dumbbell, Heart, StretchVertical, Battery, Apple, Utensils, BookOpen, Home, Trophy, Users, FileText, Bookmark, Medal } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMenuPreferences, Site } from "@/context/MenuPreferencesContext";
@@ -125,9 +125,10 @@ export const CommunityMenu = () => {
       <SheetClose asChild>
         <Button 
           variant={currentPath === "/community" ? "secondary" : "ghost"} 
-          className="w-full justify-start h-8 text-sm px-2"
+          className="w-full justify-start h-10 text-base gap-2 px-2"
           onClick={() => handleNavigation("/community")}
         >
+          <Home className="h-4 w-4" />
           Feed
         </Button>
       </SheetClose>
@@ -135,9 +136,10 @@ export const CommunityMenu = () => {
       <SheetClose asChild>
         <Button 
           variant={currentPath === "/community/challenges" ? "secondary" : "ghost"} 
-          className="w-full justify-start h-8 text-sm px-2"
+          className="w-full justify-start h-10 text-base gap-2 px-2"
           onClick={() => handleNavigation("/community/challenges")}
         >
+          <Trophy className="h-4 w-4" />
           Challenges
         </Button>
       </SheetClose>
@@ -145,9 +147,10 @@ export const CommunityMenu = () => {
       <SheetClose asChild>
         <Button 
           variant={currentPath === "/community/meetups" ? "secondary" : "ghost"} 
-          className="w-full justify-start h-8 text-sm px-2"
+          className="w-full justify-start h-10 text-base gap-2 px-2"
           onClick={() => handleNavigation("/community/meetups")}
         >
+          <Users className="h-4 w-4" />
           Meetups
         </Button>
       </SheetClose>
@@ -155,9 +158,10 @@ export const CommunityMenu = () => {
       <SheetClose asChild>
         <Button 
           variant={currentPath === "/community/resources" ? "secondary" : "ghost"} 
-          className="w-full justify-start h-8 text-sm px-2"
+          className="w-full justify-start h-10 text-base gap-2 px-2"
           onClick={() => handleNavigation("/community/resources")}
         >
+          <FileText className="h-4 w-4" />
           Resources
         </Button>
       </SheetClose>
@@ -165,9 +169,10 @@ export const CommunityMenu = () => {
       <SheetClose asChild>
         <Button 
           variant={currentPath === "/community/welcome" ? "secondary" : "ghost"} 
-          className="w-full justify-start h-8 text-sm px-2"
+          className="w-full justify-start h-10 text-base gap-2 px-2"
           onClick={() => handleNavigation("/community/welcome")}
         >
+          <Bookmark className="h-4 w-4" />
           Welcome
         </Button>
       </SheetClose>
@@ -175,9 +180,10 @@ export const CommunityMenu = () => {
       <SheetClose asChild>
         <Button 
           variant={currentPath === "/community/leaderboard" ? "secondary" : "ghost"} 
-          className="w-full justify-start h-8 text-sm px-2"
+          className="w-full justify-start h-10 text-base gap-2 px-2"
           onClick={() => handleNavigation("/community/leaderboard")}
         >
+          <Medal className="h-4 w-4" />
           Leaderboard
         </Button>
       </SheetClose>
@@ -185,12 +191,12 @@ export const CommunityMenu = () => {
   );
 
   const renderCirclesMenu = () => (
-    <div className="px-3 py-2 space-y-2">
-      <Separator className="my-2" />
+    <div className="px-3 pt-0 pb-2 space-y-2">
+      <Separator className="mt-0 mb-2" />
       
       {ACCESS_GROUPS.map((group, index) => (
         <div key={index} className="space-y-1">
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-2 py-1">
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide px-2 py-1">
             {group.name}
           </h3>
           
@@ -198,7 +204,7 @@ export const CommunityMenu = () => {
             <SheetClose key={circle.id} asChild>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start h-8 text-sm gap-2 px-2"
+                className="w-full justify-start h-10 text-base gap-2 px-2"
                 onClick={() => handleCircleNavigation(circle.id)}
               >
                 <circle.icon className="h-3.5 w-3.5" />
@@ -311,7 +317,7 @@ export const CommunityMenu = () => {
           {!showSitesList && (
             <div className="flex-shrink-0">
               {/* Header Image */}
-              <div className="h-24 bg-muted relative">
+              <div className="h-48 bg-muted relative">
                 <img
                   src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8"
                   alt="Community header"
@@ -352,8 +358,8 @@ export const CommunityMenu = () => {
               <>
                 {/* Community Info */}
                 <div className="px-3 py-2 space-y-2 border-b">
-                  <h2 className="text-base font-semibold">Community</h2>
-                  <p className="text-xs text-muted-foreground">
+                  <h2 className="text-lg font-semibold">Community</h2>
+                  <p className="text-sm text-muted-foreground">
                     This is a detailed description of our fitness community where members can share their journey, achievements, and support each other.
                   </p>
                   <Button 

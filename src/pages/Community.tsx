@@ -28,6 +28,92 @@ const getCategoryIconName = (category: string): string => {
 };
 
 export const MOCK_POSTS = [
+  // Example post with Instagram story-sized image (9:16 aspect ratio)
+  {
+    index: 13,
+    category: "cardio",
+    author: {
+      firstName: "Sophia",
+      lastName: "Garcia",
+      handle: "sophiafitness",
+      avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop"
+    },
+    content: "INSTAGRAM STORY SIZE (9:16): Just finished my morning run! This image has a 9:16 aspect ratio like an Instagram story. Notice how it's displayed with preserved aspect ratio, maximum height of 600px, and centered horizontally in the container.",
+    timestamp: "5m",
+    metrics: {
+      likes: 42,
+      comments: 5
+    },
+    media: {
+      type: "image" as const,
+      url: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=900&h=1600&fit=crop"
+    }
+  },
+  // Example post with PORTRAIT image (taller than wide)
+  {
+    index: 10,
+    category: "yoga",
+    author: {
+      firstName: "Emma",
+      lastName: "Chen",
+      handle: "emmayoga",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+      verified: true
+    },
+    content: "PORTRAIT IMAGE EXAMPLE: Just finished my morning yoga session! This pose really helps with flexibility and balance. Notice how this portrait image (taller than wide) is displayed with preserved aspect ratio, 600px maximum height, and centered horizontally in the container.",
+    timestamp: "10m",
+    metrics: {
+      likes: 58,
+      comments: 7
+    },
+    media: {
+      type: "image" as const,
+      url: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=600&h=900&fit=crop"
+    }
+  },
+  // Example post with LANDSCAPE image (wider than tall)
+  {
+    index: 11,
+    category: "cardio",
+    author: {
+      firstName: "Jason",
+      lastName: "Miller",
+      handle: "jasonruns",
+      avatar: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop"
+    },
+    content: "LANDSCAPE IMAGE EXAMPLE: Beautiful trail run this morning! This landscape image (wider than tall) spans the full width of the post container with 16dp padding on sides, and its height is proportionally scaled while preserving the aspect ratio.",
+    timestamp: "25m",
+    metrics: {
+      likes: 124,
+      comments: 15
+    },
+    media: {
+      type: "image" as const,
+      url: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=900&h=500&fit=crop"
+    }
+  },
+  // Example post with SQUARE image (1:1 aspect ratio)
+  {
+    index: 12,
+    category: "nutrition",
+    author: {
+      firstName: "Olivia",
+      lastName: "Taylor",
+      handle: "oliviaeats",
+      avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop",
+      role: "admin" as const
+    },
+    content: "SQUARE IMAGE EXAMPLE: Meal prepped for the week! This square image (1:1 aspect ratio) is displayed with preserved aspect ratio, 600px maximum height, and centered horizontally in the container.",
+    timestamp: "1h",
+    metrics: {
+      likes: 210,
+      comments: 32
+    },
+    media: {
+      type: "image" as const,
+      url: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=800&fit=crop"
+    }
+  },
   // Long post example with "See more" button
   {
     index: 0,

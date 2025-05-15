@@ -236,11 +236,10 @@ As a mobile app user, I want to attach videos to my posts to share dynamic visua
 
 **Acceptance Criteria:**
 - Video attachment options clearly visible in composer:
-  - Camera option to record video directly
-  - Gallery option to select existing videos
+  - Add video button to add video
+  - Take video button to record video
 - Video selection interface supports:
-  - Preview thumbnails of videos
-  - Ability to play video previews before posting
+  - Preview thumbnails of videos (always square, center crop) with play button overlay
   - Ability to remove selected videos before posting
 - Video specifications:
   - Support for common formats (MP4, MOV)
@@ -384,8 +383,8 @@ As a mobile app user, I want to see photos and image content in feed posts so I 
 - Posts with photo attachments display properly in the feed:
   - Single photo post:
     - Image displays below text with aspect ratio preserved
-    - Image height limited to 300px maximum in feed view
-    - Image width spans the full post width with 16dp padding on sides
+    - Image height limited to 600px maximum in feed view
+    - Image width spans the full post width with no padding on sides
     - Tapping image opens full-screen photo viewer with zoom capability
     - Full-screen viewer includes swipe or X action for dismissal
   - Multiple photos post:
