@@ -28,6 +28,86 @@ const getCategoryIconName = (category: string): string => {
 };
 
 export const MOCK_POSTS = [
+  // Landscape-only carousel post
+  {
+    index: 16,
+    category: "weight-training",
+    author: {
+      firstName: "Alex",
+      lastName: "Chen",
+      handle: "@alexfitpro",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces&auto=format",
+      role: "founder" as const
+    },
+    content: "LANDSCAPE CAROUSEL EXAMPLE: Check out these workout space photos from my recent gym tour. All images are landscape orientation, so they maintain natural height while respecting maximum height constraints.",
+    timestamp: "3h ago",
+    metrics: {
+      likes: 28,
+      comments: 4
+    },
+    mediaItems: [
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&h=800&fit=crop&auto=format", // Landscape
+        aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+      },
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1200&h=800&fit=crop&auto=format", // Landscape
+        aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+      },
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1576678927484-cc907957088c?w=1200&h=800&fit=crop&auto=format", // Landscape
+        aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+      },
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1534367507873-d2d7e24c797f?w=1200&h=800&fit=crop&auto=format", // Landscape
+        aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+      }
+    ]
+  },
+  // Mixed portrait and landscape images post
+  {
+    index: 15,
+    category: "yoga",
+    author: {
+      firstName: "Jamie",
+      lastName: "Rodriguez",
+      handle: "@jamiefit",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces&auto=format",
+      role: "founder" as const
+    },
+    content: "MIXED PORTRAIT & LANDSCAPE EXAMPLE: Here's a carousel with mixed portrait and landscape photos from my latest fitness photoshoot. The UX maintains consistent styling while respecting each image's aspect ratio. Swipe through to see both orientations.",
+    timestamp: "Just now",
+    metrics: {
+      likes: 42,
+      comments: 7
+    },
+    mediaItems: [
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=800&h=1200&fit=crop&auto=format", // Portrait
+        aspectRatio: 0.66 // 2:3 aspect ratio (portrait)
+      },
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=1200&h=800&fit=crop&auto=format", // Landscape
+        aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+      },
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=1200&h=800&fit=crop&auto=format", // Landscape
+        aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+      },
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=1200&h=800&fit=crop&auto=format", // Landscape
+        aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+      }
+    ]
+  },
   // Text-only post with long content to demonstrate the 9-line truncation rule
   {
     index: 14,
@@ -297,7 +377,8 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
         },
         media: {
           type: "image" as const,
-          url: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400&h=300&fit=crop"
+          url: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=1200&h=800&fit=crop&auto=format", // Landscape
+          aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
         }
       }
     ]
@@ -1001,6 +1082,29 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
       shares: 89,
     },
   },
+  {
+    index: 10,
+    category: "weight-training",
+    author: {
+      firstName: "Emma",
+      lastName: "Rodriguez",
+      handle: "emmafit",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
+      verified: true,
+    },
+    content: "Just finished my vertical pull workout! 💪 Here's my go-to exercise for back development - the proper form is key!",
+    timestamp: "15m",
+    metrics: {
+      likes: 214,
+      comments: 27,
+      shares: 13,
+    },
+    media: {
+      type: "image" as const,
+      url: "https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?w=400&h=1200&fit=crop",
+      aspectRatio: 0.33 // Very tall image (1:3 ratio)
+    },
+  },
 ];
 
 const PINNED_POST = {
@@ -1070,7 +1174,7 @@ const Community = () => {
 
   const renderContent = () => {
     switch (currentPath) {
-      case "/community":
+      case "/community": {
         return (
           <>
             <CreatePost />
@@ -1085,18 +1189,20 @@ const Community = () => {
               </div>
               {sortedPosts.map((post) => (
                 <FeedPost key={post.index} {...post} />
-            ))}
+              ))}
             </div>
           </>
         );
+      }
       case "/community/challenges":
       case "/community/meetups":
-      case "/community/leaderboard":
+      case "/community/leaderboard": {
         return (
           <div className="p-8 text-center text-muted-foreground">
             This is a webview
           </div>
         );
+      }
       default:
         return null;
     }

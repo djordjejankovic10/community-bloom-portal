@@ -13,6 +13,7 @@ export type PostMedia = {
   title?: string;
   domain?: string;
   thumbnail?: string;
+  aspectRatio?: number; // Width divided by height, for tall image detection
 };
 
 export type PostAuthor = {
@@ -30,6 +31,7 @@ export type PostProps = {
   timestamp: string;
   metrics: PostMetrics;
   media?: PostMedia;
+  mediaItems?: PostMedia[]; // Multiple media items for carousel
   replies?: PostProps[];
   index?: number;
   pinned?: boolean;

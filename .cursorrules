@@ -9,4 +9,6 @@ It will primarily be used as a reference point for Native mobile engineers to bu
 # Coding Practices 
 - Document the code thoroughly whenever you work through tasks
     - If at all possible Within that documentation, add user experience (UX) notes that outline what users experience when on that screen or using that code specifically
-- When working on new functionality, create branches and follow standard git protocols since other engineers will be working on this project and we want to mitigate the risk of merge conflicts     
+- When working on new functionality, create branches and follow standard git protocols since other engineers will be working on this project and we want to mitigate the risk of merge conflicts   
+
+dont run local after completing a task.

@@ -228,8 +228,10 @@ As a mobile app user, I want to attach photos and images to my posts to share vi
 - Image upload process:
   - Progress indicators during upload
   - Ability to cancel individual image uploads
-  - Error handling for failed uploads with retry options
   - Support for continuing text composition while images upload
+- Proper error states for failed image loads:
+  - Display a placeholder with retry option when images fail to load, using a light gray background with broken image icon and brief error message
+  - Maintain layout integrity with proper spacing and dimensions matching the expected image size
 
 **User Story: Attach Videos to Posts**
 As a mobile app user, I want to attach videos to my posts to share dynamic visual content.
@@ -339,7 +341,7 @@ As a mobile app user, I want to reply to specific comments so I can engage in th
   - Newly added reply appears immediately in the thread with proper indentation
   - Error handling for failed reply submission
   - Sheet automatically closes after successful submission
-  - Momentarily highlight the newly created reply with a subtle animation (pulsing highling) and haptic feedback
+  - Momentarily highlight the newly created reply with a subtle animation (pulsing highlighting) and haptic feedback
 - Media in replies:
   - Support for attaching images to replies (up to 6 per reply)
   - Preview thumbnails of attached media show in reply composition area
@@ -354,27 +356,6 @@ As a mobile app user, I want to reply to specific comments so I can engage in th
 
 ### Priority 4: Rich Media Experiences
 This priority enhances how users view and interact with different media types in the feed. It includes support for photos, videos, link previews, and pinned content. These features create a more engaging and visual content experience.
-
-**User Story: Filter and Sort Feed Content**
-As a mobile app user, I want to filter and sort posts in my feed to more easily find relevant content.
-
-**Acceptance Criteria:**
-- Feed includes a prominent sort/filter control at the top of the screen:
-  - Sort button shows current sort method with label "Sort by" followed by the active option
-  - Sort control appears as a touch target with proper padding (16dp horizontal, 16dp vertical)
-  - Visual indicator (chevron down icon) shows the control is tappable
-- Tapping the sort/filter control opens a context menu (action sheet) with the following options:
-  - Latest Activity - Shows posts ordered by most recent comments/reactions first (available in home feed)
-  - Popularity - Shows posts ordered by engagement metrics (available in circle/channel feeds)
-  - Newest to oldest - Shows posts ordered by creation date (newest first)
-  - Oldest to newest - Shows posts ordered by creation date (oldest first)
-- Current selection is visually indicated in the action sheet
-- Selecting a different option:
-  - Immediately applies the new sort order with loading indicator
-  - Updates the button label to reflect the current selection
-  - Refreshes the feed content with the new sort order
-  - Maintains sort preference between app sessions
-- User interface provides clear visual feedback during loading after filter change
 
 **User Story: View Photos in Feed Posts**
 As a mobile app user, I want to see photos and image content in feed posts so I can engage with visual content shared by the community.
@@ -403,9 +384,14 @@ As a mobile app user, I want to see photos and image content in feed posts so I 
   - Proper handling of portrait vs. landscape orientations
     - Always preserve aspect ratio - Never stretch or distort images
     - Portrait images (taller than wide) must scale to either 600px maximum height or container width (whichever constraint is hit first), while landscape images (wider than tall) must scale to fit the full container width with height determined by aspect ratio. Test: Compare side-by-side rendering of portrait and landscape images to verify consistent, appropriate scaling.
+    - For carousels with mixed portrait and landscape images, maintain a consistent height for all images if any portrait image (aspect ratio < 1) is present. This approach uses a fixed 600px height with center-cropping for landscape images to maintain visual consistency during swiping.
+    - When all images in a carousel are landscape orientation, maintain natural height with a maximum of 600px.
+    - Extremely tall images (beyond 9:16 aspect ratio or less than 0.5625 ratio) should be center-cropped with a fixed height of 600px to ensure the width is always maximized while maintaining the center focus of the image. This prevents very narrow displays of tall vertical images.
     - All images must be centered horizontally with consistent 8dp rounded corners and proper padding (16dp on sides), with no unnecessary white space or abrupt layout shifts when loading. 
 Test edge cases - Very tall/narrow images, panoramas, etc.
   - Proper error states for failed image loads
+    - Display a placeholder with retry option when images fail to load, using a light gray background with broken image icon and brief error message
+    - Maintain layout integrity with proper spacing and dimensions matching the expected image size
   - Fallback for unsupported image types
   - Proper handling of animated GIFs
 Suggested optimizations
@@ -439,9 +425,7 @@ As a mobile app user, I want to see video content in feed posts so I can engage 
   - Efficient video loading
   - Appropriate video quality based on display size
   - Responsive sizing to fit different screen dimensions
-
-
-====consider splitting this out , but prioritizing other things 
+ 
 
 **User Story: View URL Previews in Posts**
 As a mobile app user, I want to see rich previews of URLs shared in posts to get context without leaving the app.
@@ -501,6 +485,27 @@ As a mobile app user, I want to see important pinned posts at the top of my feed
 
 ### Priority 5: Advanced Content Experiences
 This priority adds specialized content types and more complex post interactions. It focuses on interactive content like polls and announcement posts. These features provide additional engagement mechanisms beyond standard posts.
+
+**User Story: Filter and Sort Feed Content**
+As a mobile app user, I want to filter and sort posts in my feed to more easily find relevant content.
+
+**Acceptance Criteria:**
+- Feed includes a prominent sort/filter control at the top of the screen:
+  - Sort button shows current sort method with label "Sort by" followed by the active option
+  - Sort control appears as a touch target with proper padding (16dp horizontal, 16dp vertical)
+  - Visual indicator (chevron down icon) shows the control is tappable
+- Tapping the sort/filter control opens a context menu (action sheet) with the following options:
+  - Latest Activity - Shows posts ordered by most recent comments/reactions first (available in home feed)
+  - Popularity - Shows posts ordered by engagement metrics (available in circle/channel feeds)
+  - Newest to oldest - Shows posts ordered by creation date (newest first)
+  - Oldest to newest - Shows posts ordered by creation date (oldest first)
+- Current selection is visually indicated in the action sheet
+- Selecting a different option:
+  - Immediately applies the new sort order with loading indicator
+  - Updates the button label to reflect the current selection
+  - Refreshes the feed content with the new sort order
+  - Maintains sort preference between app sessions
+- User interface provides clear visual feedback during loading after filter change
 
 **User Story: View and Interact with Poll Posts**
 As a mobile app user, I want to view and participate in polls so I can share my opinion and see community responses.

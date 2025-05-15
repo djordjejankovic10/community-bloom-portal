@@ -174,12 +174,23 @@ const generateReactors = (count: number): ReactionUser[] => {
   return shuffled.slice(0, Math.min(count, users.length));
 };
 
+// Add a new type for multi-image support
+type MediaItem = {
+  type: "image" | "video" | "link";
+  url: string;
+  thumbnail?: string;
+  title?: string;
+  domain?: string;
+  aspectRatio?: number;
+};
+
 export const FeedPost = ({ 
   author, 
   content, 
   timestamp, 
   metrics: initialMetrics, 
   media, 
+  mediaItems,
   replies, 
   index, 
   pinned, 
@@ -219,6 +230,9 @@ export const FeedPost = ({
   const [reactionMenuPosition, setReactionMenuPosition] = useState({ x: 0, y: 0 });
   const reactionButtonRef = useRef<HTMLButtonElement>(null);
   const reactionMenuRef = useRef<HTMLDivElement>(null);
+  
+  // State for multi-image carousel
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   
   // Calculate total reactions
   const totalReactions = Object.values(reactionsCount).reduce((sum, count) => sum + count, 0);
@@ -516,14 +530,59 @@ export const FeedPost = ({
     return () => window.removeEventListener('keydown', handleEscKey);
   }, [isPhotoViewerOpen]);
 
+  // Add event listener to detect horizontal scroll and update active image index
+  useEffect(() => {
+    if (!mediaItems || mediaItems.length <= 1) return;
+    
+    const handleScroll = (e: Event) => {
+      const container = e.target as HTMLElement;
+      const scrollLeft = container.scrollLeft;
+      const slideWidth = container.offsetWidth;
+      
+      // Calculate the nearest slide index based on scroll position
+      const newIndex = Math.round(scrollLeft / slideWidth);
+      
+      // Only update if actually changing to avoid unnecessary re-renders
+      if (newIndex !== activeImageIndex && newIndex >= 0 && newIndex < mediaItems.length) {
+        setActiveImageIndex(newIndex);
+      }
+    };
+    
+    const container = document.querySelector('.snap-x');
+    if (container) {
+      // Use scrollend event with fallback to scroll
+      if ('onscrollend' in window) {
+        container.addEventListener('scrollend', handleScroll);
+      } else {
+        // For browsers that don't support scrollend
+        let scrollTimer: ReturnType<typeof setTimeout>;
+        const throttledScrollHandler = (e: Event) => {
+          clearTimeout(scrollTimer);
+          scrollTimer = setTimeout(() => handleScroll(e), 100);
+        };
+        container.addEventListener('scroll', throttledScrollHandler);
+        
+        return () => {
+          container.removeEventListener('scroll', throttledScrollHandler);
+        };
+      }
+      
+      return () => {
+        if ('onscrollend' in window) {
+          container.removeEventListener('scrollend', handleScroll);
+        }
+      };
+    }
+  }, [mediaItems, activeImageIndex]);
+
   return (
     <div className={cn(
       "w-full max-w-full block",
       isEmbedded ? "" : (!isReply && "border-b"),
       pinned && "bg-secondary/30 border-l-2 border-l-primary"
     )}>
-      {/* Full-screen photo viewer */}
-      {isPhotoViewerOpen && media && media.type === "image" && (
+      {/* Full-screen photo viewer - updated to work with both media and mediaItems */}
+      {isPhotoViewerOpen && (
         <div 
           className="fixed inset-0 z-50 bg-black flex items-center justify-center"
           onClick={() => setIsPhotoViewerOpen(false)}
@@ -536,29 +595,7 @@ export const FeedPost = ({
           onTouchEnd={handleDragEnd}
         >
           <div className="absolute top-4 right-4 z-10 flex gap-4">
-            {/* Zoom controls */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="rounded-full bg-black/50 text-white hover:bg-black/70"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleZoom(true);
-              }}
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="rounded-full bg-black/50 text-white hover:bg-black/70"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleZoom(false);
-              }}
-            >
-              <Minus className="h-6 w-6" />
-            </Button>
+            {/* Remove the Plus and Minus zoom buttons, keep only the close button */}
             <Button 
               variant="ghost" 
               size="icon" 
@@ -573,7 +610,7 @@ export const FeedPost = ({
           </div>
           
           <img
-            src={media.url}
+            src={mediaItems ? mediaItems[activeImageIndex].url : (media?.url || '')}
             alt=""
             className="max-h-screen max-w-screen object-contain"
             style={{
@@ -582,7 +619,38 @@ export const FeedPost = ({
               transition: isDragging ? 'none' : 'transform 0.2s ease-out'
             }}
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image
+            // Add double-click to zoom instead of buttons
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              if (zoomLevel > 1) {
+                // Reset zoom if already zoomed in
+                setZoomLevel(1);
+                setPosition({ x: 0, y: 0 });
+              } else {
+                // Zoom to 2x if not zoomed in
+                setZoomLevel(2);
+              }
+            }}
           />
+          
+          {/* Add image navigation for multiple images */}
+          {mediaItems && mediaItems.length > 1 && (
+            <div className="absolute bottom-16 left-0 right-0 flex justify-center gap-3">
+              {mediaItems.map((_, idx) => (
+                <button 
+                  key={idx}
+                  className={cn(
+                    "w-3 h-3 rounded-full",
+                    idx === activeImageIndex ? "bg-white" : "bg-white/40 hover:bg-white/70"
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIndex(idx);
+                  }}
+                />
+              ))}
+            </div>
+          )}
           
           <div className="absolute bottom-4 left-0 right-0 flex justify-center text-white text-sm">
             <div className="bg-black/50 px-3 py-1 rounded-full">
@@ -695,7 +763,7 @@ export const FeedPost = ({
             isReply ? "text-sm" : "text-base", 
             "text-foreground py-1.5 my-1",
             isContentTruncated && !showFullContent ? 
-              (media ? 'line-clamp-3 max-h-[4.5em] overflow-hidden' : 'line-clamp-9 max-h-[13.5em] overflow-hidden') : ''
+              (media || mediaItems ? 'line-clamp-3 max-h-[4.5em] overflow-hidden' : 'line-clamp-9 max-h-[13.5em] overflow-hidden') : ''
           )}
         >
           {/* Display different captions based on reply status unless in detail view */}
@@ -723,15 +791,23 @@ export const FeedPost = ({
           </div>
         )}
         
-        {/* Media content - now at the container level, not nested */}
-        {media && (
+        {/* MEDIA SECTION - Updated to handle both single and multiple media items */}
+        {/* Single Media Item */}
+        {media && !mediaItems && (
           <div className="mt-2 pb-1.5 rounded-lg overflow-hidden">
             {media.type === "image" ? (
               <div className="relative w-full">
                 <img
                   src={media.url}
                   alt=""
-                  className="max-h-[600px] w-full rounded-lg object-contain cursor-pointer"
+                  className={cn(
+                    "w-full rounded-lg cursor-pointer",
+                    // For portrait images (aspect ratio < 1) or very tall images (< 0.5625)
+                    // use a fixed height with object-cover to maintain consistency
+                    media.aspectRatio && media.aspectRatio < 1
+                      ? "h-[600px] object-cover object-center" 
+                      : "max-h-[600px] object-contain"
+                  )}
                   onClick={(e) => {
                     e.stopPropagation();
                     // Open the full-screen photo viewer
@@ -788,6 +864,104 @@ export const FeedPost = ({
                   </div>
                 </div>
               </a>
+            )}
+          </div>
+        )}
+        
+        {/* Multiple Media Items - Carousel */}
+        {mediaItems && mediaItems.length > 0 && (
+          <div className="mt-2 pb-3 rounded-lg overflow-hidden">
+            {/* Horizontal scroll container */}
+            <div 
+              className="relative w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+              style={{ scrollBehavior: 'smooth' }}
+              onScroll={(e) => {
+                if (mediaItems.length <= 1) return;
+                
+                // This immediate scroll handler (as opposed to the useEffect one)
+                // updates the dots visually while scrolling for better feedback
+                const container = e.currentTarget;
+                const scrollLeft = container.scrollLeft;
+                const slideWidth = container.offsetWidth;
+                const newIndex = Math.round(scrollLeft / slideWidth);
+                
+                if (newIndex !== activeImageIndex && newIndex >= 0 && newIndex < mediaItems.length) {
+                  setActiveImageIndex(newIndex);
+                }
+              }}
+            >
+              {/* Container for all images placed side by side */}
+              <div className="flex">
+                {mediaItems.map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    className="flex-shrink-0 w-full min-w-full snap-center px-1 first:pl-0 last:pr-0"
+                    ref={idx === activeImageIndex ? (el) => {
+                      // When active image index changes, scroll to that image
+                      if (el) {
+                        const container = el.parentElement?.parentElement;
+                        if (container) {
+                          container.scrollLeft = (el as HTMLElement).offsetLeft - 4; // Account for padding
+                        }
+                      }
+                    } : undefined}
+                  >
+                    <img
+                      src={item.url}
+                      alt=""
+                      className={cn(
+                        "w-full rounded-lg cursor-pointer",
+                        // Check if any image in the carousel is at least 600px high (portrait)
+                        // If so, use a fixed height of 600px for ALL images with object-cover
+                        mediaItems.some(mediaItem => mediaItem.aspectRatio && mediaItem.aspectRatio < 1) 
+                          ? "h-[600px] object-cover object-center" 
+                          : "max-h-[600px] object-contain"
+                      )}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveImageIndex(idx);
+                        setIsPhotoViewerOpen(true);
+                        setZoomLevel(1);
+                        setPosition({ x: 0, y: 0 });
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Image counter in top-right */}
+              {mediaItems.length > 1 && (
+                <div className="absolute top-2 right-2 bg-black/60 text-white text-xs font-medium rounded-full px-2 py-0.5 z-10">
+                  {activeImageIndex + 1}/{mediaItems.length}
+                </div>
+              )}
+            </div>
+            
+            {/* Pagination dots - below the image */}
+            {mediaItems.length > 1 && (
+              <div className="flex justify-center gap-1.5 mt-2">
+                {mediaItems.map((_, idx) => (
+                  <button 
+                    key={idx}
+                    className={cn(
+                      "w-2 h-2 rounded-full transition-colors",
+                      idx === activeImageIndex 
+                        ? "bg-primary" 
+                        : "bg-muted hover:bg-primary/50"
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex(idx);
+                      // Find the relevant slide and scroll to it
+                      const container = document.querySelector('.snap-x');
+                      const slides = container?.querySelectorAll('.snap-center');
+                      if (container && slides && slides[idx]) {
+                        container.scrollLeft = (slides[idx] as HTMLElement).offsetLeft;
+                      }
+                    }}
+                  />
+                ))}
+              </div>
             )}
           </div>
         )}
@@ -1044,4 +1218,49 @@ export const FeedPost = ({
       {!isEmbedded && !isReply && <Separator className="w-full max-w-full" />}
     </div>
   );
+};
+
+// Example mixed orientation post to demonstrate the feature
+export const MixedOrientationPostExample = () => {
+  const mixedMediaPost: PostProps = {
+    author: {
+      firstName: "Jamie",
+      lastName: "Rodriguez",
+      handle: "@jamiefit",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces&auto=format",
+      role: "founder"
+    },
+    content: "Here's a mix of portrait and landscape photos from my latest fitness photoshoot. Notice how the carousel maintains consistent sizing while respecting each image's aspect ratio.",
+    timestamp: "2h ago",
+    metrics: {
+      likes: 42,
+      comments: 7
+    },
+    mediaItems: [
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=800&h=1200&fit=crop&auto=format", // Portrait
+        aspectRatio: 0.66 // 2:3 aspect ratio (portrait)
+      },
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200&h=800&fit=crop&auto=format", // Landscape
+        aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+      },
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=1200&fit=crop&auto=format", // Portrait
+        aspectRatio: 0.66 // 2:3 aspect ratio (portrait)
+      },
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=1200&h=800&fit=crop&auto=format", // Landscape
+        aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+      }
+    ],
+    index: 999, // Example post index
+    category: "yoga"
+  };
+  
+  return <FeedPost {...mixedMediaPost} />;
 };
