@@ -142,7 +142,7 @@ export const PostReplies = ({
   const navigate = useNavigate();
   
   // Maximum nesting level to avoid excessive indentation
-  const MAX_LEVEL = 5;
+  const MAX_LEVEL = 3;
   const actualLevel = Math.min(level, MAX_LEVEL);
   
   // Calculate indentation based on level

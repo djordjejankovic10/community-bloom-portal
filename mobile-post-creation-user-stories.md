@@ -19,7 +19,7 @@ As a mobile app user, I want to see a basic feed of posts so I can browse commun
     - Appropriate padding around text content (16dp horizontal, 12dp vertical)
     - For text-only posts with no media:
       - Post card can expand to show full content when tapped
-      - Text appears with 16px font size, line height 22px
+      - Text appears with 16px font size, line height 24px
       - Text uses system font with regular weight
 - Feed has a clear empty state when no posts are available (need design)
 - Basic pull-to-refresh functionality is implemented
@@ -31,18 +31,27 @@ As a mobile app user, I want to see engagement metrics on posts so I can underst
 - Each post displays post engagement metrics in a footer section below post content:
   - Reaction count showing total number of reactions for each type (e.g., 👍❤️😂), with the order of highest to lowest count left to right.
   - Comments count with comment icon
-  - Tapping on comments count navigates to post details view focused on comments
   - Metrics use appropriate condensed format for large numbers (e.g., "1.2K" instead of "1,234")
-  - Tapping on reaction count opens a reaction details bottom sheet showing:
-    - Tabs for filtering by reaction type ("All", and individual reaction types, sorted highest to lowest count left to right)
-    - List of users who reacted with their profile pictures, names, reaction emoji and membership tags (admin, founder etc)
-    - Ability to load more reactions (lazy loading) when scrolling
-    - Sheet is dismissed by pulling it down or tapping outside of it.
+  - Tapping on reaction count opens a reaction details bottom sheet
 - Metrics are positioned in a clear footer section that separates them from post content
 - Metrics use appropriate text styles (smaller than post text, secondary color)
 - Metrics footer provides visual spacing between content and interaction buttons below
 - Zero counts never display (do not show "0" rather hide reaction/comment metric)
 - Highly engaging posts with many reactions/comments don't cause visual issues
+
+**User Story: View Reaction Details**
+As a mobile app user, I want to see who reacted to a post so I can understand who engaged with the content.
+
+**Acceptance Criteria:**
+- Tapping on reaction count opens a reaction details bottom sheet showing:
+  - Tabs for filtering by reaction type ("All", and individual reaction types, sorted highest to lowest count left to right)
+  - If there is no reaction (count = 0), hide from the filter view
+  - List of users who reacted with their profile pictures, names, reaction emoji and membership tags (admin, founder etc)
+  - Ability to load more reactions (lazy loading) when scrolling
+  - Sheet is dismissed by pulling it down or tapping outside of it
+- Bottom sheet has appropriate styling and animation when appearing/disappearing
+- Loading states while fetching reaction data
+- Error handling for failed data fetching with retry option
 
 **User Story: View Post Interaction Elements**
 As a mobile app user, I want to easily interact with posts through intuitive actions.
@@ -55,19 +64,14 @@ As a mobile app user, I want to easily interact with posts through intuitive act
     - Long-press opens reaction selection menu showing all available reaction options
     - Reaction options appear in a horizontally scrollable bar with animation
     - Each reaction option shows emoji with tooltip on long-press showing reaction name
-    - Available reactions include:
+    - Available reactions include (note, emojis and names are fully customizable by Heroes, but theres never more than 6 total):
       - Inspired (👍) - Default reaction, also serves as "Like"
       - Love (❤️)
       - Haha (😂)
       - Wow (😮)
       - Sad (😢)
       - Angry (😡)
-    - Each reaction is visually distinct with appropriate emoji and color
-    - Tapping any reaction applies it immediately (Metrics update in real-time when user interactions occur)
-  - Comment button that:
-    - Shows comment icon with "Comment" text label
-    - Tapping opens post details view and focuses on comment input field (reply comment story)
-    - Includes proper spacing between buttons for touch targets
+    - Tapping any reaction applies it immediately (Engagement metrics update in real-time when user interactions occur)
   - All buttons have appropriate touch states (highlight/press effects)
 
 **User Story: Access Post Options Menu**
@@ -82,17 +86,17 @@ As a mobile app user, I want to access additional post options so I can manage a
   - For post authors:
     - Edit post - Opens post editing interface with original content pre-populated (separate user story, make non functional for now until composer is built)
     - Delete post - Shows confirmation dialog before deletion with clear warning about permanence
+    - When a user attempts to delete a post, a warning dialog should appear stating: "This action is permanent and cannot be reversed - all content, comments, and reactions associated with this post will be permanently deleted," requiring the user to explicitly tap "Delete" to confirm or "Cancel" to abort the deletion.
     - Deleting posts is allowed for post authors, channel owners, group leaders/founders, and community moderators/admins.
   - For moderators/admins:
     - Pin/unpin post - (separate user story, make non functional for now until pinning is built)
-- Menu appearance:
+- Menu appearance (note-using contextual menu is OK if that saves us time):
   - Slides up as a bottom sheet on mobile devices
   - Uses appropriate animations for opening/closing (250ms duration)
   - Has proper spacing between options (min 48dp height per item)
   - Includes icons for each action aligned to the left
   - Shows clear dividers between permission groups
 - Proper permission checks implemented to only show relevant options
-- Success/error handling for each action with appropriate toast messages
 
 **User Story: Report Post Content**
 As a mobile app user, I want to report inappropriate or violating content so moderators can review and take action.
@@ -129,7 +133,6 @@ As a mobile app user, I want to see badges and role indicators on posts to ident
     - Badge has subscription tier color coding
     - Feed posts: Show subscription badge at 12x12px with badge title text
   - Only one achievement badge shows in feed contexts (vs. all badges in user profiles)
-  - Tapping on username/avatar opens user profile with complete badge collection (separate scope)
 
 ### Priority 2: Content Creation Basics
 This priority focuses on the fundamental content creation and editing functionality. It includes creating text posts, editing existing content, and attaching basic media types. These features enable users to contribute and share their own content within the community.
@@ -138,11 +141,11 @@ This priority focuses on the fundamental content creation and editing functional
 As a mobile app user, I want to create a new text post so I can share my thoughts with the community.
 
 **Acceptance Criteria:**
-- Post composer accessible via prominent FAB (floating action button) in feed
+- Post composer accessible on top of feed
 - Composer screen includes:
-  - Clear header indicating "New Post" or "Create Post"
+  - Clear header indicating "Create Post"
   - Text input field with appropriate placeholder text
-  - Channel/circle selector to choose where to post
+  - Channel/circle selector to choose where to post (if posting from circle feed, then this is hidden)
   - Post button (disabled until text entered)
   - Close/cancel button to exit composer
 - Text input supports:
@@ -155,7 +158,7 @@ As a mobile app user, I want to create a new text post so I can share my thought
   - Automatically navigate user back to the feed, auto-scroll to position the new post within the visible area of the feed
   - Momentarily highlight the newly created post with a subtle animation (pulsing highlight) and haptic feedback
 
-**User Story: Edit Existing Posts**
+**User Story: Edit Existing Basic Text Posts**
 As a mobile app user, I want to edit my existing posts so I can correct mistakes, add information, or update content.
 
 **Acceptance Criteria:**
@@ -170,28 +173,17 @@ As a mobile app user, I want to edit my existing posts so I can correct mistakes
   - For polls, special handling to maintain poll data while allowing edits to question/options
 - Content editing capabilities:
   - Text editing with original message pre-populated
-  - Media management:
-    - Existing media files are shown and can be removed
-    - New media can be added (up to 6 files total)
-  - Support for editing same content types as in post creation:
-    - Text content
-    - Images/photos
-    - Videos
 - Edit submission and feedback:
   - Save/Update button to confirm changes
   - Loading state during update submission
   - Momentarily highlight the newly updated post with a subtle animation (pulsing highlight) and haptic feedback
   - Error handling with clear error messages if update fails
-  - After successful update, return to feed with updated post visible
-- Special case handling:
-  - Rich text/lexical data editing includes appropriate warning about formatting loss
-  - Poll edits maintain votes while allowing question/option text changes
 
 **User Story: Mention Users in Posts**
 As a mobile app user, I want to @mention other users in my posts to notify them.
 
 **Acceptance Criteria:**
-- User can type @ symbol to trigger mention suggestion interface
+- User can type @ symbol to trigger mention suggestion interface positioned as a mini modal close to where user is typing (like a contextual menu)
 - Mention suggestions show:
   - Profile pictures of suggested users (with UserAvatar component)
   - User names with role badges where applicable
@@ -201,8 +193,7 @@ As a mobile app user, I want to @mention other users in my posts to notify them.
   - Suggestions filtered based on typed characters after @:
     - Direct name matching for 1-2 characters (first/last name contains filter)
     - Full text search for 3+ characters
-  - Up/down keyboard navigation through suggestion list (if supported by platform)
-  - Tap or press Enter/Return to select a suggestion
+  - Tap to select a suggestion
   - Dismiss suggestions by tapping away
 - Suggestions include:
   - Users from same channel/group
@@ -224,11 +215,9 @@ As a mobile app user, I want to attach photos and images to my posts to share vi
   - Single and multiple selection modes
   - Preview of selected images with appropriate thumbnails
   - Ability to remove selected images before posting
-  - Reordering of multiple images with drag-and-drop
 - Support for common image formats:
   - JPEG, PNG for standard photos
   - GIF for animated content
-- Image editing capabilities:
 - Image size limits enforced:
   - 40MB maximum per image file
   - Clear error messaging when limit is exceeded
@@ -290,15 +279,14 @@ As a mobile app user, I want to view comments on posts so I can follow community
   - Reply threads show proper indentation to visualize conversation hierarchy
     - Show only 3 immediate replies by default for each comment
     - Display a "Show replies" button below the third reply when more replies exist
-    - Button shows count of remaining replies (e.g., "Show 5 more replies")
     - Loading indicator appears when fetching additional replies
     - Once expanded, all replies in that thread remain visible
+    - Maximum nesting depth of 3 levels (original comment → reply → reply to reply → reply to reply to reply)
   - Empty state when post has no comments with appropriate message
   - Proper handling of media attachments in comments (images, videos, files)
-  - Long-press on comment shows options menu (react, reply, copy text, report)
 
-**User Story: Add Comments and Replies to Posts**
-As a mobile app user, I want to add comments and replies to posts so I can participate in conversations.
+**User Story: Add Comments to Posts**
+As a mobile app user, I want to add comments to posts so I can participate in conversations.
 
 **Acceptance Criteria:**
 - Comment input field at bottom of screen with:
@@ -307,32 +295,63 @@ As a mobile app user, I want to add comments and replies to posts so I can parti
   - Media attachment button for adding images/videos
   - Input field expands as content is added (up to 5 lines, then scrollable)
   - Send button that's disabled until content is entered
-- Reply functionality:
-  - Reply button on comments initiates a reply in a full screen bottom sheet
-  - Reply interface includes which comment is being replied to
-  - User can cancel reply to return to standard commenting
-  - Replies appear properly threaded in the comment view
-- Comment/reply submission:
+- Comment submission:
   - Visual feedback during submission (loading indicator underneath the post)
   - Newly added comment appears immediately in the list
   - Error handling for failed comment submission
-  - Momentarily highlight the newly created reply with a subtle animation (pulsing highlight) and haptic feedback.
+  - Momentarily highlight the newly created comment with a subtle animation (pulsing highlight) and haptic feedback
 - Media in comments:
   - Support for attaching images to comments (up to 6 per comment)
   - Preview thumbnails of attached media show in input field
   - Error handling for failed media uploads
-  - Permissions and moderation:
-    - Comment editing workflow:
-      - Long-press on own comment reveals action sheet with "Edit" option
-      - Selecting "Edit" transforms the comment into an editable input field with existing content pre-populated
-      - "Editing Message" indicator appears above the input field
-      - Close button (X) allows canceling the edit without saving
-      - Media attachments remain editable (can add/remove)
-      - Submit button updates to "Update" text during editing
-      - Success confirmation toast displayed after successful edit ("Your comment was updated successfully!")
-    - Option to delete own comments with confirmation
-    - Moderators, admins, and group leaders can delete any comment
-    - Comments from blocked users are hidden automatically
+- Permissions and moderation:
+  - Comment editing workflow:
+    - Access to edit options through the three-dot menu (...) for each comment
+    - Selecting "Edit" transforms the comment into an editable input field with existing content pre-populated
+    - "Editing Message" indicator appears above the input field
+    - Close button (X) allows canceling the edit without saving
+    - Media attachments remain editable (can add/remove)
+    - Submit button updates to "Update" text during editing
+    - Success confirmation toast displayed after successful edit ("Your comment was updated successfully!")
+  - Option to delete own comments with confirmation (accessed through the three-dot menu)
+  - When a user attempts to delete a comment, a warning dialog should appear stating: "This action is permanent and cannot be reversed - all content, comments, and reactions associated with this post will be permanently deleted," requiring the user to explicitly tap "Delete" to confirm or "Cancel" to abort the deletion.
+    - Deleting posts is allowed for post authors, channel owners, group leaders/founders, and community moderators/admins.
+  - Moderators, admins, and group leaders can delete any comment
+  - Comments from blocked users are hidden automatically
+
+**User Story: Reply to Comments**
+As a mobile app user, I want to reply to specific comments so I can engage in threaded conversations and respond directly to other users.
+
+**Acceptance Criteria:**
+- Reply functionality:
+  - Reply button visible on each comment
+  - Reply button on comments initiates a full screen bottom sheet
+  - Reply sheet shows the original comment at the top with a visual connecting line between the original comment and reply area for clear threading context
+  - Reply sheet includes the original commenter's avatar and name for context
+  - Reply sheet includes a back/close button to return to the post detail view
+  - Reply input field auto-focuses when the sheet opens
+  - Input field expands as content is added (up to 5 lines, then scrollable)
+  - Send button that's disabled until content is entered
+- Reply composition features:
+  - Mention functionality with @ symbol to tag other users (just this for now, other buttons come later)
+  - All buttons appear in a toolbar at the bottom of the sheet
+- Reply submission:
+  - Visual feedback during submission (loading indicator)
+  - Newly added reply appears immediately in the thread with proper indentation
+  - Error handling for failed reply submission
+  - Sheet automatically closes after successful submission
+  - Momentarily highlight the newly created reply with a subtle animation (pulsing highling) and haptic feedback
+- Media in replies:
+  - Support for attaching images to replies (up to 6 per reply)
+  - Preview thumbnails of attached media show in reply composition area
+  - Error handling for failed media uploads
+- Reply threading and visibility:
+  - Replies appear indented under the parent comment with appropriate connecting lines
+  - Proper visual hierarchy maintained for deeply nested replies
+  - Visual design maintains thread context at all levels of nesting
+- Reply editing and moderation:
+  - Same editing and deletion capabilities as regular comments
+  - Same permission structure applies (own replies editable/deletable, moderators can delete any reply)
 
 ### Priority 4: Rich Media Experiences
 This priority enhances how users view and interact with different media types in the feed. It includes support for photos, videos, link previews, and pinned content. These features create a more engaging and visual content experience.
@@ -419,6 +438,9 @@ As a mobile app user, I want to see video content in feed posts so I can engage 
   - Efficient video loading
   - Appropriate video quality based on display size
   - Responsive sizing to fit different screen dimensions
+
+
+====consider splitting this out , but prioritizing other things 
 
 **User Story: View URL Previews in Posts**
 As a mobile app user, I want to see rich previews of URLs shared in posts to get context without leaving the app.

@@ -550,7 +550,7 @@ export const FeedPost = ({
           ref={contentRef}
           className={cn(
             isReply ? "text-sm" : "text-base", 
-            "text-foreground py-1.5 my-1",
+            "text-foreground py-3 my-1",
             isContentTruncated && !showFullContent ? 'line-clamp-10 max-h-[300px] overflow-hidden' : ''
           )}
         >
@@ -583,7 +583,7 @@ export const FeedPost = ({
         
         {/* Media content - now at the container level, not nested */}
         {media && (
-          <div className="mt-2 rounded-lg overflow-hidden">
+          <div className="mt-2 pb-1.5 rounded-lg overflow-hidden">
             {media.type === "image" ? (
               <img
                 src={media.url}
