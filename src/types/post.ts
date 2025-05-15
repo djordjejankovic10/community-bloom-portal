@@ -22,7 +22,7 @@ export type PostAuthor = {
   handle: string;
   avatar: string;
   verified?: boolean;
-  role?: "admin" | "founder";
+  role?: "founder" | "admin" | "moderator";
 };
 
 export type PostProps = {

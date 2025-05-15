@@ -12,6 +12,8 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Plus, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { PinnedPosts } from "@/components/community/PinnedPosts";
+import { PostProps } from "@/types/post";
 
 // Helper function to get category icons
 const getCategoryIconName = (category: string): string => {
@@ -27,7 +29,83 @@ const getCategoryIconName = (category: string): string => {
   return "message-circle"; // Default icon
 };
 
+// Define pinned posts first so they can be included in MOCK_POSTS
+const PINNED_POST_999: PostProps = {
+  index: 999,
+  pinned: true,
+  category: "weight-training",
+  author: {
+    firstName: "David",
+    lastName: "Johnson",
+    handle: "davidj",
+    avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
+    verified: true,
+    role: "founder" as const,
+  },
+  content: "👋 Welcome to our fitness community! Here's a quick guide to get you started:\n\n• Share your progress & achievements\n• Ask questions & support others\n• Join weekly challenges\n• Follow our community guidelines\n\nLet's crush our fitness goals together! 💪",
+  timestamp: "2d",
+  metrics: {
+    likes: 1567,
+    comments: 245,
+    shares: 89,
+  },
+  replies: [] // Add empty replies array to prevent undefined issues
+};
+
+const PINNED_POST_998: PostProps = {
+  index: 998,
+  pinned: true,
+  category: "nutrition",
+  author: {
+    firstName: "Emma",
+    lastName: "Taylor",
+    handle: "emmanutritionist",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop",
+    verified: true,
+    role: "admin" as const,
+  },
+  content: "🥗 Nutrition tip of the week: Protein intake is crucial for muscle recovery. Aim for 1.6-2.2g per kg of bodyweight if you're training regularly. Check our new nutrition guide for meal ideas!",
+  timestamp: "1d",
+  metrics: {
+    likes: 982,
+    comments: 152,
+    shares: 64,
+  },
+  media: {
+    type: "image" as const,
+    url: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&h=600&fit=crop",
+  },
+  replies: [] // Add empty replies array to prevent undefined issues
+};
+
+const PINNED_POST_997: PostProps = {
+  index: 997,
+  pinned: true,
+  category: "cardio",
+  author: {
+    firstName: "Michael",
+    lastName: "Brown",
+    handle: "mikerunner",
+    avatar: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop",
+    verified: true,
+    role: "moderator" as const,
+  },
+  content: "🏃‍♂️ Latest community challenge: The 30-Day Running Streak! Join us starting Monday for 30 days of consistent running. Minimum 1 mile per day. Track your progress in the 'Challenges' tab!",
+  timestamp: "12h",
+  metrics: {
+    likes: 742,
+    comments: 98,
+    shares: 43,
+  },
+  replies: [] // Add empty replies array to prevent undefined issues
+};
+
+// Add pinned posts to MOCK_POSTS array
 export const MOCK_POSTS = [
+  // Add pinned posts to make them findable in PostDetail page
+  PINNED_POST_999,
+  PINNED_POST_998,
+  PINNED_POST_997,
   // Landscape-only carousel post
   {
     index: 16,
@@ -1107,35 +1185,23 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
   },
 ];
 
-const PINNED_POST = {
-  index: 999, // Adding a unique index for the pinned post
-  pinned: true,
-  category: "weight-training",
-  author: {
-    firstName: "David",
-    lastName: "Johnson",
-    handle: "davidj",
-    avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
-    verified: true,
-    role: "founder" as const,
-  },
-  content: "👋 Welcome to our fitness community! Here's a quick guide to get you started:\n\n• Share your progress & achievements\n• Ask questions & support others\n• Join weekly challenges\n• Follow our community guidelines\n\nLet's crush our fitness goals together! 💪",
-  timestamp: "2d",
-  metrics: {
-    likes: 1567,
-    comments: 245,
-    shares: 89,
-  },
-};
+// Array for pinned posts in the UI
+const PINNED_POSTS: PostProps[] = [
+  PINNED_POST_999,
+  PINNED_POST_998,
+  PINNED_POST_997
+];
 
+// Sort options type
 type SortOption = "latest" | "newest" | "oldest";
 
 const Community = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const [activeFilter, setActiveFilter] = useState("all");
-  const [isPinned, setIsPinned] = useState(true);
+  const [pinnedPosts, setPinnedPosts] = useState<PostProps[]>(PINNED_POSTS);
   const [currentSort, setCurrentSort] = useState<SortOption>("newest");
+  const navigate = useNavigate();
 
   const filteredPosts = MOCK_POSTS.filter(post => 
     activeFilter === "all" || post.category === activeFilter
@@ -1151,72 +1217,80 @@ const Community = () => {
   });
 
   const sortedPosts = [...postsWithIndices].sort((a, b) => {
-    switch (currentSort) {
-      case "latest":
-        // Sort by engagement (likes + comments)
-        const engagementA = a.metrics.likes + a.metrics.comments;
-        const engagementB = b.metrics.likes + b.metrics.comments;
-        return engagementB - engagementA;
-      case "newest":
-        // For demo, using timestamp string comparison
-        return b.timestamp.localeCompare(a.timestamp);
-      case "oldest":
-        // For demo, using timestamp string comparison
-        return a.timestamp.localeCompare(b.timestamp);
-      default:
-        return 0;
+    if (currentSort === "latest") {
+      // Sort by engagement (likes + comments)
+      const engagementA = a.metrics.likes + a.metrics.comments;
+      const engagementB = b.metrics.likes + b.metrics.comments;
+      return engagementB - engagementA;
+    } else if (currentSort === "newest") {
+      // For demo, using timestamp string comparison
+      return b.timestamp.localeCompare(a.timestamp);
+    } else if (currentSort === "oldest") {
+      // For demo, using timestamp string comparison
+      return a.timestamp.localeCompare(b.timestamp);
     }
+    return 0;
   });
 
-  const handleUnpin = () => {
-    setIsPinned(false);
+  const handleUnpin = (postIndex: number) => {
+    setPinnedPosts(prevPosts => prevPosts.filter(post => post.index !== postIndex));
   };
 
-  const renderContent = () => {
-    switch (currentPath) {
-      case "/community": {
-        return (
-          <>
-            <CreatePost />
-            <div className="space-y-4">
-              {isPinned && <FeedPost {...PINNED_POST} onUnpin={handleUnpin} />}
-              <div className="flex flex-col space-y-1">
-                <SortOptions 
-                  currentSort={currentSort}
-                  onSortChange={setCurrentSort}
-                />
-                <div className="h-px bg-border w-full" />
-              </div>
-              {sortedPosts.map((post) => (
-                <FeedPost key={post.index} {...post} />
-              ))}
-            </div>
-          </>
-        );
-      }
-      case "/community/challenges":
-      case "/community/meetups":
-      case "/community/leaderboard": {
-        return (
-          <div className="p-8 text-center text-muted-foreground">
-            This is a webview
+  // Render community feed
+  const renderCommunityFeed = () => {
+    return (
+      <>
+        <CreatePost />
+        <div className="space-y-4">
+          {pinnedPosts.length > 0 && (
+            <PinnedPosts pinnedPosts={pinnedPosts} onUnpin={handleUnpin} />
+          )}
+          <div className="flex flex-col space-y-1">
+            <SortOptions 
+              currentSort={currentSort}
+              onSortChange={setCurrentSort}
+            />
+            <div className="h-px bg-border w-full" />
           </div>
-        );
-      }
-      default:
-        return null;
+          {sortedPosts.map((post) => (
+            <FeedPost key={post.index} {...post} />
+          ))}
+        </div>
+      </>
+    );
+  };
+
+  // Render webview content
+  const renderWebview = () => {
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        This is a webview
+      </div>
+    );
+  };
+
+  // Main render function
+  const renderContent = () => {
+    if (currentPath === "/community") {
+      return renderCommunityFeed();
     }
+    
+    if (["/community/challenges", "/community/meetups", "/community/leaderboard"].includes(currentPath)) {
+      return renderWebview();
+    }
+    
+    return null;
   };
 
   return (
     <UIPreferencesProvider>
       <div className="flex flex-col flex-1">
-      <CommunityHeader />
+        <CommunityHeader />
         <ConditionalCommunityTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-      <main>
-        {renderContent()}
-      </main>
-    </div>
+        <main>
+          {renderContent()}
+        </main>
+      </div>
     </UIPreferencesProvider>
   );
 };

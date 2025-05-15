@@ -232,6 +232,29 @@ As a mobile app user, I want to attach photos and images to my posts to share vi
 - Proper error states for failed image loads:
   - Display a placeholder with retry option when images fail to load, using a light gray background with broken image icon and brief error message
   - Maintain layout integrity with proper spacing and dimensions matching the expected image size
+- Photo handling includes:
+  - Progressive loading with low-resolution placeholders
+    - Initially display a shimmer animation over a light gray placeholder matching image dimensions
+    - As soon as available, show a very low-resolution thumbnail (10-20% of original size) that fills the entire container
+    - Gradually transition to higher resolution versions as they load (LQIP - Low Quality Image Placeholder technique)
+    - Maintain consistent dimensions to prevent layout shifts during the progressive loading process
+    - Use a subtle cross-fade transition between loading states to avoid jarring visual changes
+  - Proper handling of portrait vs. landscape orientations
+    - Always preserve aspect ratio - Never stretch or distort images
+    - Portrait images (taller than wide) must scale to either 600px maximum height or container width (whichever constraint is hit first), while landscape images (wider than tall) must scale to fit the full container width with height determined by aspect ratio. Test: Compare side-by-side rendering of portrait and landscape images to verify consistent, appropriate scaling.
+    - For carousels with mixed portrait and landscape images, maintain a consistent height for all images if any portrait image (aspect ratio < 1) is present. This approach uses a fixed 600px height with center-cropping for landscape images to maintain visual consistency during swiping.
+    - When all images in a carousel are landscape orientation, maintain natural height with a maximum of 600px.
+    - Extremely tall images (beyond 9:16 aspect ratio or less than 0.5625 ratio) should be center-cropped with a fixed height of 600px to ensure the width is always maximized while maintaining the center focus of the image. This prevents very narrow displays of tall vertical images.
+    - All images must be centered horizontally with consistent 8dp rounded corners and proper padding (16dp on sides), with no unnecessary white space or abrupt layout shifts when loading. 
+Test edge cases - Very tall/narrow images, panoramas, etc.
+  - Proper error states for failed image loads
+    - Display a placeholder with retry option when images fail to load, using a light gray background with broken image icon and brief error message
+    - Maintain layout integrity with proper spacing and dimensions matching the expected image size
+  - Fallback for unsupported image types
+  - Proper handling of animated GIFs
+Suggested optimizations
+- File size optimization implemented for faster loading
+- Image caching implemented for better performance
 
 **User Story: Attach Videos to Posts**
 As a mobile app user, I want to attach videos to my posts to share dynamic visual content.
@@ -381,6 +404,9 @@ As a mobile app user, I want to see photos and image content in feed posts so I 
   - Full content view displays the entire text
 - Photo handling includes:
   - Progressive loading with low-resolution placeholders
+    - Initially display a shimmer animation over a light gray placeholder matching image dimensions
+    - Maintain consistent dimensions to prevent layout shifts during the progressive loading process
+    - Use a subtle cross-fade transition between loading states to avoid jarring visual changes
   - Proper handling of portrait vs. landscape orientations
     - Always preserve aspect ratio - Never stretch or distort images
     - Portrait images (taller than wide) must scale to either 600px maximum height or container width (whichever constraint is hit first), while landscape images (wider than tall) must scale to fit the full container width with height determined by aspect ratio. Test: Compare side-by-side rendering of portrait and landscape images to verify consistent, appropriate scaling.
@@ -404,7 +430,7 @@ As a mobile app user, I want to see video content in feed posts so I can engage 
 **Acceptance Criteria:**
 - Video posts display properly in the feed:
   - Video thumbnail displays with play button overlay centered on the thumbnail
-  - Similar size constraints as photos (300px max height in feed)
+  - Similar size constraints as photos (600px max height in feed)
   - Videos don't autoplay in feed
   - For multiple videos, pagination dots appear below content similar to photos
   - Videos appear in same carousel/slider as photos when a post has multiple media items
@@ -415,41 +441,23 @@ As a mobile app user, I want to see video content in feed posts so I can engage 
   - Player includes standard controls (play/pause, seek, volume)
   - Option to open fullscreen modal viewer with close button
   - Video player maintains aspect ratio of original video
-    - All videos must maintain their original aspect ratio in both thumbnail and playback states, regardless of whether they are portrait (vertical) or landscape (horizontal) orientation. Play both portrait (9:16) and landscape (16:9) videos and verify that no stretching, cropping or distortion occurs in either thumbnail or full playback view.
-    - When a post contains multiple videos with different orientations (portrait and landscape mixed), all videos must appear with a consistent container size without jarring layout shifts when swiping between them.
+    - All videos must maintain their original aspect ratio in playback states, regardless of whether they are portrait (vertical) or landscape (horizontal) orientation. Play both portrait (9:16) and landscape (16:9) videos and verify that no stretching, cropping or distortion occurs in full playback view.
+    - When a post contains multiple videos with different orientations (portrait and landscape mixed), all videos must appear with a consistent container size without jarring layout shifts when swiping between them (just like images)
   - Background state properly handled when navigating away from video
 - Video handling includes:
   - Loading indicators while video initializes
+    - Display a shimmer animation over a light gray video thumbnail placeholder
+    - Center a pulsing play button icon that indicates loading state (different from the standard play button)
+    - Maintain consistent dimensions to prevent layout shifts when the video loads
+    - Transition smoothly from loading state to thumbnail with a brief fade animation
   - Error states for failed video loads
+    - Display a placeholder with retry option when videos fail to load, using a light gray background with video icon and brief error message
+    - Maintain layout integrity with proper spacing and dimensions matching the expected video size
 - Video optimization:
   - Efficient video loading
   - Appropriate video quality based on display size
   - Responsive sizing to fit different screen dimensions
  
-
-**User Story: View URL Previews in Posts**
-As a mobile app user, I want to see rich previews of URLs shared in posts to get context without leaving the app.
-
-**Acceptance Criteria:**
-- URLs in post content are automatically detected using regex pattern
-- For detected URLs, a rich preview card is displayed below the post text showing:
-  - Preview image from the link (left side of card, square aspect ratio)
-  - Link title with proper truncation (max 2 lines)
-  - Link description with truncation (max 1 line)
-  - Website domain name displayed below description
-- Preview card dimensions and styling:
-  - Card has light border (1px) with subtle rounded corners (8px radius)
-  - Text area has proper padding (12px horizontal, 8px vertical)
-  - Max width matches the container width
-  - Clear visual hierarchy between title (larger, bold font) and description (regular weight)
-  - Domain name in subtle, secondary color
-- Visual states:
-  - Loading state shows skeleton UI while fetching preview data
-  - Error/fallback state shows domain name when preview data unavailable
-- Tapping on the preview card opens the URL in in-app browser or external browser based on user settings
-- Preview images load efficiently with proper caching
-- URL previews gracefully handle long content with appropriate truncation
-
 **User Story: View Pinned Posts**
 As a mobile app user, I want to see important pinned posts at the top of my feed for quick access to essential community information.
 
@@ -482,6 +490,30 @@ As a mobile app user, I want to see important pinned posts at the top of my feed
   - Global feed shows posts with "globalFeedPinnedAt" value
   - Channel feed shows posts with "channelPinnedAt" value
   - When a feed has only a single pinned post, it's shown inline at the top instead of in a carousel
+
+**User Story: View URL Previews in Posts**
+As a mobile app user, I want to see rich previews of URLs shared in posts to get context without leaving the app.
+
+**Acceptance Criteria:**
+- URLs in post content are automatically detected using regex pattern
+- For detected URLs, a rich preview card is displayed below the post text showing:
+  - Preview image from the link (left side of card, square aspect ratio)
+  - Link title with proper truncation (max 2 lines)
+  - Website domain name displayed below description
+- Preview card dimensions and styling:
+  - Card has light border (1px) with subtle rounded corners (8px radius)
+  - Text area has proper padding (12px horizontal, 8px vertical)
+  - Max width matches the container width
+  - Clear visual hierarchy between title (larger, bold font) and description (regular weight)
+  - Domain name in subtle, secondary color
+- Visual states:
+  - Loading state shows skeleton UI while fetching preview data
+  - Error/fallback state shows domain name when preview data unavailable
+- Tapping on the preview card opens the URL in in-app browser or external browser based on user settings
+- Preview images load efficiently with proper caching
+- URL previews gracefully handle long content with appropriate truncation
+
+
 
 ### Priority 5: Advanced Content Experiences
 This priority adds specialized content types and more complex post interactions. It focuses on interactive content like polls and announcement posts. These features provide additional engagement mechanisms beyond standard posts.

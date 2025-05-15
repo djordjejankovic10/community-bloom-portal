@@ -579,7 +579,7 @@ export const FeedPost = ({
     <div className={cn(
       "w-full max-w-full block",
       isEmbedded ? "" : (!isReply && "border-b"),
-      pinned && "bg-secondary/30 border-l-2 border-l-primary"
+      pinned && !isDetail && "bg-secondary/30 border-l-2 border-l-primary"
     )}>
       {/* Full-screen photo viewer - updated to work with both media and mediaItems */}
       {isPhotoViewerOpen && (
@@ -668,7 +668,7 @@ export const FeedPost = ({
         )}
         onClick={isEmbedded ? undefined : handleClick}
       >
-        {pinned && (
+        {pinned && !isDetail && (
           <div className="flex items-center gap-1.5 mb-2 text-primary text-xs font-medium">
             <Pin className="h-3.5 w-3.5" />
             Pinned post
@@ -686,7 +686,7 @@ export const FeedPost = ({
               <div className="p-4">
                 <h3 className="font-medium text-lg mb-4">Post options</h3>
                 <div className="space-y-2">
-                  {onUnpin && pinned && (
+                  {onUnpin && pinned && !isDetail && (
                     <Button 
                       variant="ghost" 
                       className="w-full justify-start text-left text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
@@ -967,8 +967,8 @@ export const FeedPost = ({
         )}
       </div>
       
-      {/* Display reaction counters (only if not in detail view) */}
-      {!isEmbedded && !isReply && !isDetail && (
+      {/* Display reaction counters */}
+      {!isEmbedded && !isReply && (
         <div className="flex items-center justify-between w-full max-w-full px-4 mt-2 text-muted-foreground text-sm">
           <Drawer open={reactionsOpen} onOpenChange={setReactionsOpen}>
             <DrawerTrigger asChild>
@@ -1086,7 +1086,23 @@ export const FeedPost = ({
             </DrawerContent>
           </Drawer>
           <div className="flex items-center gap-2">
-            <span>{metrics.comments} comments</span>
+            <span 
+              className="cursor-pointer hover:text-foreground"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (typeof index === 'number') {
+                  if (isDetail) {
+                    // In detail view, just scroll to comments section
+                    document.querySelector('.comments-section')?.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    // In feed view, navigate to post detail with comments
+                    navigate(`/community/post/${index}?showComments=true`);
+                  }
+                }
+              }}
+            >
+              {metrics.comments} comments
+            </span>
           </div>
         </div>
       )}

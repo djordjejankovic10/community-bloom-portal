@@ -266,7 +266,7 @@ const PostDetail = () => {
       <FeedPost {...post} isDetail />
 
       {/* Comments section */}
-      <div className="px-4 py-2 pb-24">
+      <div className="px-4 py-2 pb-24 comments-section">
         {totalReplies > 0 ? (
           <>
             <div className="flex items-center justify-between mb-4">
