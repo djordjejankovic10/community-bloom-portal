@@ -462,34 +462,31 @@ As a mobile app user, I want to see video content in feed posts so I can engage 
 As a mobile app user, I want to see important pinned posts at the top of my feed for quick access to essential community information.
 
 **Acceptance Criteria:**
-- Pinned posts appear in a dedicated section at the top of the feed, before regular posts:
-  - Section has a "Pinned Posts" heading with expand/collapse functionality
-  - Visual indicator shows whether section is expanded or collapsed
-  - User preference for expanded/collapsed state persists between sessions
-- Pinned posts appear in a horizontal carousel when multiple exist:
+- Pinned posts appear in a dedicated section at the top of the feed, before regular posts
+- Pinned posts appear in a horizontal carousel:
   - Cards are ~284px width and ~360px height with proper padding and spacing
   - Users can swipe horizontally to browse through pinned posts
   - Pagination indicator shows current position in the carousel
-  - Carousel supports looping through pinned posts
+  - Last slide has right padding to prevent cutoff
 - Each pinned post card includes:
-  - Visual indicator showing it's pinned (pin icon)
-  - Unread state with highlighted border for posts not yet viewed (2px border in theme color)
-  - Author information with profile picture and name
-  - Post content preview (truncated to 3 lines with "show more" indication)
-  - First media item (image/video) if present
-  - Basic engagement metrics (reactions, comments)
-- Special handling based on post type:
-  - Poll posts show question and first 2 options in the pinned card
-  - Media posts show first image/video with proper aspect ratio
-  - Posts with files show file previews with option to see more
+  - Unread state with highlighted primary-colored border (2px) for posts not yet viewed
+  - Author information with profile picture, name, and role badge when applicable
+  - Post timestamp positioned next to the author name (not below it) to match regular posts
+  - Category badge (e.g., "yoga", "weight-training") displayed alongside other badges
+  - Role badges for special users (e.g., "founder", "admin", "moderator") displayed consistently with regular posts
+  - Post content truncated to 5 lines for posts with media
+  - Basic engagement metrics (likes, comments, shares)
+- Media handling in pinned posts:
+  - Single images display with preserved aspect ratio and maximum height constraint (~160-180px)
+  - Multiple images show only the first image with a counter indicator (e.g., "1/3")
+  - Image-only posts (no text) maximize the image display area
+  - Various aspect ratios are supported (landscape, portrait, square)
+  - Media is positioned below truncated text with appropriate spacing
 - Interaction capabilities:
   - Tapping a pinned post opens the full post view
-  - Long-pressing a pinned post opens options menu
-  - Post is marked as read after viewing
-- Pinned posts appear differently based on context:
-  - Global feed shows posts with "globalFeedPinnedAt" value
-  - Channel feed shows posts with "channelPinnedAt" value
-  - When a feed has only a single pinned post, it's shown inline at the top instead of in a carousel
+  - Post is marked as read only when explicitly clicked, not on carousel viewing
+- Expand/collapse functionality for the pinned posts section
+- Visual pin icon indicating posts are pinned
 
 **User Story: View URL Previews in Posts**
 As a mobile app user, I want to see rich previews of URLs shared in posts to get context without leaving the app.

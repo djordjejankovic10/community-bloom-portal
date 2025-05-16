@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ChevronDown, ChevronUp, Pin, ThumbsUp, Heart, MessageCircle } from "lucide-react";
+import { 
+  ChevronDown, 
+  ChevronUp, 
+  Pin, 
+  ThumbsUp, 
+  Heart, 
+  MessageCircle,
+  Dumbbell,
+  StretchVertical,
+  Battery,
+  Apple,
+  Utensils
+} from "lucide-react";
 import { 
   Carousel,
   CarouselContent, 
@@ -85,6 +97,31 @@ interface PinnedPostsProps {
   pinnedPosts: PostProps[];
   onUnpin?: (postIndex: number) => void;
 }
+
+// Add getCategoryIcon function to match FeedPost component
+const getCategoryIcon = (category: string) => {
+  switch (category?.toLowerCase()) {
+    case 'weight-training':
+      return <Dumbbell className="h-2.5 w-2.5 mr-1" />;
+    case 'cardio':
+      return <Heart className="h-2.5 w-2.5 mr-1" />;
+    case 'yoga':
+      return <StretchVertical className="h-2.5 w-2.5 mr-1" />;
+    case 'recovery':
+      return <Battery className="h-2.5 w-2.5 mr-1" />;
+    case 'nutrition':
+      return <Apple className="h-2.5 w-2.5 mr-1" />;
+    case 'keto-diet':
+      return <Utensils className="h-2.5 w-2.5 mr-1" />;
+    default:
+      return <MessageCircle className="h-2.5 w-2.5 mr-1" />; // Default icon for uncategorized posts
+  }
+};
+
+// Add formatCategory function to match FeedPost component
+const formatCategory = (cat: string) => {
+  return cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : "General";
+};
 
 export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
   const navigate = useNavigate();
@@ -423,12 +460,25 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
                                 className="h-full w-full object-cover" 
                               />
                             </div>
-                            <div>
-                              <div className="font-medium text-sm">
-                                {post.author.firstName} {post.author.lastName}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center flex-wrap gap-x-1 gap-y-0.5">
+                                <span className="font-medium text-sm">
+                                  {post.author.firstName} {post.author.lastName}
+                                </span>
+                                <span className="text-xs text-muted-foreground whitespace-nowrap">· {post.timestamp}</span>
                               </div>
-                              <div className="text-xs text-muted-foreground">
-                                {post.timestamp}
+                              <div className="flex items-center gap-1 mt-0.5">
+                                {post.category && (
+                                  <Badge variant="outline" className="px-1 py-0 bg-accent/50 flex items-center text-[10px]">
+                                    {getCategoryIcon(post.category)}
+                                    {formatCategory(post.category)}
+                                  </Badge>
+                                )}
+                                {post.author.role && (
+                                  <Badge variant="default" className="px-1 py-0 text-[10px]">
+                                    {post.author.role}
+                                  </Badge>
+                                )}
                               </div>
                             </div>
                           </div>
