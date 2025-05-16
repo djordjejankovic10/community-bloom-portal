@@ -100,12 +100,107 @@ const PINNED_POST_997: PostProps = {
   replies: [] // Add empty replies array to prevent undefined issues
 };
 
+const PINNED_POST_996: PostProps = {
+  index: 996,
+  pinned: true,
+  category: "weight-training",
+  author: {
+    firstName: "Michael",
+    lastName: "Brown",
+    handle: "mikerunner",
+    avatar: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop",
+    verified: true,
+    role: "moderator" as const,
+  },
+  content: "Check out these photo highlights from our community weight training workshop last weekend! This was such an incredible event with over 50 participants from all skill levels. Everyone had the opportunity to learn proper form, get personalized coaching, and connect with other fitness enthusiasts. We covered everything from basic lifts like squats, deadlifts, and bench press to more advanced techniques for those looking to level up their training. The energy in the room was amazing, and we're already planning our next workshop based on your feedback. Special thanks to all the trainers who volunteered their time to make this possible. Swipe to see more pictures. Thanks to everyone who participated!",
+  timestamp: "12h",
+  metrics: {
+    likes: 742,
+    comments: 98,
+    shares: 43,
+  },
+  mediaItems: [
+    {
+      type: "image" as const,
+      url: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200&h=800&fit=crop&auto=format", // Landscape
+      aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+    },
+    {
+      type: "image" as const,
+      url: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=1200&h=800&fit=crop&auto=format", // Landscape
+      aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+    },
+    {
+      type: "image" as const,
+      url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=1200&h=800&fit=crop&auto=format", // Landscape
+      aspectRatio: 1.5 // 3:2 aspect ratio (landscape)
+    }
+  ],
+  replies: [] // Add empty replies array to prevent undefined issues
+};
+
+const PINNED_POST_995: PostProps = {
+  index: 995,
+  pinned: true,
+  category: "yoga",
+  author: {
+    firstName: "Emma",
+    lastName: "Chen",
+    handle: "emmayoga",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+    verified: true,
+    role: "admin" as const,
+  },
+  content: "New beginner yoga class starting Monday! 🧘‍♀️",
+  timestamp: "1h",
+  metrics: {
+    likes: 358,
+    comments: 42,
+    shares: 26,
+  },
+  media: {
+    type: "image" as const,
+    url: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=800&h=1000&fit=crop",
+    aspectRatio: 0.8, // Portrait image
+  },
+  replies: [] // Add empty replies array to prevent undefined issues
+};
+
+const PINNED_POST_994: PostProps = {
+  index: 994,
+  pinned: true,
+  category: "weight-training",
+  author: {
+    firstName: "James",
+    lastName: "Wilson",
+    handle: "strengthcoach",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+    verified: true,
+  },
+  content: "", // Empty content - just image
+  timestamp: "3h",
+  metrics: {
+    likes: 476,
+    comments: 32,
+    shares: 18,
+  },
+  media: {
+    type: "image" as const,
+    url: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop",
+    aspectRatio: 1.33, // 4:3 aspect ratio
+  },
+  replies: [] // Add empty replies array to prevent undefined issues
+};
+
 // Add pinned posts to MOCK_POSTS array
 export const MOCK_POSTS = [
   // Add pinned posts to make them findable in PostDetail page
   PINNED_POST_999,
   PINNED_POST_998,
   PINNED_POST_997,
+  PINNED_POST_996,
+  PINNED_POST_995,
+  PINNED_POST_994,
   // Landscape-only carousel post
   {
     index: 16,
@@ -1189,7 +1284,10 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
 const PINNED_POSTS: PostProps[] = [
   PINNED_POST_999,
   PINNED_POST_998,
-  PINNED_POST_997
+  PINNED_POST_997,
+  PINNED_POST_996,
+  PINNED_POST_995,
+  PINNED_POST_994
 ];
 
 // Sort options type

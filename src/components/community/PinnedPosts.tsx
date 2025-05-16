@@ -111,7 +111,7 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
   // Constants for layout calculations
   const CARD_HEIGHT = 360; // Total card height in px
   const HEADER_FOOTER_HEIGHT = 90; // Space for author info, pin indicator, metrics footer
-  const MEDIA_MAX_HEIGHT = 120; // Maximum height for media content
+  const MEDIA_MAX_HEIGHT = 240; // Maximum height for media content (increased to fill container)
   
   // Load user preference and read state from localStorage on mount
   useEffect(() => {
@@ -191,34 +191,13 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
     };
   }, [api, pinnedPosts, readPosts]);
   
-  // Check if content needs truncation
+  // Check if content needs truncation - not needed anymore since we're using fixed line-clamp
   useEffect(() => {
     if (!isExpanded) return;
     
-    // Use a short timer to ensure elements are rendered properly
-    const timer = setTimeout(() => {
-      const newTruncatedState: Record<string | number, boolean> = {};
-      
-      // Check each post's content height
-      pinnedPosts.forEach(post => {
-        const index = post.index ?? 0;
-        const contentElement = contentRefs.current[index];
-        
-        if (contentElement) {
-          // Calculate available height based on whether post has media
-          const hasMedia = !!post.media || !!(post.mediaItems && post.mediaItems.length > 0);
-          
-          // Available height = card height - (header/footer + media height if present)
-          const availableHeight = CARD_HEIGHT - HEADER_FOOTER_HEIGHT - (hasMedia ? MEDIA_MAX_HEIGHT : 0);
-          const isTruncated = contentElement.scrollHeight > availableHeight;
-          newTruncatedState[index] = isTruncated;
-        }
-      });
-      
-      setContentTruncated(newTruncatedState);
-    }, 100);
+    // No need to calculate truncation state anymore
+    setContentTruncated({});
     
-    return () => clearTimeout(timer);
   }, [isExpanded, pinnedPosts]);
   
   // Generate mock reactors for a post
@@ -330,10 +309,8 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
   const getMaxContentHeight = (post: PostProps, isExpanded: boolean): string => {
     if (isExpanded) return "none";
     
-    const hasMedia = !!post.media || !!(post.mediaItems && post.mediaItems.length > 0);
-    const availableHeight = CARD_HEIGHT - HEADER_FOOTER_HEIGHT - (hasMedia ? MEDIA_MAX_HEIGHT : 0);
-    
-    return `${availableHeight - 40}px`; // Subtract extra for safety margin
+    // Always limit to 3 lines of text (approx 60px)
+    return "60px"; // 3 lines at ~20px line height
   };
   
   // If there are no pinned posts, don't render anything
@@ -438,7 +415,7 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
                       >
                         <div className="p-3 flex-1 overflow-hidden flex flex-col">
                           {/* Author info */}
-                          <div className="flex items-center mb-2">
+                          <div className="flex items-center mb-3 flex-shrink-0">
                             <div className="h-8 w-8 rounded-full overflow-hidden mr-2">
                               <img 
                                 src={post.author.avatar} 
@@ -456,75 +433,57 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
                             </div>
                           </div>
                           
-                          {/* Post content */}
-                          <div 
-                            className={cn(
-                              "relative min-h-0",
-                              isContentExpanded ? "flex-1" : hasMedia ? "flex-initial" : "flex-1"
-                            )}
-                          >
-                            <p 
-                              ref={(el) => setContentRef(post.index, el)}
-                              className={cn(
-                                "text-sm mb-2",
-                                !isContentExpanded && isTruncated && "overflow-hidden",
-                                !isContentExpanded && isTruncated && `max-h-[${getMaxContentHeight(post, false)}]`
-                              )}
-                              style={
-                                !isContentExpanded && isTruncated 
-                                  ? { maxHeight: getMaxContentHeight(post, false) } 
-                                  : undefined
-                              }
-                            >
-                              {post.content}
-                            </p>
-                            
-                            {isTruncated && !isContentExpanded && (
-                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent h-8 pointer-events-none" />
-                            )}
-                            
-                            {isTruncated && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-primary text-xs font-medium absolute bottom-0 right-0"
-                                onClick={(e) => toggleContentExpansion(e, post.index)}
+                          {/* Content area - flex layout to manage space distribution */}
+                          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                            {/* Post content */}
+                            <div className="mb-2 flex-shrink-0">
+                              <p 
+                                ref={(el) => setContentRef(post.index, el)}
+                                className={cn(
+                                  "text-sm",
+                                  hasMedia && "line-clamp-5" // Always truncate at 5 lines for posts with media
+                                )}
                               >
-                                {isContentExpanded ? "Show less" : "Show more"}
-                              </Button>
+                                {post.content}
+                              </p>
+                            </div>
+                            
+                            {/* Post media (if available) */}
+                            {hasMedia && (
+                              <div className="flex-1 min-h-0 overflow-hidden">
+                                {post.media && (
+                                  <div className="h-full overflow-hidden rounded-md">
+                                    <img 
+                                      src={post.media.url} 
+                                      alt=""
+                                      className="w-full h-full object-cover" 
+                                    />
+                                  </div>
+                                )}
+                                
+                                {/* Show first image from mediaItems (if available) */}
+                                {post.mediaItems && post.mediaItems.length > 0 && (
+                                  <div className="h-full overflow-hidden rounded-md relative">
+                                    <img 
+                                      src={post.mediaItems[0].url} 
+                                      alt=""
+                                      className="w-full h-full object-cover" 
+                                    />
+                                    
+                                    {/* Image counter badge */}
+                                    {post.mediaItems.length > 1 && (
+                                      <div className="absolute top-1 right-1 bg-black/60 text-white text-xs font-medium rounded-full px-1.5 py-0.5 z-10">
+                                        1/{post.mediaItems.length}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             )}
                           </div>
                           
-                          {/* Post media (if available) - only show when content is not expanded */}
-                          {!isContentExpanded && hasMedia && (
-                            <>
-                              {post.media && (
-                                <div className={`h-${MEDIA_MAX_HEIGHT / 8} overflow-hidden rounded-md mb-2`}
-                                     style={{ maxHeight: `${MEDIA_MAX_HEIGHT}px` }}>
-                                  <img 
-                                    src={post.media.url} 
-                                    alt=""
-                                    className="w-full h-full object-cover" 
-                                  />
-                                </div>
-                              )}
-                              
-                              {/* Show first image from mediaItems (if available) */}
-                              {post.mediaItems && post.mediaItems.length > 0 && (
-                                <div className={`h-${MEDIA_MAX_HEIGHT / 8} overflow-hidden rounded-md mb-2`}
-                                     style={{ maxHeight: `${MEDIA_MAX_HEIGHT}px` }}>
-                                  <img 
-                                    src={post.mediaItems[0].url} 
-                                    alt=""
-                                    className="w-full h-full object-cover" 
-                                  />
-                                </div>
-                              )}
-                            </>
-                          )}
-                          
                           {/* Post metrics - Prevent propagation on drawer trigger clicks */}
-                          <div className="flex items-center justify-between w-full max-w-full mt-auto text-muted-foreground text-xs">
+                          <div className="flex items-center justify-between w-full max-w-full mt-2 text-muted-foreground text-xs flex-shrink-0">
                             <Drawer 
                               open={reactionsOpen[postIndex] || false} 
                               onOpenChange={(open) => setReactionsOpen(prev => ({ ...prev, [postIndex]: open }))}
