@@ -175,16 +175,8 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
       const selectedIndex = api.selectedScrollSnap();
       setCurrent(selectedIndex);
       
-      // Mark currently viewed post as read
-      if (selectedIndex >= 0 && selectedIndex < pinnedPosts.length) {
-        const postIndex = pinnedPosts[selectedIndex].index;
-        if (postIndex !== undefined && !readPosts[postIndex]) {
-          setReadPosts(prev => ({
-            ...prev,
-            [postIndex]: true
-          }));
-        }
-      }
+      // Remove automatic marking of posts as read when scrolling through carousel
+      // Posts will only be marked as read when explicitly clicked via handlePostClick
     };
     
     // Register the event listener
@@ -417,7 +409,7 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
               {/* Horizontal scrolling indicator - right */}
               <div className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-16 bg-gradient-to-l from-background/80 to-transparent z-10 pointer-events-none" />
               
-              <CarouselContent>
+              <CarouselContent className="pl-4">
                 {pinnedPosts.map((post, slideIndex) => {
                   const postIndex = post.index || 0;
                   const isRead = readPosts[postIndex];
@@ -432,7 +424,7 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
                   return (
                     <CarouselItem 
                       key={postIndex} 
-                      className="basis-[284px] sm:basis-[300px] pl-1 pr-3 transition-all hover:scale-[1.02]"
+                      className={`basis-[284px] sm:basis-[300px] pr-3 transition-all ${slideIndex === 0 ? 'pl-1' : 'pl-2'}`}
                       data-slide-index={slideIndex}
                     >
                       <div 

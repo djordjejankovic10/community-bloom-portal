@@ -32,7 +32,7 @@ export const SortOptions = ({ currentSort, onSortChange }: SortOptionsProps) => 
   };
 
   return (
-    <div className="px-4 py-2 flex justify-end">
+    <div className="px-4 pt-0 pb-2 flex justify-end">
       <Drawer>
         <DrawerTrigger asChild>
           <Button variant="ghost" size="sm" className="text-muted-foreground">

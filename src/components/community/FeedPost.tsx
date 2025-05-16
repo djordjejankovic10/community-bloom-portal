@@ -338,7 +338,8 @@ export const FeedPost = ({
         const lines = Math.floor(height / lineHeight);
         
         // Different truncation rules based on whether post has media
-        const lineThreshold = media ? 3 : 9;
+        const hasMedia = !!media || !!(mediaItems && mediaItems.length > 0);
+        const lineThreshold = hasMedia ? 3 : 9;
         
         // Only truncate if not in detail view and content exceeds the threshold
         const shouldTruncate = !isEmbedded && !isDetail && lines > lineThreshold;
@@ -347,12 +348,12 @@ export const FeedPost = ({
         // For debugging
         console.log(`Post content: ${content.substring(0, 30)}...`);
         console.log(`Lines detected: ${lines}, Threshold: ${lineThreshold}, Should truncate: ${shouldTruncate}`);
-        console.log(`Has media: ${!!media}, Content height: ${height}px, Line height: ${lineHeight}px`);
+        console.log(`Has media: ${hasMedia}, Content height: ${height}px, Line height: ${lineHeight}px`);
       }
     }, 100); // Short delay to ensure content is rendered
     
     return () => clearTimeout(timer);
-  }, [content, isEmbedded, isDetail, media]);
+  }, [content, isEmbedded, isDetail, media, mediaItems]);
 
   const handleClick = () => {
     // Skip navigation for embedded posts only

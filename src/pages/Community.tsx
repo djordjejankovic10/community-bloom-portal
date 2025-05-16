@@ -1075,7 +1075,7 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
       url: "https://www.healthline.com/health/shoulder-pain-exercises",
       title: "Ice Bath vs Cold Shower: Complete Recovery Guide",
       domain: "healthline.com",
-      thumbnail: "https://images.unsplash.com/photo-1563268093-a158621e3fc2?w=600&h=400&fit=crop",
+      thumbnail: "https://images.unsplash.com/photo-1662045010180-a2b1ac1652b4?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dhttps://https://plus.unsplash.com/premium_photo-1664109999537-088e7d964da2?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dphotogenicmind.com/wp-content/uploads/2024/12/Female-Fitness-Photoshoot-31.12.2024-1.jpg",
     },
     replies: [
       {
@@ -1204,7 +1204,7 @@ const Community = () => {
   const navigate = useNavigate();
 
   const filteredPosts = MOCK_POSTS.filter(post => 
-    activeFilter === "all" || post.category === activeFilter
+    (activeFilter === "all" || post.category === activeFilter) && !post.pinned
   );
 
   // Make sure all posts have valid index properties
@@ -1245,7 +1245,7 @@ const Community = () => {
           {pinnedPosts.length > 0 && (
             <PinnedPosts pinnedPosts={pinnedPosts} onUnpin={handleUnpin} />
           )}
-          <div className="flex flex-col space-y-1">
+          <div className="flex flex-col">
             <SortOptions 
               currentSort={currentSort}
               onSortChange={setCurrentSort}
