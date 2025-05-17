@@ -1147,7 +1147,9 @@ export const FeedPost = ({
             >
               {userReaction ? (
                 <>
-                  <ThumbsUp className="h-5 w-5 fill-current" />
+                  <div className={cn("h-5 w-5", REACTION_DATA[userReaction].color)}>
+                    {REACTION_DATA[userReaction].icon}
+                  </div>
                   <span>{REACTION_DATA[userReaction].label}</span>
                 </>
               ) : (
