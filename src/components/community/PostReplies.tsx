@@ -43,14 +43,14 @@ type ReactionUser = {
 const REACTION_DATA = {
   inspired: { 
     icon: <ThumbsUp className="h-4 w-4" />, 
-    color: "text-blue-500",
-    bgColor: "bg-blue-500",
+    color: "text-primary",
+    bgColor: "bg-primary",
     label: "Inspired"
   },
   love: { 
     icon: <Heart className="h-4 w-4" />, 
-    color: "text-red-500",
-    bgColor: "bg-red-500",
+    color: "text-primary",
+    bgColor: "bg-primary",
     label: "Love"
   },
   haha: {
@@ -164,6 +164,14 @@ export const PostReplies = ({
   // State to track expanded reply threads
   const [expandedThreads, setExpandedThreads] = useState<Record<number, boolean>>({});
   
+  // State for full-screen photo viewer
+  const [isPhotoViewerOpen, setIsPhotoViewerOpen] = useState(false);
+  const [activePhotoUrl, setActivePhotoUrl] = useState<string>('');
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
+  
   // Default number of replies to show initially
   const DEFAULT_REPLIES_SHOWN = 3;
   
@@ -243,6 +251,66 @@ export const PostReplies = ({
     };
   }, [isLongPressed]);
   
+  // Close photo viewer on escape key
+  useEffect(() => {
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isPhotoViewerOpen) {
+        setIsPhotoViewerOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscKey);
+    return () => window.removeEventListener('keydown', handleEscKey);
+  }, [isPhotoViewerOpen]);
+  
+  // Handle zoom in/out
+  const handleZoom = (increase: boolean) => {
+    setZoomLevel(prev => {
+      const newZoom = increase ? prev * 1.2 : prev / 1.2;
+      // Limit zoom range between 0.5 and 5
+      return Math.min(Math.max(newZoom, 0.5), 5);
+    });
+  };
+
+  // Handle mouse/touch events for dragging
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    if (zoomLevel <= 1) return; // Only allow dragging when zoomed in
+    
+    setIsDragging(true);
+    
+    // Get current position
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    
+    setStartPosition({ x: clientX - position.x, y: clientY - position.y });
+  };
+
+  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging || zoomLevel <= 1) return;
+    
+    // Get current position
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    
+    setPosition({
+      x: clientX - startPosition.x,
+      y: clientY - startPosition.y
+    });
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+  
+  // Function to open photo viewer
+  const openPhotoViewer = (url: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActivePhotoUrl(url);
+    setIsPhotoViewerOpen(true);
+    setZoomLevel(1);
+    setPosition({ x: 0, y: 0 });
+  };
+  
   // Handle opening reaction details drawer
   const handleOpenReactions = (index: number, totalLikes: number) => {
     setActiveReplyIndex(index);
@@ -258,6 +326,64 @@ export const PostReplies = ({
   
   return (
     <div className="relative mt-1">
+      {isPhotoViewerOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+          onClick={() => setIsPhotoViewerOpen(false)}
+          onMouseDown={handleDragStart}
+          onMouseMove={handleDragMove}
+          onMouseUp={handleDragEnd}
+          onMouseLeave={handleDragEnd}
+          onTouchStart={handleDragStart}
+          onTouchMove={handleDragMove}
+          onTouchEnd={handleDragEnd}
+        >
+          <div className="absolute top-4 right-4 z-10 flex gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full bg-black/50 text-white hover:bg-black/70"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsPhotoViewerOpen(false);
+              }}
+            >
+              <span className="text-2xl font-bold">×</span>
+            </Button>
+          </div>
+          
+          <img
+            src={activePhotoUrl}
+            alt=""
+            className="max-h-screen max-w-screen object-contain"
+            style={{
+              transform: `translate(${position.x}px, ${position.y}px) scale(${zoomLevel})`,
+              cursor: zoomLevel > 1 ? 'grab' : 'default',
+              transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+            }}
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image
+            // Add double-click to zoom
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              if (zoomLevel > 1) {
+                // Reset zoom if already zoomed in
+                setZoomLevel(1);
+                setPosition({ x: 0, y: 0 });
+              } else {
+                // Zoom to 2x if not zoomed in
+                setZoomLevel(2);
+              }
+            }}
+          />
+          
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center text-white text-sm">
+            <div className="bg-black/50 px-3 py-1 rounded-full">
+              {Math.round(zoomLevel * 100)}%
+            </div>
+          </div>
+        </div>
+      )}
+      
       {replies.map((reply, index) => {
         const isLast = index === replies.length - 1;
         
@@ -390,7 +516,8 @@ export const PostReplies = ({
                             <img
                               src={reply.media.url}
                               alt=""
-                              className="w-full h-auto rounded-lg"
+                              className="w-full h-auto rounded-lg cursor-pointer"
+                              onClick={(e) => openPhotoViewer(reply.media.url, e)}
                             />
                           ) : reply.media.type === "video" ? (
                             <div className="relative w-full aspect-video bg-muted rounded-lg overflow-hidden">

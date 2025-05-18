@@ -90,7 +90,7 @@ const PINNED_POST_997: PostProps = {
     verified: true,
     role: "moderator" as const,
   },
-  content: "🏃‍♂️ Latest community challenge: The 30-Day Running Streak! Join us starting Monday for 30 days of consistent running. Minimum 1 mile per day. Track your progress in the 'Challenges' tab!",
+  content: "🏃‍♂️ Latest community challenge: The 30-Day Running Streak! Join us starting Monday for 30 days of consistent running. Minimum 1 mile per day. Track your progress in the 'Challenges' tab! [this is a pinned post thats read]",
   timestamp: "12h",
   metrics: {
     likes: 742,

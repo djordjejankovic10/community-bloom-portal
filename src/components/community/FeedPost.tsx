@@ -59,6 +59,15 @@ type ReactionsCount = {
   angry: number;
 };
 
+// Reaction data type
+type ReactionDataType = {
+  icon: React.ReactNode;
+  activeIcon?: React.ReactNode;
+  color: string;
+  bgColor: string;
+  label: string;
+};
+
 // Mock data for current user
 const CURRENT_USER: ReactionUser = {
   name: "Current User",
@@ -69,17 +78,23 @@ const CURRENT_USER: ReactionUser = {
 };
 
 // Reaction icons and colors
-const REACTION_DATA = {
+const REACTION_DATA: Record<ReactionType, ReactionDataType> = {
   inspired: { 
-    icon: <ThumbsUp className="h-4 w-4" />, 
-    color: "text-blue-500",
-    bgColor: "bg-blue-500",
+    icon: <ThumbsUp className="h-4 w-4" />,
+    activeIcon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+      <path d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" />
+    </svg>,
+    color: "text-primary",
+    bgColor: "bg-primary",
     label: "Inspired"
   },
   love: { 
-    icon: <Heart className="h-4 w-4" />, 
-    color: "text-red-500",
-    bgColor: "bg-red-500",
+    icon: <Heart className="h-4 w-4" />,
+    activeIcon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+    </svg>,
+    color: "text-primary",
+    bgColor: "bg-primary",
     label: "Love"
   },
   haha: {
@@ -846,21 +861,23 @@ export const FeedPost = ({
                 href={media.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block border rounded-lg overflow-hidden hover:bg-accent"
+                className="flex border rounded-lg overflow-hidden hover:bg-accent"
                 onClick={(e) => e.stopPropagation()}
               >
                 {media.thumbnail && (
-                  <img
-                    src={media.thumbnail}
-                    alt=""
-                    className="w-full h-[160px] object-cover"
-                  />
+                  <div className="flex-shrink-0 w-[120px] h-[90px]">
+                    <img
+                      src={media.thumbnail}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 )}
-                <div className="p-2">
-                  <div className="text-foreground font-medium text-sm">
+                <div className="flex-1 p-3 flex flex-col justify-center min-w-0">
+                  <div className="text-foreground font-medium text-sm line-clamp-2 min-h-[2.5rem]">
                     {media.title}
                   </div>
-                  <div className="text-muted-foreground text-xs">
+                  <div className="text-muted-foreground text-xs mt-1">
                     {media.domain}
                   </div>
                 </div>
@@ -896,7 +913,7 @@ export const FeedPost = ({
                 {mediaItems.map((item, idx) => (
                   <div 
                     key={idx} 
-                    className="flex-shrink-0 w-full min-w-full snap-center px-1 first:pl-0 last:pr-0"
+                    className="flex-shrink-0 w-full min-w-full snap-center px-1 first:pl-0 last:pr-0 relative"
                     ref={idx === activeImageIndex ? (el) => {
                       // When active image index changes, scroll to that image
                       if (el) {
@@ -907,6 +924,12 @@ export const FeedPost = ({
                       }
                     } : undefined}
                   >
+                    {/* Image counter for each image */}
+                    {mediaItems.length > 1 && (
+                      <div className="absolute top-2 right-2 bg-black/60 text-white text-xs font-medium rounded-full px-2 py-0.5 z-10">
+                        {idx + 1}/{mediaItems.length}
+                      </div>
+                    )}
                     <img
                       src={item.url}
                       alt=""
@@ -929,13 +952,6 @@ export const FeedPost = ({
                   </div>
                 ))}
               </div>
-              
-              {/* Image counter in top-right */}
-              {mediaItems.length > 1 && (
-                <div className="absolute top-2 right-2 bg-black/60 text-white text-xs font-medium rounded-full px-2 py-0.5 z-10">
-                  {activeImageIndex + 1}/{mediaItems.length}
-                </div>
-              )}
             </div>
             
             {/* Pagination dots - below the image */}
@@ -1147,14 +1163,16 @@ export const FeedPost = ({
             >
               {userReaction ? (
                 <>
-                  <div className={cn("h-5 w-5", REACTION_DATA[userReaction].color)}>
-                    {REACTION_DATA[userReaction].icon}
+                  <div className={cn("h-5 w-5 flex items-center justify-center", REACTION_DATA[userReaction].color)}>
+                    {REACTION_DATA[userReaction].activeIcon || REACTION_DATA[userReaction].icon}
                   </div>
                   <span>{REACTION_DATA[userReaction].label}</span>
                 </>
               ) : (
                 <>
-                  <ThumbsUp className="h-5 w-5" />
+                  <div className="h-5 w-5 flex items-center justify-center">
+                    <ThumbsUp className="h-4 w-4" />
+                  </div>
                   <span>Inspired</span>
                 </>
               )}
