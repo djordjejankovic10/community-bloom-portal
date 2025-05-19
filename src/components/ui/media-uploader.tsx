@@ -78,7 +78,7 @@ const MediaPicker = ({ onSelect, onClose, iconPosition }: MediaPickerProps) => {
           onClick={() => onSelect("photo")}
         >
           <FileImage className="w-4 h-4 mr-2" />
-          <span>Photo Gallery</span>
+          <span>Photo Library</span>
         </Button>
         <Button 
           variant="ghost" 
@@ -86,15 +86,15 @@ const MediaPicker = ({ onSelect, onClose, iconPosition }: MediaPickerProps) => {
           onClick={() => onSelect("camera")}
         >
           <Camera className="w-4 h-4 mr-2" />
-          <span>Take Photo</span>
+          <span>Take Photo or Video</span>
         </Button>
         <Button 
           variant="ghost" 
           className="flex items-center justify-start"
-          onClick={() => onSelect("video")}
+          onClick={() => onSelect("file")}
         >
-          <Video className="w-4 h-4 mr-2" />
-          <span>Video</span>
+          <Plus className="w-4 h-4 mr-2" />
+          <span>Choose Files</span>
         </Button>
       </div>
     </div>

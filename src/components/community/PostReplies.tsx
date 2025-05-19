@@ -493,7 +493,7 @@ export const PostReplies = ({
             {/* Reply post with indentation */}
             <div 
               className={cn(
-                "relative pt-1 max-w-full",
+                "relative max-w-full",
                 index > 0 && level === 0 ? "mt-3" : (index > 0 ? "mt-4" : "")
               )}
               style={{ 
@@ -503,11 +503,11 @@ export const PostReplies = ({
               {/* Custom comment display for cleaner UI */}
               <div 
                 className={cn(
-                  "flex gap-2 pb-1.5",
+                  "flex gap-2 pb-1.5 items-start",
                   level > 0 && "rounded-lg overflow-hidden"
                 )}
               >
-                <Avatar className="w-8 h-8 mt-0 flex-shrink-0">
+                <Avatar className="w-8 h-8 flex-shrink-0 self-start mt-1">
                   <AvatarImage src={reply.author.avatar} />
                   <AvatarFallback>{reply.author.firstName[0]}</AvatarFallback>
                 </Avatar>

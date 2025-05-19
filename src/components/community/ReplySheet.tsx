@@ -217,6 +217,7 @@ interface ReplySheetProps {
 export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel = false }: ReplySheetProps) {
   const [replyText, setReplyText] = useState("");
   const [selectedMediaItems, setSelectedMediaItems] = useState<MediaItem[]>([]);
+  const [showMediaUploader, setShowMediaUploader] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const mediaUploaderRef = useRef<MediaUploaderRef>(null);
   
@@ -282,7 +283,8 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
     }
   };
 
-  const toggleMediaUploader = () => {
+  const toggleMediaUploader = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setShowMediaUploader(true);
     setTimeout(() => {
       mediaUploaderRef.current?.openMediaPicker();
     }, 50);
@@ -459,7 +461,7 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
         )}
         
         {/* Media uploader */}
-        {selectedMediaItems.length > 0 && (
+        {showMediaUploader && (
           <div className="mt-3 mb-4">
             <MediaUploader 
               mediaItems={selectedMediaItems}
@@ -479,8 +481,7 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
             variant="ghost"
             size="icon"
             className="h-9 w-9 rounded-full"
-            onClick={toggleMediaUploader}
-            title="Media"
+            onClick={(e) => toggleMediaUploader(e)}
           >
             <Image className="h-5 w-5" />
           </Button>
