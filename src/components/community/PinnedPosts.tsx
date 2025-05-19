@@ -158,9 +158,14 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
     }
     
     const savedReadState = localStorage.getItem("pinnedPostsReadState");
+    let readPostsState = {};
+    
     if (savedReadState !== null) {
-      setReadPosts(JSON.parse(savedReadState));
+      readPostsState = JSON.parse(savedReadState);
     }
+    
+    // Always mark Michael Brown's post (index 997) as read, regardless of localStorage
+    setReadPosts({ ...readPostsState, 997: true });
 
     // Initialize reaction counts and filters for each post
     const initialReactionsCount: Record<string | number, ReactionsCount> = {};
@@ -244,17 +249,26 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
     const postReactionsCount = reactionsCount[postIndex];
     if (!postReactionsCount) return [];
     
-    const totalLikes = Object.values(postReactionsCount).reduce((sum, count) => sum + count, 0);
     const mockReactors: ReactionUser[] = [];
     
     const firstNames = ["Alex", "Jamie", "Jordan", "Taylor", "Morgan", "Casey", "Riley", "Quinn"];
     const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis"];
     
-    // Generate reactors based on reaction distribution
+    // Generate a much smaller set of reactors (max 12 total)
     let reactorCount = 0;
+    const maxReactorsPerType = 3; // Max 3 reactors per reaction type
+    const maxTotalReactors = 12; // Max 12 reactors total
+    
     Object.entries(postReactionsCount).forEach(([reaction, count]) => {
+      if (count <= 0) return; // Skip reaction types with no reactions
+      
       const reactionType = reaction as ReactionType;
-      for (let i = 0; i < count; i++) {
+      // Generate at most maxReactorsPerType reactors for each reaction type
+      const numToGenerate = Math.min(count, maxReactorsPerType);
+      
+      for (let i = 0; i < numToGenerate; i++) {
+        if (reactorCount >= maxTotalReactors) break; // Stop if we've reached the total limit
+        
         const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
         const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
         mockReactors.push({
@@ -265,9 +279,9 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
           reactionType
         });
         reactorCount++;
-        if (reactorCount >= 50) break; // Limit to 50 mock reactors
       }
-      if (reactorCount >= 50) return mockReactors;
+      
+      if (reactorCount >= maxTotalReactors) return mockReactors;
     });
     
     return mockReactors;

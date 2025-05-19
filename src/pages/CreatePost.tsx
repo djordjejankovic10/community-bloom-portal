@@ -619,11 +619,11 @@ const CreatePostPage = () => {
             >
               {selectedCircle ? (
                 <>
-                  <CircleIcon size={14} /> {selectedCircle}
+                  {selectedCircle}
                 </>
               ) : (
                 <>
-                  <CircleIcon size={14} /> Select circle
+                  Select circle
                 </>
               )}
               <ChevronDownIcon size={14} />
@@ -631,7 +631,7 @@ const CreatePostPage = () => {
             
             <textarea
               ref={textareaRef}
-              className="w-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
+              className="w-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none pt-[10px]"
               placeholder="What's on your mind?"
               value={content}
               onChange={(e) => setContent(e.target.value)}

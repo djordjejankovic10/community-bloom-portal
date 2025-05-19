@@ -49,7 +49,7 @@ export const CommunityHeader = () => {
           <div className="flex items-center">
             <CommunityMenu />
             <div className="flex items-center gap-2 ml-2">
-              <div className="rounded-lg overflow-hidden w-6 h-6 border border-primary flex-shrink-0">
+              <div className="rounded-lg overflow-hidden w-6 h-6 flex-shrink-0">
                 <img 
                   src="https://images.unsplash.com/photo-1493690283958-32df2c86326e?w=400&h=400&fit=crop" 
                   alt="ES Fitness Logo" 
