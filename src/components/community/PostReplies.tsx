@@ -485,10 +485,7 @@ export const PostReplies = ({
               </>
             )}
             
-            {/* Visual indicator for top-level replies */}
-            {level === 0 && index > 0 && (
-              <div className="h-[1px] w-full mb-2 bg-border/30 dark:bg-border/20" />
-            )}
+            {/* Visual indicator for top-level replies removed */}
             
             {/* Reply post with indentation */}
             <div 
