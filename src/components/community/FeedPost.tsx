@@ -382,6 +382,10 @@ export const FeedPost = ({
     
     // For normal posts, navigate to the post detail view
     // Use the post's index if available, otherwise use 0 as a fallback
+    if (typeof index !== 'number') {
+      console.warn("Post has no index, using fallback");
+    }
+    
     const postId = typeof index === 'number' ? index : 0;
     navigate(`/community/post/${postId}`);
   };
@@ -683,6 +687,7 @@ export const FeedPost = ({
           "transition-colors relative"
         )}
         onClick={isEmbedded ? undefined : handleClick}
+        data-post-index={index}
       >
         {pinned && !isDetail && (
           <div className="flex items-center gap-1.5 mb-2 text-primary text-xs font-medium">
@@ -785,7 +790,7 @@ export const FeedPost = ({
           {/* Display different captions based on reply status unless in detail view */}
           {!isReply && !isDetail && replies && replies.length > 0 ? (
             replies.some(reply => reply.replies && reply.replies.length > 0) ? 
-              "This post has threaded replies" : 
+              "This post has threaded replies with media" : 
               "This post has replies"
           ) : (
             content

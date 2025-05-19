@@ -34,6 +34,17 @@ const PostDetail = () => {
   // Find the post by its index property
   const post = MOCK_POSTS.find(p => p.index === Number(postId));
   
+  // If the post isn't found, try to handle different URL formats
+  useEffect(() => {
+    if (!post && postId) {
+      console.log(`Post with ID ${postId} not found. Available post IDs:`, 
+        MOCK_POSTS.map(p => p.index).sort((a, b) => a - b).join(", "));
+      
+      // In a real app, you might want to fetch the post from an API here
+      // or redirect to a 404 page if it's truly not found
+    }
+  }, [post, postId]);
+  
   const [replyText, setReplyText] = useState("");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [displayedComments, setDisplayedComments] = useState<PostProps[]>([]);
@@ -258,6 +269,13 @@ const PostDetail = () => {
             ←
           </button>
           <h1 className="font-bold text-xl">{post.author.firstName}'s post</h1>
+          
+          {/* Debug info - only in debug mode */}
+          {window.__DEBUG_MODE__ && (
+            <div className="ml-auto text-xs bg-muted px-2 py-1 rounded">
+              Post ID: {postId} | Author: {post.author.firstName} {post.author.lastName}
+            </div>
+          )}
         </div>
         <Separator />
       </div>

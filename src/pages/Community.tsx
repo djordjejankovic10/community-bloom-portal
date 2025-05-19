@@ -201,6 +201,165 @@ export const MOCK_POSTS = [
   PINNED_POST_996,
   PINNED_POST_995,
   PINNED_POST_994,
+  // Example post with comment media - Emma Davis
+  {
+    index: 21,
+    category: "fitness",
+    author: {
+      firstName: "Emma",
+      lastName: "Davis",
+      handle: "@emmad",
+      avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=200&h=200&fit=crop&crop=faces&auto=format",
+      role: "admin" as const
+    },
+    content: "Just finished my morning workout routine! What's your favorite exercise to start the day with?",
+    timestamp: "2h ago",
+    metrics: {
+      likes: 45,
+      comments: 12,
+      userReacted: true,
+      userReactionType: 'inspired' as const
+    },
+    pinned: false,
+    replies: [
+      {
+        author: {
+          firstName: "David",
+          lastName: "Johnson",
+          handle: "@davidj",
+          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces&auto=format",
+          role: "founder" as const
+        },
+        content: "I always start with some light stretching and then move into a 10-minute HIIT session. Here's my progress from the last month:",
+        timestamp: "1h ago",
+        metrics: {
+          likes: 8,
+          comments: 3
+        },
+        media: {
+          // Single photo in comment example
+          type: "image" as const,
+          url: "https://images.unsplash.com/photo-1593476550610-87baa860004a?w=800&h=600&fit=crop",
+          aspectRatio: 1.33
+        },
+        replies: [
+          {
+            author: {
+              firstName: "Emma",
+              lastName: "Davis",
+              handle: "@emmad",
+              avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=200&h=200&fit=crop&crop=faces&auto=format",
+              role: "admin" as const
+            },
+            content: "That's impressive progress, David! How many days a week are you doing this routine?",
+            timestamp: "58m ago",
+            metrics: {
+              likes: 3,
+              comments: 1
+            }
+          },
+          {
+            author: {
+              firstName: "David",
+              lastName: "Johnson",
+              handle: "@davidj",
+              avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces&auto=format",
+              role: "founder" as const
+            },
+            content: "I'm currently doing it 4 days a week. Here's my full weekly schedule:",
+            timestamp: "45m ago",
+            metrics: {
+              likes: 2,
+              comments: 0
+            },
+            mediaItems: [
+              // Carousel in reply example
+              {
+                type: "image" as const,
+                url: "https://images.unsplash.com/photo-1594737625785-a6cbdabd333c?w=800&h=600&fit=crop",
+                aspectRatio: 1.33
+              },
+              {
+                type: "image" as const,
+                url: "https://images.unsplash.com/photo-1576678927484-cc907957088c?w=800&h=600&fit=crop",
+                aspectRatio: 1.33
+              },
+              {
+                type: "image" as const,
+                url: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&h=600&fit=crop",
+                aspectRatio: 1.33
+              }
+            ]
+          }
+        ]
+      },
+      {
+        author: {
+          firstName: "Sarah",
+          lastName: "Williams",
+          handle: "@sarahfit",
+          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces&auto=format",
+          role: "moderator" as const
+        },
+        content: "I've been loving yoga as my morning routine. It really helps set a positive tone for the day! Check out this quick flow:",
+        timestamp: "1h ago",
+        metrics: {
+          likes: 12,
+          comments: 2
+        },
+        media: {
+          // Video in comment example
+          type: "video" as const,
+          url: "https://player.vimeo.com/external/459389137.sd.mp4?s=39df92260aa7c60e5a10448e23c60c267dab43ff&profile_id=139",
+          thumbnail: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=600&h=900&fit=crop"
+        },
+        replies: [
+          {
+            author: {
+              firstName: "Mike",
+              lastName: "Chen",
+              handle: "@mikefit",
+              avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces&auto=format",
+              role: "founder" as const
+            },
+            content: "That's a great flow! I've been trying to get into yoga myself. Is this good for beginners?",
+            timestamp: "45m ago",
+            metrics: {
+              likes: 3,
+              comments: 1
+            }
+          },
+          {
+            author: {
+              firstName: "Sarah",
+              lastName: "Williams",
+              handle: "@sarahfit",
+              avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces&auto=format",
+              role: "moderator" as const
+            },
+            content: "Absolutely! Start with 10 minutes a day and gradually increase. Here are some beginner poses:",
+            timestamp: "30m ago",
+            metrics: {
+              likes: 4,
+              comments: 0
+            },
+            mediaItems: [
+              {
+                type: "image" as const,
+                url: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=600&h=900&fit=crop",
+                aspectRatio: 0.67 // Portrait image
+              },
+              {
+                type: "image" as const,
+                url: "https://images.unsplash.com/photo-1599447292180-45a28f5008cc?w=600&h=900&fit=crop",
+                aspectRatio: 0.67 // Portrait image
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
   // Landscape-only carousel post
   {
     index: 16,
@@ -1278,6 +1437,265 @@ Who's ready to take on their own 30-day challenge? I'm happy to share my detaile
       aspectRatio: 0.33 // Very tall image (1:3 ratio)
     },
   },
+  // Example post with threaded comment experience with media
+  {
+    index: 21,
+    category: "fitness",
+    author: {
+      firstName: "Emma",
+      lastName: "Davis",
+      handle: "@emmad",
+      avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=200&h=200&fit=crop&crop=faces&auto=format",
+      role: "admin",
+    },
+    content: "Just completed my first 10K run in under an hour! So proud of my progress over the last few months. What milestones are you all working towards?",
+    timestamp: "2h ago",
+    metrics: {
+      likes: 87,
+      comments: 14,
+    },
+    media: {
+      type: "image" as const,
+      url: "https://images.unsplash.com/photo-1521537634581-0dced2fee2ef?w=800&h=600&fit=crop&auto=format",
+      aspectRatio: 1.33
+    },
+    replies: [
+      {
+        author: {
+          firstName: "David",
+          lastName: "Johnson",
+          handle: "@davidj",
+          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces&auto=format",
+          role: "founder",
+        },
+        content: "Amazing achievement, Emma! I'm currently training for a half marathon next month. Here's my favorite running trail:",
+        timestamp: "1h ago",
+        metrics: {
+          likes: 12,
+          comments: 3,
+        },
+        media: {
+          // Single image in comment example
+          type: "image" as const,
+          url: "https://images.unsplash.com/photo-1502904550040-7534597429ae?w=800&h=600&fit=crop&auto=format",
+          aspectRatio: 1.33
+        },
+        replies: [
+          {
+            author: {
+              firstName: "Emma",
+              lastName: "Davis",
+              handle: "@emmad",
+              avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=200&h=200&fit=crop&crop=faces&auto=format",
+              role: "admin",
+            },
+            content: "That's a beautiful trail! Where is it located?",
+            timestamp: "58m ago",
+            metrics: {
+              likes: 3,
+              comments: 1,
+            }
+          },
+          {
+            author: {
+              firstName: "David",
+              lastName: "Johnson",
+              handle: "@davidj",
+              avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces&auto=format",
+              role: "founder",
+            },
+            content: "It's in Golden Gate Park, San Francisco. Here are some more views from my run this morning:",
+            timestamp: "45m ago",
+            metrics: {
+              likes: 4,
+              comments: 3,
+            },
+            mediaItems: [
+              // Carousel in reply example
+              {
+                type: "image" as const,
+                url: "https://images.unsplash.com/photo-1533922922960-9fceb9ef4733?w=800&h=600&fit=crop&auto=format",
+                aspectRatio: 1.33
+              },
+              {
+                type: "image" as const,
+                url: "https://images.unsplash.com/photo-1602431702087-7ac0b4c1d960?w=800&h=600&fit=crop&auto=format",
+                aspectRatio: 1.33
+              },
+              {
+                type: "image" as const,
+                url: "https://images.unsplash.com/photo-1512335156536-5f95ed9cd0c8?w=800&h=600&fit=crop&auto=format",
+                aspectRatio: 1.33
+              }
+            ],
+            replies: [
+              {
+                author: {
+                  firstName: "Mike",
+                  lastName: "Chen",
+                  handle: "@mikefit",
+                  avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces&auto=format",
+                  role: "moderator",
+                },
+                content: "I've been there! The trails are fantastic. We should organize a group run sometime.",
+                timestamp: "30m ago",
+                metrics: {
+                  likes: 2,
+                  comments: 2,
+                },
+                replies: [
+                  {
+                    author: {
+                      firstName: "David",
+                      lastName: "Johnson",
+                      handle: "@davidj",
+                      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces&auto=format",
+                      role: "founder",
+                    },
+                    content: "That's a great idea! Let's plan something for next weekend.",
+                    timestamp: "25m ago",
+                    metrics: {
+                      likes: 1,
+                      comments: 0,
+                    }
+                  },
+                  {
+                    author: {
+                      firstName: "Emma",
+                      lastName: "Davis",
+                      handle: "@emmad",
+                      avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=200&h=200&fit=crop&crop=faces&auto=format",
+                      role: "admin",
+                    },
+                    content: "Count me in! I'd love to join a group run.",
+                    timestamp: "20m ago",
+                    metrics: {
+                      likes: 1,
+                      comments: 0,
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        author: {
+          firstName: "Sarah",
+          lastName: "Williams",
+          handle: "@sarahfit",
+          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces&auto=format",
+          role: "moderator",
+        },
+        content: "Way to go, Emma! I'm working towards improving my strength training. Here's a video of my deadlift form - any tips?",
+        timestamp: "45m ago",
+        metrics: {
+          likes: 9,
+          comments: 4,
+        },
+        media: {
+          // Video in comment example
+          type: "video" as const,
+          url: "https://player.vimeo.com/external/477260057.sd.mp4?s=f89a2bf20c81457c9865c586a917a11bef0680f0&profile_id=139",
+          thumbnail: "https://images.unsplash.com/photo-1517344884509-a0c97ec11bcc?w=800&h=600&fit=crop&auto=format"
+        },
+        replies: [
+          {
+            author: {
+              firstName: "Alex",
+              lastName: "Lee",
+              handle: "@alexl",
+              avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&crop=faces&auto=format",
+              role: "moderator",
+            },
+            content: "Your form looks good! Try keeping your gaze neutral instead of looking up - it helps maintain proper spine alignment.",
+            timestamp: "30m ago",
+            metrics: {
+              likes: 5,
+              comments: 2,
+            },
+            replies: [
+              {
+                author: {
+                  firstName: "Sarah",
+                  lastName: "Williams",
+                  handle: "@sarahfit",
+                  avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces&auto=format",
+                  role: "moderator",
+                },
+                content: "Thanks for the tip! I'll try that in my next session.",
+                timestamp: "20m ago",
+                metrics: {
+                  likes: 2,
+                  comments: 0,
+                }
+              },
+              {
+                author: {
+                  firstName: "Mike",
+                  lastName: "Chen",
+                  handle: "@mikefit",
+                  avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces&auto=format",
+                  role: "moderator",
+                },
+                content: "Also, engage your lats a bit more before lifting. It'll help protect your lower back.",
+                timestamp: "15m ago",
+                metrics: {
+                  likes: 3,
+                  comments: 1,
+                },
+                replies: [
+                  {
+                    author: {
+                      firstName: "Sarah",
+                      lastName: "Williams",
+                      handle: "@sarahfit",
+                      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces&auto=format",
+                      role: "moderator",
+                    },
+                    content: "Great point! I've been working on that. Here's my attempt at engaging the lats more:",
+                    timestamp: "10m ago",
+                    metrics: {
+                      likes: 2,
+                      comments: 0,
+                    },
+                    mediaItems: [
+                      {
+                        type: "image" as const,
+                        url: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&h=600&fit=crop&auto=format",
+                        aspectRatio: 1.33
+                      },
+                      {
+                        type: "image" as const,
+                        url: "https://images.unsplash.com/photo-1534438097545-a2c22c5135c6?w=800&h=600&fit=crop&auto=format",
+                        aspectRatio: 1.33
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            author: {
+              firstName: "Emma",
+              lastName: "Davis",
+              handle: "@emmad",
+              avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=200&h=200&fit=crop&crop=faces&auto=format",
+              role: "admin",
+            },
+            content: "Looking strong, Sarah! My strength goal is to do 10 pull-ups in a row.",
+            timestamp: "25m ago",
+            metrics: {
+              likes: 4,
+              comments: 0,
+            }
+          }
+        ]
+      }
+    ]
+  },
 ];
 
 // Array for pinned posts in the UI
@@ -1339,6 +1757,26 @@ const Community = () => {
     return (
       <>
         <CreatePost />
+        
+        {/* Debug link to Emma's post with media in comments */}
+        {window.__DEBUG_MODE__ && (
+          <div className="bg-muted/50 p-2 m-2 rounded-md text-xs">
+            <p>Debug Links:</p>
+            <div className="flex gap-2 mt-1">
+              <a 
+                href="/community/post/21" 
+                className="text-primary underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/community/post/21");
+                }}
+              >
+                Open Emma's Post (ID 21)
+              </a>
+            </div>
+          </div>
+        )}
+        
         <div className="space-y-4">
           {pinnedPosts.length > 0 && (
             <PinnedPosts pinnedPosts={pinnedPosts} onUnpin={handleUnpin} />

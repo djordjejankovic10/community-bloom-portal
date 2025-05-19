@@ -3,7 +3,7 @@ import { FeedPost } from "./FeedPost";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ThumbsUp, MessageCircle, MoreVertical, Heart } from "lucide-react";
+import { ThumbsUp, MessageCircle, MoreVertical, Heart, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
@@ -194,6 +194,31 @@ export const PostReplies = ({
     return replyIndex % 2 === 0 
       ? "bg-secondary/70 dark:[&]:bg-[#383838]" 
       : "bg-secondary dark:[&]:bg-[#383838]";
+  };
+  
+  // Determine if we should show a "View n replies" button
+  const shouldShowViewRepliesButton = (reply: PostProps, index: number) => {
+    if (!reply.replies || reply.replies.length <= 1) return false;
+    return !expandedThreads[index]; // Only show if thread is not expanded
+  };
+  
+  // Get the number of hidden replies 
+  const getHiddenRepliesCount = (reply: PostProps) => {
+    if (!reply.replies) return 0;
+    return reply.replies.length - 1; // We show the first one by default
+  };
+  
+  // Get replies to render based on expansion state
+  const getRepliesToRender = (reply: PostProps, index: number) => {
+    if (!reply.replies || reply.replies.length === 0) return [];
+    
+    // If thread is expanded, show all replies
+    if (expandedThreads[index]) {
+      return reply.replies;
+    }
+    
+    // Otherwise, show only the first reply
+    return reply.replies.slice(0, 1);
   };
   
   // Handle reaction for a specific reply
@@ -409,7 +434,13 @@ export const PostReplies = ({
           : (!hasReacted && reply.metrics.userReacted ? totalReactions - 1 : totalReactions);
         
         return (
-          <div key={index} className="relative">
+          <div
+            key={index}
+            className={cn(
+              "my-3 relative",
+              isLastReply && index === replies.length - 1 ? "mb-0" : ""
+            )}
+          >
             {/* Connecting line from parent to child */}
             {level > 0 && (
               <div 
@@ -516,7 +547,7 @@ export const PostReplies = ({
                             <img
                               src={reply.media.url}
                               alt=""
-                              className="w-full h-auto rounded-lg cursor-pointer"
+                              className="w-full h-[200px] object-cover rounded-lg cursor-pointer"
                               onClick={(e) => openPhotoViewer(reply.media.url, e)}
                             />
                           ) : reply.media.type === "video" ? (
@@ -569,6 +600,72 @@ export const PostReplies = ({
                                 )}
                               </div>
                             </a>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Reply mediaItems (carousel) */}
+                      {reply.mediaItems && reply.mediaItems.length > 0 && (
+                        <div className="mt-2 relative rounded-lg overflow-hidden">
+                          <div className="flex overflow-x-auto snap-x scrollbar-hide">
+                            {reply.mediaItems.map((item, idx) => (
+                              <div 
+                                key={idx}
+                                className="flex-shrink-0 w-full h-[200px] snap-center"
+                              >
+                                {item.type === "image" ? (
+                                  <img
+                                    src={item.url}
+                                    alt=""
+                                    className="w-full h-full object-cover cursor-pointer"
+                                    onClick={(e) => openPhotoViewer(item.url, e)}
+                                  />
+                                ) : item.type === "video" && (
+                                  <div className="relative w-full aspect-video bg-muted">
+                                    <img
+                                      src={item.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 rounded-full bg-background/80 hover:bg-background/90"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          // Handle video playback
+                                          console.log("Play video:", item.url);
+                                        }}
+                                      >
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                                          <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
+                                        </svg>
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* Carousel indicators */}
+                          {reply.mediaItems.length > 1 && (
+                            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+                              {reply.mediaItems.map((_, idx) => (
+                                <div 
+                                  key={idx}
+                                  className={`h-1.5 rounded-full ${idx === 0 ? 'w-4 bg-white' : 'w-1.5 bg-white/60'}`}
+                                ></div>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {/* Image counter */}
+                          {reply.mediaItems.length > 1 && (
+                            <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full">
+                              1/{reply.mediaItems.length}
+                            </div>
                           )}
                         </div>
                       )}
@@ -790,48 +887,50 @@ export const PostReplies = ({
                 </div>
               </div>
               
-              {/* Nested replies (if any) */}
+              {/* Render replies if this reply has them */}
               {reply.replies && reply.replies.length > 0 && (
-                <>
-                  {/* Only show first 3 replies by default or all if expanded */}
-                  <PostReplies 
-                    replies={expandedThreads[index] 
-                      ? reply.replies 
-                      : reply.replies.slice(0, DEFAULT_REPLIES_SHOWN)} 
-                    parentAuthor={reply.author.firstName + " " + reply.author.lastName}
-                    level={actualLevel + 1}
-                    isLastReply={isLast}
+                <div className="pl-4 relative">
+                  {/* Thread connection line */}
+                  <div 
+                    className="absolute left-2 top-2 bottom-2 w-0.5 bg-border dark:bg-gray-700"
+                    style={{ top: "24px" }}
+                  />
+                  
+                  {/* Render the replies that should be visible */}
+                  <PostReplies
+                    replies={getRepliesToRender(reply, index)}
+                    parentAuthor={`${reply.author.firstName} ${reply.author.lastName}`}
+                    level={level + 1}
+                    isLastReply={!shouldShowViewRepliesButton(reply, index)}
                     onReply={onReply}
                   />
                   
-                  {/* Show "Show more replies" button if there are more than 3 replies and thread is not expanded */}
-                  {!expandedThreads[index] && reply.replies.length > DEFAULT_REPLIES_SHOWN && (
-                    <div 
-                      className="flex items-center gap-1 ml-8 mt-2 mb-3 cursor-pointer text-xs text-primary hover:text-primary/80"
-                      style={{ marginLeft: `${leftIndent + 28}px` }}
+                  {/* "View n replies" button */}
+                  {shouldShowViewRepliesButton(reply, index) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => toggleThreadExpansion(index)}
+                      className="ml-2 text-primary hover:text-primary/80 hover:bg-transparent flex items-center gap-1 pl-2 h-8 mt-1"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                      </svg>
-                      <span>Show {reply.replies.length - DEFAULT_REPLIES_SHOWN} more {reply.replies.length - DEFAULT_REPLIES_SHOWN === 1 ? 'reply' : 'replies'}</span>
-                    </div>
+                      <MessageCircle className="h-3.5 w-3.5 mr-1" />
+                      View {getHiddenRepliesCount(reply)} {getHiddenRepliesCount(reply) === 1 ? 'reply' : 'replies'}
+                    </Button>
                   )}
                   
-                  {/* Show "Show less" button if thread is expanded */}
-                  {expandedThreads[index] && reply.replies.length > DEFAULT_REPLIES_SHOWN && (
-                    <div 
-                      className="flex items-center gap-1 ml-8 mt-2 mb-3 cursor-pointer text-xs text-primary hover:text-primary/80"
-                      style={{ marginLeft: `${leftIndent + 28}px` }}
+                  {/* "Hide replies" button when expanded */}
+                  {expandedThreads[index] && reply.replies && reply.replies.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => toggleThreadExpansion(index)}
+                      className="ml-2 text-primary hover:text-primary/80 hover:bg-transparent flex items-center gap-1 pl-2 h-8 mt-1"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 transform rotate-180">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                      </svg>
-                      <span>Show less</span>
-                    </div>
+                      <ChevronUp className="h-3.5 w-3.5 mr-1" />
+                      Hide replies
+                    </Button>
                   )}
-                </>
+                </div>
               )}
             </div>
           </div>
