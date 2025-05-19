@@ -607,18 +607,23 @@ export const PostReplies = ({
                       {/* Reply mediaItems (carousel) */}
                       {reply.mediaItems && reply.mediaItems.length > 0 && (
                         <div className="mt-2 relative rounded-lg overflow-hidden">
-                          <div className="flex overflow-x-auto snap-x scrollbar-hide">
+                          <div className="flex overflow-x-auto snap-x scrollbar-hide px-1 -mx-1 space-x-2">
                             {reply.mediaItems.map((item, idx) => (
                               <div 
                                 key={idx}
-                                className="flex-shrink-0 w-full h-[200px] snap-center"
+                                className="flex-shrink-0 w-full h-[200px] snap-center px-1"
                               >
                                 {item.type === "image" ? (
                                   <img
-                                    src={item.url}
+                                    src={item.url || "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&h=600&fit=crop"}
                                     alt=""
                                     className="w-full h-full object-cover cursor-pointer"
-                                    onClick={(e) => openPhotoViewer(item.url, e)}
+                                    onClick={(e) => openPhotoViewer(item.url || "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&h=600&fit=crop", e)}
+                                    onError={(e) => {
+                                      // Fallback to a reliable image if the original one fails to load
+                                      const target = e.target as HTMLImageElement;
+                                      target.src = "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&h=600&fit=crop";
+                                    }}
                                   />
                                 ) : item.type === "video" && (
                                   <div className="relative w-full aspect-video bg-muted">

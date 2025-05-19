@@ -55,7 +55,6 @@ As a mobile app user, I want to view media attachments in comments so I can full
   - Video player includes standard controls (play/pause, seek, volume)
   - Tap X or swipe down to dismiss full-screen viewer
 - Loading and error states:
-  - Progressive loading with low-resolution placeholders
   - Initially display shimmer animation over light gray placeholder
   - Maintain consistent dimensions during loading to prevent layout shifts
   - Error states for failed media loads with retry option
@@ -116,9 +115,7 @@ As a mobile app user, I want to attach media to my comments so I can share visua
     - Comment send button disabled until upload completes
   - Error handling for failed uploads with retry option
   - Size constraints and optimization:
-    - File size limits enforced (10MB for images, 50MB for videos)
-    - Automatic compression offered for large files
-    - Image quality optimized for mobile viewing
+    - File size limits enforced 
   - Background uploading allows continuing to type comment during media upload
 - Media display follows same specifications as in "View Media in Comments"
   - Consistent rendering between preview and final posted appearance
@@ -131,7 +128,7 @@ As a mobile app user, I want to reply to specific comments so I can engage in th
 - Reply functionality:
   - Reply button visible on each comment
   - Reply button on comments initiates a full screen bottom sheet
-  - Reply sheet shows the original comment at the top with a visual connecting line between the original comment and reply area for clear threading context
+  - Reply sheet shows the original comment (and any media) at the top with a visual connecting line between the original comment and reply area for clear threading context
   - Reply sheet includes the original commenter's avatar and name for context
   - Reply sheet includes a back/close button to return to the post detail view
   - Reply input field auto-focuses when the sheet opens
@@ -147,8 +144,6 @@ As a mobile app user, I want to reply to specific comments so I can engage in th
   - Momentarily highlight the newly created reply with a subtle animation (pulsing highlighting) and haptic feedback
 - Media in replies:
   - Support for attaching up to 6 media items per reply (part of overall 6 file maximum)
-  - Same media selection, preview, and upload process as regular comments
-  - Media picker integrated in the reply bottom sheet
   - Preview thumbnails appear in reply composition area before sending
   - Loading indicators show upload progress with percentage or visual indicator
   - Error handling for failed uploads with retry option
