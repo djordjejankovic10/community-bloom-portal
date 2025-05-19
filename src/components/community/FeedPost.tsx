@@ -16,8 +16,10 @@ import {
   Utensils,
   ThumbsUp,
   Plus,
-  Minus
+  Minus,
+  Send
 } from "lucide-react";
+import { ReplySheet } from "@/components/community/ReplySheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -232,6 +234,9 @@ export const FeedPost = ({
   const [reactors, setReactors] = useState<ReactionUser[]>([]);
   const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
   const [metrics, setMetrics] = useState(initialMetrics);
+  
+  // State for comment sheet (reusing ReplySheet for top-level comments)
+  const [commentSheetOpen, setCommentSheetOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<ReactionType | 'all'>('all');
   const [reactionsCount, setReactionsCount] = useState<ReactionsCount>({
     inspired: Math.floor(initialMetrics.likes * 0.7),
@@ -1226,9 +1231,8 @@ export const FeedPost = ({
               className="flex items-center justify-center gap-2 py-2 text-muted-foreground transition-colors text-sm w-full"
               onClick={(e) => {
                 e.stopPropagation();
-                if (typeof index === 'number') {
-                  navigate(`/community/post/${index}?showComments=true`);
-                }
+                // Open the comment sheet instead of navigating
+                setCommentSheetOpen(true);
               }}
             >
               <MessageCircle className="h-5 w-5" />
@@ -1258,6 +1262,36 @@ export const FeedPost = ({
       )}
       
       {!isEmbedded && !isReply && <Separator className="w-full max-w-full" />}
+      
+      {/* Comment Sheet for top-level comments (reusing ReplySheet component) */}
+      <ReplySheet
+        open={commentSheetOpen}
+        onClose={() => {
+          setCommentSheetOpen(false);
+        }}
+        onSendReply={(text, media) => {
+          // Handle sending a top-level comment
+          // In a real app, this would call an API to add the comment
+          toast({
+            title: "Comment added",
+            description: "Your comment has been added to the post."
+          });
+          
+          // Close the comment sheet
+          setCommentSheetOpen(false);
+          
+          // Navigate to the post detail view to see the comment
+          if (typeof index === 'number') {
+            navigate(`/community/post/${index}?showComments=true`);
+          }
+        }}
+        replyingTo={{
+          name: `${author.firstName} ${author.lastName}`,
+          avatar: author.avatar,
+          content: content
+        }}
+        isTopLevel={true}
+      />
     </div>
   );
 };

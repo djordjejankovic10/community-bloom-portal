@@ -143,7 +143,7 @@ export const PostReplies = ({
   
   // Maximum nesting level to avoid excessive indentation
   // Original comment is level 0, max depth is 3 levels (original → reply → reply to reply → reply to reply to reply)
-  const MAX_LEVEL = 2; // Since we start at level 0, MAX_LEVEL should be 2 to get 3 total levels
+  const MAX_LEVEL = 3; // This allows for original comment (0) + 3 levels of replies (1,2,3)
   const actualLevel = Math.min(level, MAX_LEVEL);
   
   // Calculate indentation based on level - reduce indentation for deeper levels
@@ -442,30 +442,47 @@ export const PostReplies = ({
               isLastReply && index === replies.length - 1 ? "mb-0" : ""
             )}
           >
-            {/* Connecting line from parent to child */}
+            {/* L-shaped connector line (replaces separate vertical and horizontal lines) */}
             {level > 0 && (
-              <div 
-                className={cn(
-                  "absolute w-[1.5px] bg-border/60 dark:bg-border/40",
-                  isLast && isLastReply ? "h-[30px]" : "h-full"
-                )}
-                style={{ 
-                  left: leftIndent - 12, // Adjusted for better alignment
-                  top: 0
-                }}
-              />
-            )}
-            
-            {/* Horizontal connector line */}
-            {level > 0 && (
-              <div 
-                className="absolute h-[1.5px] bg-border/60 dark:bg-border/40"
-                style={{ 
-                  left: leftIndent - 12,
-                  width: '12px',
-                  top: '16px' // Adjusted to align with avatar center
-                }}
-              />
+              <>
+                {/* Vertical part of the L */}
+                <div 
+                  className={cn(
+                    "absolute w-[1.5px]",
+                    isLast && isLastReply ? "h-[16px]" : "h-full",
+                    "dark:[&]:bg-[#383838]/60 bg-secondary/60"
+                  )}
+                  style={{ 
+                    left: leftIndent - 12,
+                    top: 0
+                  }}
+                />
+                
+                {/* Corner piece - creates the bend */}
+                <div 
+                  className="absolute dark:[&]:bg-[#383838]/60 bg-secondary/60"
+                  style={{ 
+                    left: leftIndent - 12,
+                    width: '6px',
+                    height: '6px',
+                    top: '14px',
+                    borderTopLeftRadius: '4px',
+                    borderLeft: '1.5px solid',
+                    borderTop: '1.5px solid',
+                    borderColor: 'inherit'
+                  }}
+                />
+                
+                {/* Horizontal part of the L */}
+                <div 
+                  className="absolute h-[1.5px] dark:[&]:bg-[#383838]/60 bg-secondary/60"
+                  style={{ 
+                    left: leftIndent - 6,
+                    width: '6px',
+                    top: '16px'
+                  }}
+                />
+              </>
             )}
             
             {/* Visual indicator for top-level replies */}
@@ -680,7 +697,6 @@ export const PostReplies = ({
                     {/* Timestamp outside the bubble */}
                     <div className="text-xs text-muted-foreground ml-2 mt-1 mb-0.5 flex items-center gap-1.5 justify-between">
                       <div className="flex items-center gap-3">
-                        <span>{reply.timestamp}</span>
                         <button 
                           ref={el => reactionButtonRefs.current[index] = el}
                           className={cn(
@@ -777,6 +793,7 @@ export const PostReplies = ({
                         >
                           Reply
                         </button>
+                        <span>{reply.timestamp}</span>
                       </div>
                       
                       {/* Reaction counts display with drawer - now right aligned */}
@@ -896,16 +913,7 @@ export const PostReplies = ({
               {/* Render replies if this reply has them and we haven't reached max nesting level */}
               {reply.replies && reply.replies.length > 0 && level < MAX_LEVEL && (
                 <div className="pl-4 relative">
-                  {/* Thread connection line */}
-                  <div 
-                    className="absolute w-0.5 bg-border/60 dark:bg-border/40"
-                    style={{ 
-                      left: '8px', 
-                      top: '0px',
-                      bottom: '8px',
-                      height: 'calc(100% - 8px)'
-                    }}
-                  />
+                  {/* Removed disconnected thread connection line */}
                   
                   {/* Render the replies that should be visible */}
                   <PostReplies
@@ -924,7 +932,6 @@ export const PostReplies = ({
                       onClick={() => toggleThreadExpansion(index)}
                       className="ml-2 text-primary hover:text-primary/80 hover:bg-transparent flex items-center gap-1 pl-2 h-8 mt-1"
                     >
-                      <MessageCircle className="h-3.5 w-3.5 mr-1" />
                       View {getHiddenRepliesCount(reply)} {getHiddenRepliesCount(reply) === 1 ? 'reply' : 'replies'}
                     </Button>
                   )}

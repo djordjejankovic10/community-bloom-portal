@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useUIPreferences } from "@/context/UIPreferences";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -197,6 +198,7 @@ interface ReplySheetProps {
     avatar?: string;
     content?: string;
   };
+  isTopLevel?: boolean; // Flag to indicate if this is a top-level comment
 }
 
 /**
@@ -212,11 +214,14 @@ interface ReplySheetProps {
  * - Send button activates when there is content to send
  * - Includes full composer functionality matching the CreatePost experience
  */
-export function ReplySheet({ open, onClose, onSendReply, replyingTo }: ReplySheetProps) {
+export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel = false }: ReplySheetProps) {
   const [replyText, setReplyText] = useState("");
   const [selectedMediaItems, setSelectedMediaItems] = useState<MediaItem[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const mediaUploaderRef = useRef<MediaUploaderRef>(null);
+  
+  // Get the setHideBottomNav function from UIPreferences context
+  const { setHideBottomNav } = useUIPreferences();
   
   // States for various bottom sheets and functionality
   const [isAISheetOpen, setIsAISheetOpen] = useState(false);
@@ -250,17 +255,23 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo }: ReplyShee
     }
   }, [replyText]);
 
-  // Body scroll lock effect
+  // Body scroll lock effect and hide bottom nav when open
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
+      // Hide bottom navigation when the sheet is open
+      setHideBottomNav(true);
     } else {
       document.body.style.overflow = "";
+      // Show bottom navigation when the sheet is closed
+      setHideBottomNav(false);
     }
     return () => {
       document.body.style.overflow = "";
+      // Ensure bottom navigation is shown when component unmounts
+      setHideBottomNav(false);
     };
-  }, [open]);
+  }, [open, setHideBottomNav]);
 
   const handleReply = () => {
     if (replyText.trim() || selectedMediaItems.length > 0) {
@@ -372,7 +383,7 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo }: ReplyShee
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h2 className="text-lg font-bold">Reply</h2>
+        <h2 className="text-lg font-bold">{isTopLevel ? "Comment" : "Reply"}</h2>
         <Button 
           size="sm"
           onClick={handleReply}
@@ -384,7 +395,7 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo }: ReplyShee
               : "bg-primary/70 text-primary-foreground/70"
           )}
         >
-          Reply
+          {isTopLevel ? "Post" : "Reply"}
         </Button>
       </div>
       

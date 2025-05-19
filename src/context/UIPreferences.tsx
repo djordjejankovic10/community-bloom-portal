@@ -3,6 +3,8 @@ import React, { createContext, useContext, useState } from 'react';
 type UIPreferencesContextType = {
   showNavigation: boolean;
   toggleNavigation: () => void;
+  hideBottomNav: boolean;
+  setHideBottomNav: (hide: boolean) => void;
 };
 
 // Create a default context value
@@ -11,11 +13,17 @@ const UIPreferencesContext = createContext<UIPreferencesContextType>({
   toggleNavigation: () => {
     console.warn('UIPreferencesContext not initialized yet');
   },
+  hideBottomNav: false,
+  setHideBottomNav: () => {
+    console.warn('UIPreferencesContext not initialized yet');
+  }
 });
 
 export const UIPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Use state to track navigation visibility
   const [showNav, setShowNav] = useState(false);
+  // State to control bottom navigation visibility
+  const [hideBottomNav, setHideBottomNav] = useState(false);
 
   // Define toggle function
   const toggle = () => {
@@ -29,6 +37,8 @@ export const UIPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
   const contextValue = {
     showNavigation: showNav,
     toggleNavigation: toggle,
+    hideBottomNav,
+    setHideBottomNav,
   };
 
   // Provide context to children

@@ -18,7 +18,7 @@ import { MOCK_POSTS } from "./Community";
 import { PostReplies } from "../components/community/PostReplies";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { PostProps } from "@/types/post";
+import { PostProps, PostAuthor, PostMedia } from "@/types/post";
 import { MediaUploader, MediaItem, MediaUploaderRef } from "@/components/ui/media-uploader";
 import { ReplySheet } from "@/components/community/ReplySheet";
 
@@ -31,8 +31,9 @@ const PostDetail = () => {
   const commentsEndRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Find the post by its index property
-  const post = MOCK_POSTS.find(p => p.index === Number(postId));
+  // Find the post by its index property and cast it to the correct type
+  const foundPost = MOCK_POSTS.find(p => p.index === Number(postId));
+  const [post, setPost] = useState<PostProps | undefined>(foundPost as PostProps);
   
   // If the post isn't found, try to handle different URL formats
   useEffect(() => {
@@ -59,7 +60,11 @@ const PostDetail = () => {
     name: string;
     avatar?: string;
     content?: string;
+    isTopLevel?: boolean;
   } | null>(null);
+  
+  // State for comment sheet (reusing ReplySheet for top-level comments)
+  const [commentSheetOpen, setCommentSheetOpen] = useState(false);
   
   // Auto-resize input as content is added
   useEffect(() => {
@@ -271,7 +276,7 @@ const PostDetail = () => {
           <h1 className="font-bold text-xl">{post.author.firstName}'s post</h1>
           
           {/* Debug info - only in debug mode */}
-          {window.__DEBUG_MODE__ && (
+          {window.location.search.includes('debug=true') && (
             <div className="ml-auto text-xs bg-muted px-2 py-1 rounded">
               Post ID: {postId} | Author: {post.author.firstName} {post.author.lastName}
             </div>
@@ -349,83 +354,35 @@ const PostDetail = () => {
         )}
       </div>
 
-      {/* Fixed comment input at bottom */}
+      {/* Fixed comment input at bottom - now just a trigger for the comment sheet */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-3 pb-safe-area-inset-bottom">
         <div className="flex flex-col gap-2 max-w-2xl mx-auto">
-          {replyingTo && (
-            <div className="flex items-center text-xs text-muted-foreground mb-1">
-              <Badge variant="outline" className="mr-2 px-1 py-0 gap-1 h-5">
-                <span>Replying to {replyingTo}</span>
-                <button 
-                  onClick={clearReplyingTo}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            </div>
-          )}
-          
-          {/* Media uploader component - always render but toggle visibility */}
-          {showMediaUploader && (
-            <MediaUploader 
-              mediaItems={selectedMediaItems}
-              onChange={setSelectedMediaItems}
-              maxItems={6}
-              previewSize="md"
-              ref={mediaUploaderRef}
-            />
-          )}
-          
           <div className="flex items-start gap-2">
             <Avatar className="w-8 h-8 flex-shrink-0 mt-1">
               <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
-            <div className="flex-1 relative">
-              <Textarea
-                ref={commentInputRef}
-                placeholder="Write a comment..."
-                className="min-h-[40px] pr-20 py-2 pl-4 rounded-full resize-none overflow-y-auto"
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey && replyText.trim()) {
-                    e.preventDefault();
-                    handleReply();
-                  }
-                }}
-                rows={1}
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8 rounded-full"
-                  onClick={toggleMediaUploader}
-                >
-                  <Image className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className={cn(
-                    "h-8 w-8 rounded-full", 
-                    replyText.trim() && "bg-primary hover:bg-primary/90 text-primary-foreground"
-                  )}
-                  disabled={!replyText.trim() && selectedMediaItems.length === 0}
-                  onClick={handleReply}
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
+            <div 
+              className="flex-1 relative bg-muted/50 rounded-full px-4 py-2 min-h-[40px] flex items-center cursor-pointer hover:bg-muted/80 transition-colors"
+              onClick={() => {
+                // Open the comment sheet for top-level comments
+                setReplyingToComment({
+                  name: post?.author?.firstName + " " + post?.author?.lastName,
+                  avatar: post?.author?.avatar,
+                  content: post?.content,
+                  isTopLevel: true // Flag to identify this as a top-level comment
+                });
+                setCommentSheetOpen(true);
+              }}
+            >
+              <span className="text-muted-foreground">Write a comment...</span>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Reply Sheet */}
-      {replyingToComment && (
+      {/* Reply Sheet for replies to comments */}
+      {replyingToComment && !replyingToComment.isTopLevel && (
         <ReplySheet
           open={replySheetOpen}
           onClose={() => {
@@ -436,6 +393,64 @@ const PostDetail = () => {
           }}
           onSendReply={handleSendReply}
           replyingTo={replyingToComment}
+        />
+      )}
+      
+      {/* Comment Sheet for top-level comments (reusing ReplySheet component) */}
+      {replyingToComment && replyingToComment.isTopLevel && (
+        <ReplySheet
+          open={commentSheetOpen}
+          onClose={() => {
+            setCommentSheetOpen(false);
+            setReplyingToComment(null);
+          }}
+          onSendReply={(text, media) => {
+            // Handle sending a top-level comment
+            if (post) {
+              const newComment: PostProps = {
+                author: {
+                  firstName: "You",
+                  lastName: "",
+                  handle: "@you",
+                  avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
+                  role: "admin" // Required by PostProps type
+                },
+                content: text,
+                // Convert MediaItem[] to PostMedia or PostMedia[] as needed
+                media: media.length > 0 ? {
+                  type: "image",
+                  url: media[0].url,
+                  aspectRatio: 1.5
+                } : undefined,
+                mediaItems: media.length > 1 ? media.map(m => ({
+                  type: "image",
+                  url: m.url,
+                  aspectRatio: 1.5
+                })) : undefined,
+                timestamp: new Date().toISOString(),
+                metrics: { likes: 0, comments: 0 },
+                replies: []
+              };
+              
+              // Add the comment to the post
+              if (post) {
+                const updatedPost = {...post};
+                if (!updatedPost.replies) {
+                  updatedPost.replies = [];
+                }
+                updatedPost.replies.unshift(newComment);
+                
+                // Update the UI
+                setPost(updatedPost);
+              }
+            }
+          }}
+          replyingTo={{
+            name: replyingToComment.name,
+            avatar: replyingToComment.avatar,
+            content: replyingToComment.content
+          }}
+          isTopLevel={true}
         />
       )}
     </div>

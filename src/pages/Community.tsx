@@ -2157,15 +2157,13 @@ const Community = () => {
   };
 
   return (
-    <UIPreferencesProvider>
-      <div className="flex flex-col flex-1">
-        <CommunityHeader />
-        <ConditionalCommunityTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-        <main>
-          {renderContent()}
-        </main>
-      </div>
-    </UIPreferencesProvider>
+    <div className="flex flex-col flex-1">
+      <CommunityHeader />
+      <ConditionalCommunityTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+      <main>
+        {renderContent()}
+      </main>
+    </div>
   );
 };
 

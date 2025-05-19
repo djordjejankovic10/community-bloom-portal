@@ -22,13 +22,15 @@ import WelcomePage from "./pages/Welcome";
 import ResourcesPage from "./pages/Resources";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { MenuPreferencesProvider } from "@/context/MenuPreferencesContext";
+import { UIPreferencesProvider } from "@/context/UIPreferences";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <MenuPreferencesProvider>
+      <UIPreferencesProvider>
+        <MenuPreferencesProvider>
         <TooltipProvider>
           <Toaster />
           <Sonner />
@@ -118,6 +120,7 @@ const App = () => (
           </BrowserRouter>
         </TooltipProvider>
       </MenuPreferencesProvider>
+    </UIPreferencesProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );

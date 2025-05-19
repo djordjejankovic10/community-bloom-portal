@@ -45,7 +45,7 @@ export const CommunityHeader = () => {
   return (
     <>
       <header className="sticky top-0 bg-background border-b border-border z-50">
-        <div className="flex justify-between items-center px-3 py-2">
+        <div className="flex justify-between items-center pr-3 pl-0 py-2">
           <div className="flex items-center">
             <CommunityMenu />
             <div className="flex items-center gap-2 ml-2">

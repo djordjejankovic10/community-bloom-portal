@@ -11,7 +11,7 @@ export const NotificationBadge = ({ count, className }: NotificationBadgeProps) 
   return (
     <div 
       className={cn(
-        "absolute top-0 right-0 flex items-center justify-center rounded-full bg-red-500 w-3 h-3 border-2 border-[#28292D] translate-x-1/4 translate-y-0",
+        "absolute top-0 right-0 flex items-center justify-center rounded-full bg-red-500 w-2 h-2 border-2 border-[#28292D] -translate-x-[3px] translate-y-0",
         className
       )}
     >
