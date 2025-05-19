@@ -201,6 +201,361 @@ export const MOCK_POSTS = [
   PINNED_POST_996,
   PINNED_POST_995,
   PINNED_POST_994,
+  // Deep threaded comments example post
+  {
+    index: 1001,
+    category: "fitness",
+    author: {
+      firstName: "Michael",
+      lastName: "Torres",
+      handle: "@michaelt",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces&auto=format",
+      verified: true,
+      role: "founder" as const
+    },
+    content: "What's your favorite post-workout recovery technique? I've been experimenting with different methods and would love to hear what works for everyone! #RecoveryTips",
+    timestamp: "30m",
+    metrics: {
+      likes: 87,
+      comments: 24,
+      shares: 12
+    },
+    pinned: false,
+    replies: [
+      // Comment 1 with nested replies
+      {
+        author: {
+          firstName: "Sophia",
+          lastName: "Chen",
+          handle: "@sophiac",
+          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces&auto=format",
+          role: "moderator" as const
+        },
+        content: "Ice baths have been a game-changer for me! I do 5 minutes at 50°F after intense leg days. The initial shock is worth the reduced soreness.",
+        timestamp: "2h 45m ago",
+        metrics: {
+          likes: 32,
+          comments: 8
+        },
+        mediaItems: [
+          {
+            type: "image" as const,
+            url: "https://images.unsplash.com/photo-1594737625785-a6cbdabd333c?w=800&h=600&fit=crop",
+            aspectRatio: 1.33
+          },
+          {
+            type: "image" as const,
+            url: "https://images.unsplash.com/photo-1594387312431-a7a90f436a55?w=800&h=600&fit=crop",
+            aspectRatio: 1.33
+          }
+        ],
+        replies: [
+          {
+            author: {
+              firstName: "Michael",
+              lastName: "Torres",
+              handle: "@michaelt",
+              avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces&auto=format",
+              verified: true,
+              role: "founder" as const
+            },
+            content: "That's impressive, Sophia! Do you use a special tub or just your regular bathtub with ice?",
+            timestamp: "2h 30m ago",
+            metrics: {
+              likes: 12,
+              comments: 3
+            },
+            replies: [
+              {
+                author: {
+                  firstName: "Sophia",
+                  lastName: "Chen",
+                  handle: "@sophiac",
+                  avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces&auto=format",
+                  role: "moderator" as const
+                },
+                content: "I invested in a dedicated ice bath tub, but started with a regular bathtub. Here's my setup:",
+                timestamp: "2h 20m ago",
+                metrics: {
+                  likes: 8,
+                  comments: 2
+                },
+                mediaItems: [
+                  {
+                    type: "image" as const,
+                    url: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&h=600&fit=crop",
+                    aspectRatio: 1.33
+                  }
+                ],
+                replies: [
+                  {
+                    author: {
+                      firstName: "Alex",
+                      lastName: "Rivera",
+                      handle: "@alexr",
+                      avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200&h=200&fit=crop&crop=faces&auto=format",
+                    },
+                    content: "That's a serious setup! How much did it cost? I've been thinking about getting something similar.",
+                    timestamp: "2h 15m ago",
+                    metrics: {
+                      likes: 4,
+                      comments: 1
+                    },
+                    replies: [
+                      {
+                        author: {
+                          firstName: "Sophia",
+                          lastName: "Chen",
+                          handle: "@sophiac",
+                          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces&auto=format",
+                          role: "moderator" as const
+                        },
+                        content: "It was around $300, but totally worth it. You can find cheaper options starting at $150 that work just as well.",
+                        timestamp: "2h 10m ago",
+                        metrics: {
+                          likes: 3,
+                          comments: 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                author: {
+                  firstName: "James",
+                  lastName: "Wilson",
+                  handle: "@jamesw",
+                  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=faces&auto=format",
+                },
+                content: "I've tried ice baths but couldn't handle the cold! Do you have any tips for beginners?",
+                timestamp: "2h 25m ago",
+                metrics: {
+                  likes: 6,
+                  comments: 1
+                },
+                replies: [
+                  {
+                    author: {
+                      firstName: "Sophia",
+                      lastName: "Chen",
+                      handle: "@sophiac",
+                      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces&auto=format",
+                      role: "moderator" as const
+                    },
+                    content: "Start with just 1 minute at a milder temperature (around 60°F) and gradually work your way down. Focus on controlled breathing - that's the key!",
+                    timestamp: "2h 20m ago",
+                    metrics: {
+                      likes: 5,
+                      comments: 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      // Comment 2 with nested replies
+      {
+        author: {
+          firstName: "Marcus",
+          lastName: "Johnson",
+          handle: "@marcusj",
+          avatar: "https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=200&h=200&fit=crop&crop=faces&auto=format",
+        },
+        content: "Foam rolling has been my go-to recovery method for years. I spend about 15 minutes post-workout focusing on the muscles I trained that day.",
+        timestamp: "2h 40m ago",
+        metrics: {
+          likes: 24,
+          comments: 5
+        },
+        mediaItems: [
+          {
+            type: "video" as const,
+            url: "https://example.com/videos/foam-rolling.mp4",
+            thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
+            aspectRatio: 1.78
+          }
+        ],
+        replies: [
+          {
+            author: {
+              firstName: "Olivia",
+              lastName: "Martinez",
+              handle: "@oliviam",
+              avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces&auto=format",
+            },
+            content: "Do you have a specific foam roller you recommend? I've been looking to upgrade mine.",
+            timestamp: "2h 30m ago",
+            metrics: {
+              likes: 8,
+              comments: 2
+            },
+            replies: [
+              {
+                author: {
+                  firstName: "Marcus",
+                  lastName: "Johnson",
+                  handle: "@marcusj",
+                  avatar: "https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=200&h=200&fit=crop&crop=faces&auto=format",
+                },
+                content: "I use the TriggerPoint GRID foam roller. It's a bit pricier but lasts forever and has different density zones.",
+                timestamp: "2h 25m ago",
+                metrics: {
+                  likes: 6,
+                  comments: 1
+                },
+                mediaItems: [
+                  {
+                    type: "image" as const,
+                    url: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&h=600&fit=crop",
+                    aspectRatio: 1.33
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      // Comment 3 with no replies
+      {
+        author: {
+          firstName: "Emma",
+          lastName: "Davis",
+          handle: "@emmad",
+          avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=200&h=200&fit=crop&crop=faces&auto=format",
+          role: "admin" as const
+        },
+        content: "I'm all about proper nutrition for recovery. A protein shake with 25g protein, tart cherry juice for inflammation, and plenty of water works wonders!",
+        timestamp: "2h 35m ago",
+        metrics: {
+          likes: 18,
+          comments: 0
+        }
+      },
+      // Comment 4 with single reply
+      {
+        author: {
+          firstName: "Liam",
+          lastName: "Brown",
+          handle: "@liamb",
+          avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=200&h=200&fit=crop&crop=faces&auto=format",
+        },
+        content: "Sleep is the ultimate recovery tool that most people overlook. I aim for 8-9 hours on training days and track my sleep quality with an app.",
+        timestamp: "2h 30m ago",
+        metrics: {
+          likes: 29,
+          comments: 3
+        },
+        replies: [
+          {
+            author: {
+              firstName: "Michael",
+              lastName: "Torres",
+              handle: "@michaelt",
+              avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces&auto=format",
+              verified: true,
+              role: "founder" as const
+            },
+            content: "Completely agree! What app do you use to track your sleep?",
+            timestamp: "2h 25m ago",
+            metrics: {
+              likes: 7,
+              comments: 1
+            },
+            replies: [
+              {
+                author: {
+                  firstName: "Liam",
+                  lastName: "Brown",
+                  handle: "@liamb",
+                  avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=200&h=200&fit=crop&crop=faces&auto=format",
+                },
+                content: "I use Sleep Cycle. It tracks my sleep patterns and wakes me up during light sleep so I feel more refreshed.",
+                timestamp: "2h 20m ago",
+                metrics: {
+                  likes: 5,
+                  comments: 0
+                },
+                mediaItems: [
+                  {
+                    type: "image" as const,
+                    url: "https://images.unsplash.com/photo-1586863312461-9b3e5c084218?w=800&h=600&fit=crop",
+                    aspectRatio: 1.33
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      // Comment 5 with media carousel
+      {
+        author: {
+          firstName: "Ava",
+          lastName: "Thompson",
+          handle: "@avat",
+          avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=faces&auto=format",
+        },
+        content: "I've been doing yoga for recovery days. It helps with flexibility, blood flow, and mental relaxation. Here are some of my favorite poses:",
+        timestamp: "2h 20m ago",
+        metrics: {
+          likes: 22,
+          comments: 2
+        },
+        mediaItems: [
+          {
+            type: "image" as const,
+            url: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=800&h=600&fit=crop",
+            aspectRatio: 1.33
+          },
+          {
+            type: "image" as const,
+            url: "https://images.unsplash.com/photo-1599447292180-45a28f5008cc?w=600&h=900&fit=crop",
+            aspectRatio: 0.67
+          },
+          {
+            type: "image" as const,
+            url: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&h=600&fit=crop",
+            aspectRatio: 1.33
+          }
+        ],
+        replies: [
+          {
+            author: {
+              firstName: "Noah",
+              lastName: "Garcia",
+              handle: "@noahg",
+              avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=faces&auto=format",
+            },
+            content: "Do you follow a specific yoga routine or just do whatever feels right that day?",
+            timestamp: "2h 15m ago",
+            metrics: {
+              likes: 4,
+              comments: 1
+            },
+            replies: [
+              {
+                author: {
+                  firstName: "Ava",
+                  lastName: "Thompson",
+                  handle: "@avat",
+                  avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=faces&auto=format",
+                },
+                content: "I follow the 'Yoga for Athletes' program on YouTube. It has specific routines for different workout days. Highly recommend checking it out!",
+                timestamp: "2h 10m ago",
+                metrics: {
+                  likes: 3,
+                  comments: 0
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
   // Example post with comment media - Emma Davis
   {
     index: 21,
@@ -1758,24 +2113,7 @@ const Community = () => {
       <>
         <CreatePost />
         
-        {/* Debug link to Emma's post with media in comments */}
-        {window.__DEBUG_MODE__ && (
-          <div className="bg-muted/50 p-2 m-2 rounded-md text-xs">
-            <p>Debug Links:</p>
-            <div className="flex gap-2 mt-1">
-              <a 
-                href="/community/post/21" 
-                className="text-primary underline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/community/post/21");
-                }}
-              >
-                Open Emma's Post (ID 21)
-              </a>
-            </div>
-          </div>
-        )}
+        {/* No debug links - posts should appear in the main feed */}
         
         <div className="space-y-4">
           {pinnedPosts.length > 0 && (

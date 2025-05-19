@@ -142,11 +142,12 @@ export const PostReplies = ({
   const navigate = useNavigate();
   
   // Maximum nesting level to avoid excessive indentation
-  const MAX_LEVEL = 3;
+  // Original comment is level 0, max depth is 3 levels (original → reply → reply to reply → reply to reply to reply)
+  const MAX_LEVEL = 2; // Since we start at level 0, MAX_LEVEL should be 2 to get 3 total levels
   const actualLevel = Math.min(level, MAX_LEVEL);
   
-  // Calculate indentation based on level
-  const leftIndent = actualLevel * 20; // 20px per level
+  // Calculate indentation based on level - reduce indentation for deeper levels
+  const leftIndent = actualLevel * 16; // Reduced from 20px to 16px per level
   
   // Track reactions for each reply with its index
   const [userReactions, setUserReactions] = useState<Record<number, ReactionType | null>>({});
@@ -449,7 +450,7 @@ export const PostReplies = ({
                   isLast && isLastReply ? "h-[30px]" : "h-full"
                 )}
                 style={{ 
-                  left: leftIndent - 14, // Position line to connect with the avatar
+                  left: leftIndent - 12, // Adjusted for better alignment
                   top: 0
                 }}
               />
@@ -460,9 +461,9 @@ export const PostReplies = ({
               <div 
                 className="absolute h-[1.5px] bg-border/60 dark:bg-border/40"
                 style={{ 
-                  left: leftIndent - 14,
+                  left: leftIndent - 12,
                   width: '12px',
-                  top: '20px'
+                  top: '16px' // Adjusted to align with avatar center
                 }}
               />
             )}
@@ -475,7 +476,7 @@ export const PostReplies = ({
             {/* Reply post with indentation */}
             <div 
               className={cn(
-                "relative pt-1",
+                "relative pt-1 max-w-full",
                 index > 0 && level === 0 ? "mt-3" : (index > 0 ? "mt-4" : "")
               )}
               style={{ 
@@ -494,7 +495,7 @@ export const PostReplies = ({
                   <AvatarFallback>{reply.author.firstName[0]}</AvatarFallback>
                 </Avatar>
                 
-                <div className="flex-1">
+                <div className="flex-1 min-w-0 overflow-hidden">
                   <div className="flex flex-col">
                     <div className={cn(
                       "rounded-2xl pt-2 pb-2 px-3",
@@ -607,11 +608,11 @@ export const PostReplies = ({
                       {/* Reply mediaItems (carousel) */}
                       {reply.mediaItems && reply.mediaItems.length > 0 && (
                         <div className="mt-2 relative rounded-lg overflow-hidden">
-                          <div className="flex overflow-x-auto snap-x scrollbar-hide px-1 -mx-1 space-x-2">
+                          <div className="flex overflow-x-auto snap-x scrollbar-hide px-1 -mx-1 space-x-2 max-w-[calc(100vw-60px)]">
                             {reply.mediaItems.map((item, idx) => (
                               <div 
                                 key={idx}
-                                className="flex-shrink-0 w-full h-[200px] snap-center px-1"
+                                className="flex-shrink-0 w-full max-w-[calc(100vw-80px)] h-[200px] snap-center px-1"
                               >
                                 {item.type === "image" ? (
                                   <img
@@ -892,13 +893,18 @@ export const PostReplies = ({
                 </div>
               </div>
               
-              {/* Render replies if this reply has them */}
-              {reply.replies && reply.replies.length > 0 && (
+              {/* Render replies if this reply has them and we haven't reached max nesting level */}
+              {reply.replies && reply.replies.length > 0 && level < MAX_LEVEL && (
                 <div className="pl-4 relative">
                   {/* Thread connection line */}
                   <div 
-                    className="absolute left-2 top-2 bottom-2 w-0.5 bg-border dark:bg-gray-700"
-                    style={{ top: "24px" }}
+                    className="absolute w-0.5 bg-border/60 dark:bg-border/40"
+                    style={{ 
+                      left: '8px', 
+                      top: '0px',
+                      bottom: '8px',
+                      height: 'calc(100% - 8px)'
+                    }}
                   />
                   
                   {/* Render the replies that should be visible */}
