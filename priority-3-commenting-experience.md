@@ -5,7 +5,7 @@ This priority covers the core commenting functionality that enables discussions 
 As a mobile app user, I want to view comments on posts so I can follow community discussions.
 
 **Acceptance Criteria:**
-- Tapping comment button or comment count opens post details view showing:
+- Tapping comment count opens post details view showing:
   - Original post content at top (fully expanded)
   - Comments section below with chronological ordering (oldest to newest)
   - Each comment includes:
@@ -33,7 +33,7 @@ As a mobile app user, I want to view media attachments in comments so I can full
 
 **Acceptance Criteria:**
 - Media display within comments:
-  - Media attachments appear within the comment "bubble" with rounded corners (8px radius) matching the comment styling
+  - Media attachments appear within the comment "bubble" with rounded corners (8px radius)
   - Single photo/video displays at full width of the comment with aspect ratio preserved (max height 400px)
   - Multiple media handling:
     - For multiple media items (up to 6), pagination dots appear below content
@@ -43,7 +43,7 @@ As a mobile app user, I want to view media attachments in comments so I can full
     - Always preserve aspect ratio - never stretch or distort images
     - Portrait images scale to max height or container width (whichever constraint is hit first)
     - Landscape images scale to fit full container width with height determined by aspect ratio
-    - Extremely tall images (beyond 9:16 aspect ratio) should be center-cropped with fixed height
+    - Extremely tall images (beyond 9:16 aspect ratio) should be center-cropped within fixed height limits
   - Videos show play button overlay centered on the thumbnail
   - Video thumbnails maintain same size constraints as photos
   - Videos don't autoplay in comments
@@ -70,28 +70,26 @@ As a mobile app user, I want to add comments to posts so I can participate in co
 - Comment input field at bottom of screen with:
   - User's avatar showing beside input field
   - Placeholder text ("Write a comment...")
-  - Media attachment button for adding images/videos
-  - Input field expands as content is added (up to 5 lines, then scrollable)
-  - Send button that's disabled until content is entered
+  - Clicking on input field opens a full-screen comment composer modal
+  - Media attachment button in the modal for adding images/videos with options for:
+    - Photo Library
+    - Take Photo or Video
+    - Choose Files
+  - Input field in the modal expands as content is added
+  - Post button that's enabled when content is entered
 - Comment submission:
-  - Visual feedback during submission (loading indicator underneath the post)
   - Newly added comment appears immediately in the list
+  - Comments can include text and media attachments
+  - Bottom navigation is hidden when comment modal is open
   - Error handling for failed comment submission
   - Momentarily highlight the newly created comment with a subtle animation (pulsing highlight) and haptic feedback
 - Permissions and moderation:
-  - Comment editing workflow:
-    - Access to edit options through the three-dot menu (...) for each comment
-    - Selecting "Edit" transforms the comment into an editable input field with existing content pre-populated
-    - "Editing Message" indicator appears above the input field
-    - Close button (X) allows canceling the edit without saving
-    - Media attachments remain editable (can add/remove)
-    - Submit button updates to "Update" text during editing
-    - Success confirmation toast displayed after successful edit ("Your comment was updated successfully!")
   - Option to delete own comments with confirmation (accessed through the three-dot menu)
   - When a user attempts to delete a comment, a warning dialog should appear stating: "This action is permanent and cannot be reversed - all content, comments, and reactions associated with this post will be permanently deleted," requiring the user to explicitly tap "Delete" to confirm or "Cancel" to abort the deletion.
     - Deleting posts is allowed for post authors, channel owners, group leaders/founders, and community moderators/admins.
   - Moderators, admins, and group leaders can delete any comment
   - Comments from blocked users are hidden automatically
+
 
 **User Story: Add Media to Comments**
 As a mobile app user, I want to attach media to my comments so I can share visual content in discussions and better express my ideas.
@@ -157,3 +155,16 @@ As a mobile app user, I want to reply to specific comments so I can engage in th
   - Same editing and deletion capabilities as regular comments
   - Same permission structure applies (own replies editable/deletable, moderators can delete any reply)
 
+**User Story: Edit Comments/replies**
+As a mobile app user, I want to edit my comments/replies after posting them so I can correct mistakes or add additional information.
+
+**Acceptance Criteria:**
+- Comment/reply editing workflow:
+  - Access to edit options through the three-dot menu (...) for each comment/reply
+  - Selecting "Edit" transforms the comment/reply into an editable input field with existing content pre-populated
+  - "Editing Message" indicator appears above the input field
+  - Close button (X) allows canceling the edit without saving
+  - Media attachments remain editable (can add/remove)
+  - Submit button updates to "Update" text during editing
+  - Momentarily highlight the newly updated comment with a subtle animation (pulsing highlight) and haptic feedback
+  - Only the author of a comment/reply can edit it
