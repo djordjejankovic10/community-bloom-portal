@@ -147,7 +147,7 @@ export const PostReplies = ({
   const actualLevel = Math.min(level, MAX_LEVEL);
   
   // Calculate indentation based on level - reduce indentation for deeper levels
-  const leftIndent = actualLevel * 16; // Reduced from 20px to 16px per level
+  const leftIndent = actualLevel * 8; // Reduced from 16px to 8px per level
   
   // Track reactions for each reply with its index
   const [userReactions, setUserReactions] = useState<Record<number, ReactionType | null>>({});
@@ -220,6 +220,31 @@ export const PostReplies = ({
     
     // Otherwise, show only the first reply
     return reply.replies.slice(0, 1);
+  };
+  
+  // Format timestamp to show only hours if > 1 hour, only days if > 24 hours
+  const formatTimestamp = (timestamp: string): string => {
+    // Handle "Just now" case
+    if (timestamp === "Just now") return timestamp;
+    
+    // Remove "ago" suffix if present
+    const cleanedTimestamp = timestamp.replace(" ago", "");
+    
+    // Check for days format (e.g., "2d")
+    if (cleanedTimestamp.includes("d")) return cleanedTimestamp;
+    
+    // Parse hours and minutes
+    const hasHours = cleanedTimestamp.includes("h");
+    const hasMinutes = cleanedTimestamp.includes("m");
+    
+    if (hasHours) {
+      // Extract just the hours part (e.g., "2h" from "2h 45m")
+      const hoursPart = cleanedTimestamp.split(" ")[0];
+      return hoursPart;
+    }
+    
+    // Return original for minutes only or other formats
+    return cleanedTimestamp;
   };
   
   // Handle reaction for a specific reply
@@ -436,54 +461,13 @@ export const PostReplies = ({
         
         return (
           <div
-            key={index}
+            key={index} // Reverted to map index to fix lint error
             className={cn(
               "my-3 relative",
               isLastReply && index === replies.length - 1 ? "mb-0" : ""
             )}
           >
-            {/* L-shaped connector line (replaces separate vertical and horizontal lines) */}
-            {level > 0 && (
-              <>
-                {/* Vertical part of the L */}
-                <div 
-                  className={cn(
-                    "absolute w-[1.5px]",
-                    isLast && isLastReply ? "h-[16px]" : "h-full",
-                    "dark:[&]:bg-[#383838]/60 bg-secondary/60"
-                  )}
-                  style={{ 
-                    left: leftIndent - 12,
-                    top: 0
-                  }}
-                />
-                
-                {/* Corner piece - creates the bend */}
-                <div 
-                  className="absolute dark:[&]:bg-[#383838]/60 bg-secondary/60"
-                  style={{ 
-                    left: leftIndent - 12,
-                    width: '6px',
-                    height: '6px',
-                    top: '14px',
-                    borderTopLeftRadius: '4px',
-                    borderLeft: '1.5px solid',
-                    borderTop: '1.5px solid',
-                    borderColor: 'inherit'
-                  }}
-                />
-                
-                {/* Horizontal part of the L */}
-                <div 
-                  className="absolute h-[1.5px] dark:[&]:bg-[#383838]/60 bg-secondary/60"
-                  style={{ 
-                    left: leftIndent - 6,
-                    width: '6px',
-                    top: '16px'
-                  }}
-                />
-              </>
-            )}
+            {/* All connector lines and corner pieces have been removed */}
             
             {/* Visual indicator for top-level replies removed */}
             
@@ -790,7 +774,7 @@ export const PostReplies = ({
                         >
                           Reply
                         </button>
-                        <span>{reply.timestamp}</span>
+                        <span>{formatTimestamp(reply.timestamp)}</span>
                       </div>
                       
                       {/* Reaction counts display with drawer - now right aligned */}

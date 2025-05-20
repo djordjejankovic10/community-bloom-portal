@@ -504,7 +504,6 @@ export const FeedPost = ({
     };
   }, [isLongPressed]);
 
-  // Handle zoom in/out
   const handleZoom = (increase: boolean) => {
     setZoomLevel(prev => {
       const newZoom = increase ? prev * 1.2 : prev / 1.2;
@@ -513,7 +512,6 @@ export const FeedPost = ({
     });
   };
 
-  // Handle mouse/touch events for dragging
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     if (zoomLevel <= 1) return; // Only allow dragging when zoomed in
     
@@ -701,64 +699,11 @@ export const FeedPost = ({
           </div>
         )}
         
-        {(!isEmbedded && !isReply) && <div className="absolute top-4 right-4">
-          <Drawer>
-            <DrawerTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreVertical className="h-5 w-5" />
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent onClick={(e) => e.stopPropagation()}>
-              <div className="p-4">
-                <h3 className="font-medium text-lg mb-4">Post options</h3>
-                <div className="space-y-2">
-                  {onUnpin && pinned && !isDetail && (
-                    <Button 
-                      variant="ghost" 
-                      className="w-full justify-start text-left text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
-                      onClick={onUnpin}
-                    >
-                      <Pin className="h-5 w-5 mr-3" />
-                      Unpin post
-                    </Button>
-                  )}
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start text-left" 
-                    onClick={handleCopyLink}
-                  >
-                    <Link2 className="h-5 w-5 mr-3" />
-                    Copy link to post
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start text-left" 
-                    onClick={handleCopyText}
-                  >
-                    <FileText className="h-5 w-5 mr-3" />
-                    Copy text
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start text-left text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20" 
-                    onClick={handleReport}
-                  >
-                    <AlertOctagon className="h-5 w-5 mr-3" />
-                    Report
-                  </Button>
-                </div>
-              </div>
-            </DrawerContent>
-          </Drawer>
-        </div>}
-        
-        {/* Author header section */}
-        <div className="flex gap-3 mb-3">
+        <div className="flex gap-3 mb-3 relative"> 
           <Avatar className={cn("flex-shrink-0", isReply ? "w-7 h-7" : "w-8 h-8")}>
             <AvatarImage src={author.avatar} />
             <AvatarFallback>{author.firstName[0]}</AvatarFallback>
           </Avatar>
-          
           <div className="flex-1 min-w-0">
             <div className="flex items-center flex-wrap gap-x-1 gap-y-0.5">
               <span className={cn("font-medium text-foreground", isReply ? "text-xs" : "text-sm")}>
@@ -971,7 +916,7 @@ export const FeedPost = ({
                   <button 
                     key={idx}
                     className={cn(
-                      "w-2 h-2 rounded-full transition-colors",
+                      "w-2 h-2 rounded-full",
                       idx === activeImageIndex 
                         ? "bg-primary" 
                         : "bg-muted hover:bg-primary/50"
