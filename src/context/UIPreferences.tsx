@@ -5,6 +5,8 @@ type UIPreferencesContextType = {
   toggleNavigation: () => void;
   hideBottomNav: boolean;
   setHideBottomNav: (hide: boolean) => void;
+  useMentionContextMenu: boolean;
+  setUseMentionContextMenu: (use: boolean) => void;
 };
 
 // Create a default context value
@@ -16,6 +18,10 @@ const UIPreferencesContext = createContext<UIPreferencesContextType>({
   hideBottomNav: false,
   setHideBottomNav: () => {
     console.warn('UIPreferencesContext not initialized yet');
+  },
+  useMentionContextMenu: false,
+  setUseMentionContextMenu: () => {
+    console.warn('UIPreferencesContext not initialized yet');
   }
 });
 
@@ -24,6 +30,8 @@ export const UIPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
   const [showNav, setShowNav] = useState(false);
   // State to control bottom navigation visibility
   const [hideBottomNav, setHideBottomNav] = useState(false);
+  // State to control which version of the mention menu to use
+  const [useMentionContextMenu, setUseMentionContextMenu] = useState(true);
 
   // Define toggle function
   const toggle = () => {
@@ -39,6 +47,8 @@ export const UIPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
     toggleNavigation: toggle,
     hideBottomNav,
     setHideBottomNav,
+    useMentionContextMenu,
+    setUseMentionContextMenu,
   };
 
   // Provide context to children

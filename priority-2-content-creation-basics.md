@@ -34,7 +34,6 @@ As a mobile app user, I want to edit my existing posts so I can correct mistakes
   - Selecting "Edit" transforms post into editable format in line with existing content pre-populated
   - Cancel button is present to cancel edit without saving changes
   - Edit interface matches the post creation composer in appearance and functionality
-  - For polls, special handling to maintain poll data while allowing edits to question/options
 - Content editing capabilities:
   - Text editing with original message pre-populated
 - Edit submission and feedback:

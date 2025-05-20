@@ -75,8 +75,18 @@
 @layer base {
   * {
     @apply border-border;
-    max-width: 375px;
     box-sizing: border-box;
+  }
+  
+  /* Apply mobile width constraint to all elements by default */
+  * {
+    max-width: 375px;
+  }
+  
+  /* Remove width constraint for CreatePost page */
+  [data-component-name="CreatePostPage"],
+  [data-component-name="CreatePostPage"] * {
+    max-width: none !important;
   }
   body {
     @apply bg-background text-foreground transition-colors;

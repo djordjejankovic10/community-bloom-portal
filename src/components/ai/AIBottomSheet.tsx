@@ -130,19 +130,11 @@ export const AIBottomSheet = ({
   // Render post creation AI assistant
   const renderPostAI = () => (
     <div className="bg-background">
-      <div className="flex justify-between items-center p-3 border-b">
+      <div className="flex items-center p-3 border-b">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-primary" />
           <div className="text-sm font-medium">AI Assistant</div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-6 w-6" 
-          onClick={onClose}
-        >
-          <X className="h-4 w-4" />
-        </Button>
       </div>
       
       {/* AI generated content display */}

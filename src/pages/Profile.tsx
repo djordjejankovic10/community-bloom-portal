@@ -1,4 +1,4 @@
-import { Moon, Palette, ArrowLeft, Layout } from "lucide-react";
+import { Moon, Palette, ArrowLeft, Layout, AtSign } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useMenuPreferences } from "@/context/MenuPreferencesContext";
+import { MentionToggle } from "@/components/settings/MentionToggle";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
@@ -297,6 +298,27 @@ const Profile = () => {
               </p>
             </div>
             <Switch id="notifications-toggle" checked={true} />
+          </div>
+
+          {/* Mention menu style toggle */}
+          <div className="py-3 border-b">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label 
+                  htmlFor="mention-toggle" 
+                  className="font-medium text-foreground"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <AtSign className="h-4 w-4" />
+                    <span>Mention Menu Style</span>
+                  </div>
+                </Label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Choose how the @mention menu appears when typing
+                </p>
+              </div>
+              <MentionToggle />
+            </div>
           </div>
           
           {/* Color theme section */}

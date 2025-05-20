@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { AIBottomSheet } from "@/components/ai/AIBottomSheet";
-import { BottomSheet } from "@/components/messages/BottomSheet";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { CircleIcon, ChevronDownIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Globe } from "lucide-react";
@@ -22,6 +22,8 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { MediaUploader, MediaItem, MediaUploaderRef } from "@/components/ui/media-uploader";
 import { cn } from "@/lib/utils";
+import { MentionProvider } from "@/components/mention/MentionProvider";
+import { MentionItem } from "@/components/mention/MentionContextMenu";
 
 const CIRCLES = [
   "General",
@@ -34,23 +36,7 @@ const CIRCLES = [
 
 type UploadedImage = MediaItem;
 
-type MentionType = 'lesson' | 'course' | 'module' | 'meetup' | 'challenge' | 'circle' | 'member';
-
-type MentionItem = {
-  id: string;
-  type: MentionType;
-  title: string;
-  subtitle?: string;
-  image?: string;
-};
-
-type MentionedContent = {
-  id: string;
-  type: MentionType;
-  title: string;
-  subtitle?: string;
-  image?: string;
-};
+type MentionedContent = MentionItem;
 
 // Mock data for mentions
 const MOCK_MENTIONS: MentionItem[] = [
@@ -99,7 +85,7 @@ const CircleBottomSheet = ({
   onSelect: (circle: string) => void;
 }) => {
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[50vh]">
+    <BottomSheet open={isOpen} onClose={onClose} className="max-h-[50vh]">
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Select Circle</h2>
@@ -125,147 +111,6 @@ const CircleBottomSheet = ({
               )}
             </Button>
           ))}
-        </div>
-      </div>
-    </BottomSheet>
-  );
-};
-
-// Replace the MentionDropdown component with a MentionBottomSheet component
-// Simple React component for the mention bottom sheet
-const MentionBottomSheet = ({ 
-  isOpen, 
-  onClose,
-  search,
-  onSearchChange,
-  mentions,
-  onSelect
-}: { 
-  isOpen: boolean;
-  onClose: () => void;
-  search: string;
-  onSearchChange: (value: string) => void;
-  mentions: MentionItem[];
-  onSelect: (item: MentionItem) => void;
-}) => {
-  // Group mentions by type
-  const groupedMentions = mentions.reduce((groups, mention) => {
-    const type = mention.type;
-    if (!groups[type]) {
-      groups[type] = [];
-    }
-    groups[type].push(mention);
-    return groups;
-  }, {} as Record<MentionType, MentionItem[]>);
-
-  // Sort group keys by predefined order
-  const typeOrder: MentionType[] = ['member', 'course', 'lesson', 'module', 'meetup', 'challenge', 'circle'];
-  const sortedGroups = Object.keys(groupedMentions)
-    .sort((a, b) => {
-      const aIndex = typeOrder.indexOf(a as MentionType);
-      const bIndex = typeOrder.indexOf(b as MentionType);
-      return aIndex - bIndex;
-    }) as MentionType[];
-
-  // Format type label for display
-  const formatTypeLabel = (type: string): string => {
-    return type.charAt(0).toUpperCase() + type.slice(1) + 's';
-  };
-
-  // Get icon for each type
-  const getTypeIcon = (type: MentionType) => {
-    switch (type) {
-      case 'lesson':
-        return <Video className="h-4 w-4" />;
-      case 'course':
-        return <BookOpen className="h-4 w-4" />;
-      case 'module':
-        return <Book className="h-4 w-4" />;
-      case 'meetup':
-        return <Calendar className="h-4 w-4" />;
-      case 'challenge':
-        return <Trophy className="h-4 w-4" />;
-      case 'circle':
-        return <Users className="h-4 w-4" />;
-      case 'member':
-        return <UserCircle className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[70vh]">
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-semibold">Mention</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        {/* Search area */}
-        <div className="sticky top-0 bg-background mb-4">
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              className="pl-8"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => onSearchChange(e.target.value)}
-              autoFocus
-            />
-          </div>
-        </div>
-        
-        {/* Results */}
-        <div className="overflow-y-auto">
-          {mentions.length > 0 ? (
-            <div className="space-y-4">
-              {sortedGroups.map(type => (
-                <div key={type} className="space-y-1">
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1 px-2 flex items-center gap-1">
-                    {getTypeIcon(type)}
-                    {formatTypeLabel(type)}
-                  </h3>
-                  {groupedMentions[type].map((mention) => (
-                    <Button
-                      key={mention.id}
-                      variant="ghost"
-                      className="w-full justify-start px-3 py-2 h-auto"
-                      onClick={() => onSelect(mention)}
-                    >
-                      <div className="flex items-center gap-3">
-                        {mention.image ? (
-                          <img
-                            src={mention.image}
-                            alt=""
-                            className="w-10 h-10 rounded object-cover"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                            <span className="text-primary">{mention.title[0]}</span>
-                          </div>
-                        )}
-                        <div className="text-left">
-                          <div className="font-medium">{mention.title}</div>
-                          {mention.subtitle && (
-                            <div className="text-xs text-muted-foreground">
-                              {mention.subtitle}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="px-3 py-4 text-center text-muted-foreground">
-              No results found
-            </div>
-          )}
         </div>
       </div>
     </BottomSheet>
@@ -348,9 +193,7 @@ const CreatePostPage = () => {
   const [isCircleOpen, setIsCircleOpen] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<MediaItem[]>([]);
   const [showMediaUploader, setShowMediaUploader] = useState(false);
-  const [isMentionOpen, setIsMentionOpen] = useState(false);
-  const [mentionSearch, setMentionSearch] = useState('');
-  const [mentionedContent, setMentionedContent] = useState<MentionedContent[]>([]);
+  const [mentionedContent, setMentionedContent] = useState<MentionItem[]>([]);
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [aiNotes, setAINotes] = useState("");
   const [aiGeneratedContent, setAIGeneratedContent] = useState("");
@@ -360,7 +203,6 @@ const CreatePostPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const mediaUploaderRef = useRef<MediaUploaderRef>(null);
-  const [atCharPosition, setAtCharPosition] = useState<number | null>(null);
   const textareaDivRef = useRef<HTMLDivElement>(null);
   const composerRef = useRef<HTMLDivElement>(null);
 
@@ -372,39 +214,13 @@ const CreatePostPage = () => {
     }
   }, [content]);
 
-  // Detect @ symbol for mentions
+  // Track textarea height for autoresizing
   useEffect(() => {
-    const mentionMatch = content.match(/@(\w*)$/);
-    
-    if (mentionMatch) {
-      // Found a mention at the end of the text
-      setMentionSearch(mentionMatch[1]);
-      
-      // Get position of the text caret
-      if (textareaRef.current) {
-        const pos = textareaRef.current.selectionStart;
-        const matchStartPos = pos - mentionMatch[0].length;
-        
-        setAtCharPosition(matchStartPos);
-        setIsMentionOpen(true);
-      }
-    } else if (atCharPosition !== null && !content.includes('@')) {
-      // No mention being typed, close the dropdown
-      setIsMentionOpen(false);
-      setAtCharPosition(null);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
-    
   }, [content]);
-
-  // Filter mentions based on search query
-  const filteredMentions = MOCK_MENTIONS.filter(mention => {
-    const searchLower = mentionSearch.toLowerCase();
-    return (
-      mention.title.toLowerCase().includes(searchLower) ||
-      (mention.subtitle && mention.subtitle.toLowerCase().includes(searchLower)) ||
-      mention.type.toLowerCase().includes(searchLower)
-    );
-  });
 
   // Handle media uploader toggling
   const toggleMediaUploader = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -414,72 +230,19 @@ const CreatePostPage = () => {
     }, 50);
   };
 
-  // Handle mention button click
-  const handleMentionClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // Focus the textarea
-    if (textareaRef.current) {
-      textareaRef.current.focus();
-      
-      const currentPosition = textareaRef.current.selectionStart;
-      const textBefore = content.substring(0, currentPosition);
-      const textAfter = content.substring(currentPosition);
-      
-      // Insert @ at cursor position if not already there
-      if (!textBefore.endsWith('@')) {
-        // Insert the @ symbol
-        setContent(textBefore + '@' + textAfter);
-        
-        // Store the position of the @ character
-        setAtCharPosition(currentPosition);
-        
-        // Using a timeout to ensure state updates have happened
-        setTimeout(() => {
-          // Move cursor position after the @ symbol
-          if (textareaRef.current) {
-            const newCursorPos = currentPosition + 1;
-            textareaRef.current.selectionStart = newCursorPos;
-            textareaRef.current.selectionEnd = newCursorPos;
-            
-            // Open the mention dropdown
-            setIsMentionOpen(true);
-          }
-        }, 50);
-      } else {
-        // If @ is already at cursor, just open the dropdown
-        setIsMentionOpen(true);
-      }
-    }
-  };
-
-  // Handle selecting a mention item
-  const handleSelectMention = (item: MentionItem) => {
+  // Handle mention selection
+  const handleMentionSelect = (item: MentionItem) => {
     // Add the selected mention to the list of mentioned content
     setMentionedContent([...mentionedContent, item]);
-    
-    // Replace the @ with the mention text in the content
-    if (textareaRef.current && atCharPosition !== null) {
-      const textBefore = content.substring(0, atCharPosition);
-      const textAfter = content.substring(textareaRef.current.selectionStart);
-      
-      // Add the mention with a space after it
-      const newContent = textBefore + `@${item.title} ` + textAfter;
-      setContent(newContent);
-      
-      // Close the mention popover
-      setIsMentionOpen(false);
-      setMentionSearch('');
-      setAtCharPosition(null);
-      
-      // Move cursor after the inserted mention
-      const newPosition = textBefore.length + `@${item.title} `.length;
-      
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.focus();
-          textareaRef.current.selectionStart = newPosition;
-          textareaRef.current.selectionEnd = newPosition;
-        }
-      }, 10);
+  };
+  
+  // Reference to the mention trigger function
+  const mentionTriggerRef = useRef<() => void>();
+  
+  // Handle mention button click
+  const handleMentionClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (mentionTriggerRef.current) {
+      mentionTriggerRef.current();
     }
   };
 
@@ -583,7 +346,7 @@ const CreatePostPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen w-full max-w-none flex flex-col bg-background" style={{ width: '100vw', maxWidth: '100vw' }}>
       <div className="flex items-center justify-between border-b p-3 shrink-0">
         <Button
           variant="ghost"
@@ -604,8 +367,8 @@ const CreatePostPage = () => {
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-4">
-        <div className="flex gap-3" ref={composerRef}>
+      <div className="flex-1 overflow-y-auto px-3 w-full space-y-4">
+        <div className="flex gap-3 pt-4" ref={composerRef}>
           <Avatar className="w-10 h-10 flex-shrink-0">
             <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop" />
             <AvatarFallback>DJ</AvatarFallback>
@@ -629,14 +392,21 @@ const CreatePostPage = () => {
               <ChevronDownIcon size={14} />
             </Button>
             
-            <textarea
-              ref={textareaRef}
-              className="w-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none pt-[10px]"
-              placeholder="What's on your mind?"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={1}
-            />
+            <MentionProvider
+              textareaRef={textareaRef}
+              content={content}
+              setContent={setContent}
+              onMentionSelect={handleMentionSelect}
+            >
+              <textarea
+                ref={textareaRef}
+                className="w-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none pt-[10px]"
+                placeholder="What's on your mind?"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                rows={1}
+              />
+            </MentionProvider>
             
             {/* Media uploader component */}
             {showMediaUploader && (
@@ -668,7 +438,7 @@ const CreatePostPage = () => {
 
       <Separator />
 
-      <div className="flex justify-between p-3 shrink-0 bg-background">
+      <div className="flex justify-between px-3 py-3 w-full shrink-0 bg-background">
         <div className="flex gap-4">
           <Button
             variant="ghost"
@@ -711,15 +481,7 @@ const CreatePostPage = () => {
         </div>
       </div>
 
-      {/* Custom mention dropdown */}
-      <MentionBottomSheet
-        isOpen={isMentionOpen}
-        onClose={() => setIsMentionOpen(false)}
-        search={mentionSearch}
-        onSearchChange={setMentionSearch}
-        mentions={filteredMentions}
-        onSelect={handleSelectMention}
-      />
+      {/* No need for the custom mention dropdown anymore as it's handled by MentionProvider */}
 
       {/* Other bottom sheets and modals */}
       <CircleBottomSheet

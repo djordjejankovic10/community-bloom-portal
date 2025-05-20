@@ -15,179 +15,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AIBottomSheet } from "@/components/ai/AIBottomSheet";
-import { Search, Video, BookOpen, Book, Calendar, Trophy, Users, UserCircle } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { MentionProvider } from "@/components/mention/MentionProvider";
+import { MentionItem } from "@/components/mention/MentionContextMenu";
 
-// Define types for mentions
-type MentionType = 'lesson' | 'course' | 'module' | 'meetup' | 'challenge' | 'circle' | 'member';
-
-type MentionItem = {
-  id: string;
-  type: MentionType;
-  title: string;
-  subtitle?: string;
-  image?: string;
-};
-
-type MentionedContent = {
-  id: string;
-  type: MentionType;
-  title: string;
-  subtitle?: string;
-  image?: string;
-};
-
-// Mock data for mentions - simplified version of what's in CreatePost
-const MOCK_MENTIONS: MentionItem[] = [
-  { id: 'member-1', type: 'member', title: 'John Smith', subtitle: '@johnsmith', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop' },
-  { id: 'member-2', type: 'member', title: 'Emma Davis', subtitle: '@emmafitness', image: 'https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=400&h=300&fit=crop' },
-  { id: 'circle-1', type: 'circle', title: 'Weight Training', subtitle: '15k members' },
-  { id: 'circle-2', type: 'circle', title: 'Yoga', subtitle: '8k members' },
-];
-
-// Simple MentionBottomSheet component
-const MentionBottomSheet = ({ 
-  isOpen, 
-  onClose,
-  search,
-  onSearchChange,
-  onSelect
-}: { 
-  isOpen: boolean;
-  onClose: () => void;
-  search: string;
-  onSearchChange: (value: string) => void;
-  mentions?: MentionItem[];
-  onSelect: (item: MentionItem) => void;
-}) => {
-  // Filter mentions based on search
-  const filteredMentions = MOCK_MENTIONS.filter(mention => 
-    mention.title.toLowerCase().includes(search.toLowerCase()) ||
-    (mention.subtitle && mention.subtitle.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  // Group mentions by type
-  const groupedMentions = filteredMentions.reduce((groups, mention) => {
-    const type = mention.type;
-    if (!groups[type]) {
-      groups[type] = [];
-    }
-    groups[type].push(mention);
-    return groups;
-  }, {} as Record<MentionType, MentionItem[]>);
-
-  // Sort group keys by predefined order
-  const typeOrder: MentionType[] = ['member', 'course', 'lesson', 'module', 'meetup', 'challenge', 'circle'];
-  const sortedGroups = Object.keys(groupedMentions)
-    .sort((a, b) => {
-      const aIndex = typeOrder.indexOf(a as MentionType);
-      const bIndex = typeOrder.indexOf(b as MentionType);
-      return aIndex - bIndex;
-    }) as MentionType[];
-
-  // Format type label for display
-  const formatTypeLabel = (type: string): string => {
-    return type.charAt(0).toUpperCase() + type.slice(1) + 's';
-  };
-
-  // Get icon for each type
-  const getTypeIcon = (type: MentionType) => {
-    switch (type) {
-      case 'lesson':
-        return <Video className="h-4 w-4" />;
-      case 'course':
-        return <BookOpen className="h-4 w-4" />;
-      case 'module':
-        return <Book className="h-4 w-4" />;
-      case 'meetup':
-        return <Calendar className="h-4 w-4" />;
-      case 'challenge':
-        return <Trophy className="h-4 w-4" />;
-      case 'circle':
-        return <Users className="h-4 w-4" />;
-      case 'member':
-        return <UserCircle className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <BottomSheet open={isOpen} onClose={onClose} className="max-h-[70vh]">
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-semibold">Mention</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        {/* Search area */}
-        <div className="sticky top-0 bg-background mb-4">
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              className="pl-8"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => onSearchChange(e.target.value)}
-              autoFocus
-            />
-          </div>
-        </div>
-        
-        {/* Results */}
-        <div className="overflow-y-auto">
-          {filteredMentions.length > 0 ? (
-            <div className="space-y-4">
-              {sortedGroups.map(type => (
-                <div key={type} className="space-y-1">
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1 px-2 flex items-center gap-1">
-                    {getTypeIcon(type)}
-                    {formatTypeLabel(type)}
-                  </h3>
-                  {groupedMentions[type].map((mention) => (
-                    <Button
-                      key={mention.id}
-                      variant="ghost"
-                      className="w-full justify-start px-3 py-2 h-auto"
-                      onClick={() => onSelect(mention)}
-                    >
-                      <div className="flex items-center gap-3">
-                        {mention.image ? (
-                          <img
-                            src={mention.image}
-                            alt=""
-                            className="w-10 h-10 rounded object-cover"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                            <span className="text-primary">{mention.title[0]}</span>
-                          </div>
-                        )}
-                        <div className="text-left">
-                          <div className="font-medium">{mention.title}</div>
-                          {mention.subtitle && (
-                            <div className="text-xs text-muted-foreground">{mention.subtitle}</div>
-                          )}
-                        </div>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              No matches found
-            </div>
-          )}
-        </div>
-      </div>
-    </BottomSheet>
-  );
-};
+// Type for mentioned content (using imported MentionItem)
 
 interface ReplySheetProps {
   open: boolean;
@@ -228,9 +60,7 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
   const [isAISheetOpen, setIsAISheetOpen] = useState(false);
   const [aiNotes, setAiNotes] = useState("");
   const [aiGeneratedContent, setAiGeneratedContent] = useState("");
-  const [isMentionBottomSheetOpen, setIsMentionBottomSheetOpen] = useState(false);
-  const [mentionSearch, setMentionSearch] = useState("");
-  const [mentionedContent, setMentionedContent] = useState<MentionedContent[]>([]);
+  const [mentionedContent, setMentionedContent] = useState<MentionItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Auto-focus the textarea when the sheet opens
@@ -290,45 +120,18 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
     }, 50);
   };
   
+  // Reference to the mention trigger function
+  const mentionTriggerRef = useRef<() => void>();
+  
   const handleMentionClick = () => {
-    setIsMentionBottomSheetOpen(true);
+    if (mentionTriggerRef.current) {
+      mentionTriggerRef.current();
+    }
   };
   
   const handleSelectMention = (item: MentionItem) => {
-    // Add the mention to the text input
+    // Add the mention to the list of mentioned content
     setMentionedContent(prev => [...prev, item]);
-    
-    // Insert the mention at the cursor position or at the end
-    const textarea = textareaRef.current;
-    if (textarea) {
-      const cursorPos = textarea.selectionStart || textarea.value.length;
-      const textBefore = textarea.value.substring(0, cursorPos);
-      const textAfter = textarea.value.substring(textarea.selectionEnd || cursorPos);
-      
-      // Format varies by type
-      let mentionText = '';
-      if (item.type === 'member') {
-        mentionText = `@${item.subtitle?.replace('@', '')} `;
-      } else {
-        mentionText = `@${item.title} `;
-      }
-      
-      const newText = textBefore + mentionText + textAfter;
-      setReplyText(newText);
-      
-      // Close the mention sheet
-      setIsMentionBottomSheetOpen(false);
-      setMentionSearch("");
-      
-      // Focus back on textarea and place cursor after the inserted mention
-      setTimeout(() => {
-        if (textarea) {
-          textarea.focus();
-          const newCursorPos = cursorPos + mentionText.length;
-          textarea.setSelectionRange(newCursorPos, newCursorPos);
-        }
-      }, 100);
-    }
   };
   
   const handleAIClick = () => {
@@ -441,20 +244,27 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
               </div>
               
               <div className="flex-1 relative">
-                <Textarea
-                  ref={textareaRef}
-                  placeholder="Post your reply"
-                  className="min-h-[80px] pl-0 pr-0 py-0 resize-none overflow-y-auto bg-transparent border-none shadow-none focus-visible:ring-0 text-base placeholder:text-muted-foreground/60"
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey && replyText.trim()) {
-                      e.preventDefault();
-                      handleReply();
-                    }
-                  }}
-                  rows={3}
-                />
+                <MentionProvider
+                  textareaRef={textareaRef}
+                  content={replyText}
+                  setContent={setReplyText}
+                  onMentionSelect={handleSelectMention}
+                >
+                  <Textarea
+                    ref={textareaRef}
+                    placeholder="Post your reply"
+                    className="min-h-[80px] pl-0 pr-0 py-0 resize-none overflow-y-auto bg-transparent border-none shadow-none focus-visible:ring-0 text-base placeholder:text-muted-foreground/60"
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey && replyText.trim()) {
+                        e.preventDefault();
+                        handleReply();
+                      }
+                    }}
+                    rows={3}
+                  />
+                </MentionProvider>
               </div>
             </div>
           </div>
@@ -536,16 +346,7 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
         mode="post"
       />
       
-      {/* Mention Bottom Sheet */}
-      {isMentionBottomSheetOpen && (
-        <MentionBottomSheet
-          isOpen={isMentionBottomSheetOpen}
-          onClose={() => setIsMentionBottomSheetOpen(false)}
-          search={mentionSearch}
-          onSearchChange={setMentionSearch}
-          onSelect={handleSelectMention}
-        />
-      )}
+      {/* Mention functionality is now handled by MentionProvider */}
     </div>
   );
 } 
