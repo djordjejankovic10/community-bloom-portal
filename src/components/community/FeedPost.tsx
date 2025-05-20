@@ -17,13 +17,33 @@ import {
   ThumbsUp,
   Plus,
   Minus,
-  Send
+  Send,
+  Pencil,
+  Trash2
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ReplySheet } from "@/components/community/ReplySheet";
+import { ReportSheet } from "@/features/reporting/ReportSheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Drawer,
   DrawerContent,
@@ -75,9 +95,12 @@ const CURRENT_USER: ReactionUser = {
   name: "Current User",
   handle: "@currentuser",
   avatar: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=200&h=200&fit=crop&crop=faces&auto=format",
-  role: "",
+  role: "admin", // Set to admin for testing moderator features
   reactionType: 'inspired'
 };
+
+// For testing purposes, let's make one of the posts authored by the current user
+const isCurrentUserAuthor = (handle: string) => handle === CURRENT_USER.handle;
 
 // Reaction icons and colors
 const REACTION_DATA: Record<ReactionType, ReactionDataType> = {
@@ -237,6 +260,8 @@ export const FeedPost = ({
   
   // State for comment sheet (reusing ReplySheet for top-level comments)
   const [commentSheetOpen, setCommentSheetOpen] = useState(false);
+  const [reportSheetOpen, setReportSheetOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<ReactionType | 'all'>('all');
   const [reactionsCount, setReactionsCount] = useState<ReactionsCount>({
     inspired: Math.floor(initialMetrics.likes * 0.7),
@@ -410,9 +435,41 @@ export const FeedPost = ({
   };
 
   const handleReport = () => {
+    setReportSheetOpen(true);
+  };
+
+  const handleEditPost = () => {
+    // This will be implemented in a separate user story
     toast({
-      description: "Post reported. Thank you for helping keep our community safe.",
+      description: "Edit post functionality will be implemented soon."
     });
+  };
+
+  const handleDeletePost = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeletePost = () => {
+    // In a real app, this would call an API to delete the post
+    toast({
+      title: "Post deleted",
+      description: "Your post has been permanently deleted."
+    });
+    setDeleteDialogOpen(false);
+  };
+
+  const handlePinUnpinPost = () => {
+    // This will be implemented in a separate user story
+    if (pinned && onUnpin) {
+      onUnpin();
+      toast({
+        description: "Post unpinned successfully."
+      });
+    } else {
+      toast({
+        description: "Pin post functionality will be implemented soon."
+      });
+    }
   };
 
   // Determine if post should use compact styling
@@ -705,11 +762,105 @@ export const FeedPost = ({
             <AvatarFallback>{author.firstName[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center flex-wrap gap-x-1 gap-y-0.5">
-              <span className={cn("font-medium text-foreground", isReply ? "text-xs" : "text-sm")}>
-                {author.firstName} {author.lastName}
-              </span>
-              <span className={cn("text-muted-foreground whitespace-nowrap", isReply ? "text-[10px]" : "text-xs")}>· {timestamp}</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center flex-wrap gap-x-1 gap-y-0.5">
+                <span className={cn("font-medium text-foreground", isReply ? "text-xs" : "text-sm")}>
+                  {author.firstName} {author.lastName}
+                </span>
+                <span className={cn("text-muted-foreground whitespace-nowrap", isReply ? "text-[10px]" : "text-xs")}>· {timestamp}</span>
+              </div>
+              
+              {/* Post options menu */}
+              {!isEmbedded && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button 
+                      className="p-1 rounded-full hover:bg-accent/50 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    {/* Pin/Unpin option for moderators/admins - first item */}
+                    {(CURRENT_USER.role === "admin" || CURRENT_USER.role === "moderator") && (
+                      <>
+                        <DropdownMenuItem onClick={handlePinUnpinPost}>
+                          <Pin className="mr-2 h-4 w-4" />
+                          <span>{pinned ? "Unpin post" : "Pin post"}</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
+                    
+                    {/* Options for all users */}
+                    <DropdownMenuItem onClick={handleCopyLink}>
+                      <Link2 className="mr-2 h-4 w-4" />
+                      <span>Copy link</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleCopyText}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      <span>Copy text</span>
+                    </DropdownMenuItem>
+                    
+                    {/* Options for post authors */}
+                    {(author.handle === CURRENT_USER.handle || author.firstName === "Jamie") && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleEditPost}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          <span>Edit post</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePost();
+                          }}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          <span>Delete post</span>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    
+                    {/* Additional options for moderators/admins */}
+                    {(CURRENT_USER.role === "admin" || CURRENT_USER.role === "moderator") && author.handle !== CURRENT_USER.handle && author.firstName !== "Jamie" && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePost();
+                          }}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          <span>Delete post</span>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    
+                    {/* Report option (only for non-authors and non-admins/moderators) */}
+                    {author.handle !== CURRENT_USER.handle && author.firstName !== "Jamie" && 
+                     CURRENT_USER.role !== "admin" && CURRENT_USER.role !== "moderator" && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleReport();
+                          }}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <AlertOctagon className="mr-2 h-4 w-4" />
+                          <span>Report post</span>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
             <div className="flex items-center gap-1 mt-0.5">
               {category && (
@@ -1237,6 +1388,33 @@ export const FeedPost = ({
         }}
         isTopLevel={true}
       />
+      
+      {/* Report Sheet for reporting posts */}
+      <ReportSheet
+        isOpen={reportSheetOpen}
+        onClose={() => setReportSheetOpen(false)}
+      />
+      
+      {/* Delete Post Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Post</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action is permanent and cannot be reversed - all content, comments, and reactions associated with this post will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeletePost}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
