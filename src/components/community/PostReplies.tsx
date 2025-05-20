@@ -3,7 +3,7 @@ import { FeedPost } from "./FeedPost";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ThumbsUp, MessageCircle, MoreVertical, Heart, ChevronUp } from "lucide-react";
+import { ThumbsUp, MessageCircle, MoreVertical, Heart, ChevronUp, Link2, FileText, AlertOctagon, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
@@ -14,6 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { BottomSheet } from "@/components/messages/BottomSheet";
+import { useToast } from "@/hooks/use-toast";
 import {
   Drawer,
   DrawerContent,
@@ -37,6 +39,8 @@ type ReactionUser = {
   avatar: string;
   role: string;
   reactionType: ReactionType;
+  firstName?: string;
+  lastName?: string;
 };
 
 // Define reaction data for icons and colors
@@ -124,6 +128,26 @@ const generateReactors = (count: number, reactionType: ReactionType = 'inspired'
   return shuffled.slice(0, Math.min(count, users.length));
 };
 
+// Mock data for current user
+const CURRENT_USER: ReactionUser = {
+  name: "Current User",
+  handle: "@currentuser",
+  firstName: "Current", // Added firstName for matching
+  lastName: "User",
+  avatar: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=200&h=200&fit=crop&crop=faces&auto=format",
+  role: "admin", // Set to admin for testing moderator features
+  reactionType: 'inspired'
+};
+
+// Helper function to check if the current user is the author of a comment
+const isCurrentUserAuthor = (author: any): boolean => {
+  // For testing purposes, consider any of these authors as the current user
+  return author.handle === CURRENT_USER.handle || 
+         author.firstName === "Current" || 
+         author.firstName === "David" || 
+         author.firstName === "Sarah";
+};
+
 interface PostRepliesProps {
   replies: PostProps[];
   parentAuthor?: string;
@@ -140,6 +164,20 @@ export const PostReplies = ({
   onReply,
 }: PostRepliesProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [replyToDelete, setReplyToDelete] = useState<number | null>(null);
+  
+  // Function to handle deleting a comment
+  const handleDeleteComment = () => {
+    // In a real app, this would call an API to delete the comment
+    toast({
+      title: "Comment deleted",
+      description: "Your comment has been permanently deleted."
+    });
+    setDeleteDialogOpen(false);
+    setReplyToDelete(null);
+  };
   
   // Maximum nesting level to avoid excessive indentation
   // Original comment is level 0, max depth is 3 levels (original → reply → reply to reply → reply to reply to reply)
@@ -377,6 +415,33 @@ export const PostReplies = ({
   
   return (
     <div className="relative mt-1">
+      {/* Delete Comment Confirmation Bottom Sheet */}
+      <BottomSheet isOpen={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <div className="p-4 space-y-4">
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold">Delete Comment</h2>
+            <p className="text-muted-foreground">
+              This action is permanent and cannot be reversed - all content and reactions associated with this comment will be permanently deleted.
+            </p>
+          </div>
+          
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              onClick={handleDeleteComment}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full"
+            >
+              Delete
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              className="w-full"
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </BottomSheet>
       {isPhotoViewerOpen && (
         <div 
           className="fixed inset-0 z-50 bg-black flex items-center justify-center"
@@ -515,10 +580,92 @@ export const PostReplies = ({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>Copy link</DropdownMenuItem>
-                            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>Report post</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive" onClick={(e) => e.stopPropagation()}>Hide comment</DropdownMenuItem>
+                            {/* Options for all users */}
+                            <DropdownMenuItem 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(window.location.href);
+                                toast({ description: "Link copied to clipboard" });
+                              }}
+                            >
+                              <Link2 className="mr-2 h-4 w-4" />
+                              <span>Copy link</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(reply.content);
+                                toast({ description: "Text copied to clipboard" });
+                              }}
+                            >
+                              <FileText className="mr-2 h-4 w-4" />
+                              <span>Copy text</span>
+                            </DropdownMenuItem>
+                            
+                            {/* Options for comment authors */}
+                            {isCurrentUserAuthor(reply.author) && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toast({ description: "Edit comment functionality will be implemented soon." });
+                                  }}
+                                >
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  <span>Edit comment</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setReplyToDelete(index);
+                                    setDeleteDialogOpen(true);
+                                  }}
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  <span>Delete comment</span>
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                            
+                            {/* Additional options for moderators/admins */}
+                            {(CURRENT_USER.role === "admin" || CURRENT_USER.role === "moderator") && 
+                             !isCurrentUserAuthor(reply.author) && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setReplyToDelete(index);
+                                    setDeleteDialogOpen(true);
+                                  }}
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  <span>Delete comment</span>
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                            
+                            {/* Report option (only for non-authors and non-admins/moderators) */}
+                            {!isCurrentUserAuthor(reply.author) && 
+                             CURRENT_USER.role !== "admin" && 
+                             CURRENT_USER.role !== "moderator" && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toast({ description: "Report functionality will be implemented soon." });
+                                  }}
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <AlertOctagon className="mr-2 h-4 w-4" />
+                                  <span>Report comment</span>
+                                </DropdownMenuItem>
+                              </>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

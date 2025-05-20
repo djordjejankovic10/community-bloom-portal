@@ -34,16 +34,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { BottomSheet } from "@/components/messages/BottomSheet";
 import {
   Drawer,
   DrawerContent,
@@ -1395,26 +1386,33 @@ export const FeedPost = ({
         onClose={() => setReportSheetOpen(false)}
       />
       
-      {/* Delete Post Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Post</AlertDialogTitle>
-            <AlertDialogDescription>
+      {/* Delete Post Confirmation Bottom Sheet */}
+      <BottomSheet isOpen={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <div className="p-4 space-y-4">
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold">Delete Post</h2>
+            <p className="text-muted-foreground">
               This action is permanent and cannot be reversed - all content, comments, and reactions associated with this post will be permanently deleted.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
+            </p>
+          </div>
+          
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
               onClick={confirmDeletePost}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full"
             >
               Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              className="w-full"
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   );
 };
