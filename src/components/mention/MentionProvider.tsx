@@ -10,6 +10,7 @@ interface MentionProviderProps {
   setContent: (content: string) => void;
   onMentionSelect?: (item: MentionItem) => void;
   mentions?: MentionItem[];
+  forceContextMenu?: boolean;
 }
 
 // Enhanced mock data for mentions with roles
@@ -33,9 +34,13 @@ export function MentionProvider({
   content,
   setContent,
   onMentionSelect,
-  mentions = DEFAULT_MENTIONS
+  mentions = DEFAULT_MENTIONS,
+  forceContextMenu = false
 }: MentionProviderProps) {
-  const { useMentionContextMenu } = useUIPreferences();
+  const { useMentionContextMenu: userPreference } = useUIPreferences();
+  
+  // Use context menu if forced or if user prefers it
+  const useMentionContextMenu = forceContextMenu || userPreference;
   const [isMentionOpen, setIsMentionOpen] = useState(false);
   const [mentionSearch, setMentionSearch] = useState('');
   const [mentionedContent, setMentionedContent] = useState<MentionItem[]>([]);
@@ -200,7 +205,7 @@ export function MentionProvider({
         {children}
       </div>
       
-      {/* Render appropriate mention UI based on preference */}
+      {/* Render appropriate mention UI based on preference or forced context menu */}
       {useMentionContextMenu ? (
         <div className="fixed inset-0 z-50 pointer-events-none">
           <MentionContextMenu

@@ -239,10 +239,26 @@ const CreatePostPage = () => {
   // Reference to the mention trigger function
   const mentionTriggerRef = useRef<() => void>();
   
-  // Handle mention button click
+  // Handle mention button click - always use contextual menu
   const handleMentionClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (mentionTriggerRef.current) {
-      mentionTriggerRef.current();
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+      
+      const currentPosition = textareaRef.current.selectionStart;
+      const textBefore = content.substring(0, currentPosition);
+      const textAfter = content.substring(currentPosition);
+      
+      // Insert @ at cursor position
+      setContent(textBefore + '@' + textAfter);
+      
+      // Set cursor position after the @ symbol
+      setTimeout(() => {
+        if (textareaRef.current) {
+          const newCursorPos = currentPosition + 1;
+          textareaRef.current.selectionStart = newCursorPos;
+          textareaRef.current.selectionEnd = newCursorPos;
+        }
+      }, 50);
     }
   };
 
@@ -397,6 +413,7 @@ const CreatePostPage = () => {
               content={content}
               setContent={setContent}
               onMentionSelect={handleMentionSelect}
+              forceContextMenu={true}
             >
               <textarea
                 ref={textareaRef}

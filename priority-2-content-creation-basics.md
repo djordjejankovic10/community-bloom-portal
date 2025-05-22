@@ -53,9 +53,7 @@ As a mobile app user, I want to @mention other users in my posts to notify them.
   - Empty state when no matches found
 - Type-ahead/autocomplete functionality for mentions:
   - Suggestions appear in real-time as user types after @ symbol
-  - Suggestions filtered based on typed characters after @:
-    - Direct name matching for 1-2 characters (first/last name contains filter)
-    - Full text search for 3+ characters
+  - Suggestions filtered based on typed characters after @
   - Tap to select a suggestion
   - Dismiss suggestions by tapping away
 - Suggestions include:
@@ -98,8 +96,6 @@ As a mobile app user, I want to attach photos and images to my posts to share vi
 - Photo handling includes:
   - Progressive loading with low-resolution placeholders
     - Initially display a shimmer animation over a light gray placeholder matching image dimensions
-    - As soon as available, show a very low-resolution thumbnail (10-20% of original size) that fills the entire container
-    - Gradually transition to higher resolution versions as they load (LQIP - Low Quality Image Placeholder technique)
     - Maintain consistent dimensions to prevent layout shifts during the progressive loading process
     - Use a subtle cross-fade transition between loading states to avoid jarring visual changes
   - Proper handling of portrait vs. landscape orientations
