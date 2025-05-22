@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 export type MediaItem = {
   type: string;
   url: string;
+  isLoading?: boolean;
 };
 
 export type MediaUploaderRef = {
@@ -202,14 +203,12 @@ export const MediaUploader = forwardRef<MediaUploaderRef, MediaUploaderProps>(({
       return;
     }
     
-    setIsUploading(true);
-    
     // Convert FileList to array and process each file
     const fileArray = Array.from(files);
     const validFiles = fileArray.slice(0, maxItems - mediaItems.length);
     
-    // Process each file and create media items
-    const newMediaItems = validFiles.map(file => {
+    // Create placeholder loading items first
+    const loadingItems = validFiles.map(file => {
       const isImage = file.type.startsWith('image/');
       const isVideo = file.type.startsWith('video/');
       
@@ -224,27 +223,50 @@ export const MediaUploader = forwardRef<MediaUploaderRef, MediaUploaderProps>(({
         return null;
       }
       
-      // Create a URL for the selected file
-      const fileUrl = URL.createObjectURL(file);
-      
+      // Create loading placeholder items
       return {
         type: isImage ? "image" : "video",
-        url: fileUrl
+        url: "", // Will be populated when loaded
+        isLoading: true
       };
     }).filter(item => item !== null) as MediaItem[];
     
-    // Add the new items to the existing ones
-    onChange([...mediaItems, ...newMediaItems]);
+    // Add the loading placeholders immediately
+    const updatedItems = [...mediaItems, ...loadingItems];
+    onChange(updatedItems);
     
-    // Simulate network delay
-    setTimeout(() => {
-      setIsUploading(false);
+    // Process each file and update the items with actual URLs
+    validFiles.forEach((file, index) => {
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
       
-      // Reset the file input for future selections
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    }, 800);
+      if (!isImage && !isVideo) return;
+      
+      // Create a URL for the selected file
+      const fileUrl = URL.createObjectURL(file);
+      
+      // Simulate network delay for each file
+      setTimeout(() => {
+        // Find the index of this loading item in the current state
+        const currentItems = [...updatedItems];
+        const loadingItemIndex = mediaItems.length + index;
+        
+        // Update the item with the actual URL and remove loading state
+        if (currentItems[loadingItemIndex]) {
+          currentItems[loadingItemIndex] = {
+            type: isImage ? "image" : "video",
+            url: fileUrl,
+            isLoading: false
+          };
+          onChange(currentItems);
+        }
+      }, 800);
+    });
+    
+    // Reset the file input for future selections
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const removeMediaItem = (index: number) => {
@@ -275,13 +297,7 @@ export const MediaUploader = forwardRef<MediaUploaderRef, MediaUploaderProps>(({
         disabled={disabled}
       />
       
-      {/* Loading indicator for media uploads */}
-      {isUploading && (
-        <div className="flex items-center justify-center py-3 mb-2 rounded-lg border border-dashed">
-          <Loader2 className="h-5 w-5 animate-spin mr-2 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Uploading media...</span>
-        </div>
-      )}
+      {/* No global loading indicator - we now use per-item loading states */}
       
       {/* Selected media preview - horizontally scrollable */}
       {mediaItems.length > 0 && (
@@ -295,7 +311,12 @@ export const MediaUploader = forwardRef<MediaUploaderRef, MediaUploaderProps>(({
                   getSizeClass()
                 )}
               >
-                {media.type === "image" ? (
+                {media.isLoading ? (
+                  // Loading placeholder with spinner
+                  <div className="w-full h-full flex items-center justify-center bg-muted/30">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : media.type === "image" ? (
                   <img 
                     src={media.url} 
                     alt={`Media ${index + 1}`} 
@@ -311,7 +332,7 @@ export const MediaUploader = forwardRef<MediaUploaderRef, MediaUploaderProps>(({
                     />
                   </div>
                 )}
-                {!disabled && (
+                {!disabled && !media.isLoading && (
                   <button 
                     onClick={() => removeMediaItem(index)}
                     className="absolute top-1 right-1 bg-background/80 rounded-full p-0.5"
