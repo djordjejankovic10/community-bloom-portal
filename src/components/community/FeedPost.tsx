@@ -748,7 +748,7 @@ export const FeedPost = ({
         )}
         
         <div className="flex gap-3 mb-3 relative"> 
-          <Avatar className={cn("flex-shrink-0", isReply ? "w-7 h-7" : "w-8 h-8")}>
+          <Avatar className={cn("flex-shrink-0 self-center", isReply ? "w-7 h-7" : "w-8 h-8")}>
             <AvatarImage src={author.avatar} />
             <AvatarFallback>{author.firstName[0]}</AvatarFallback>
           </Avatar>
@@ -985,7 +985,7 @@ export const FeedPost = ({
         
         {/* Multiple Media Items - Carousel */}
         {mediaItems && mediaItems.length > 0 && (
-          <div className="mt-2 pb-3 rounded-lg overflow-hidden">
+          <div className="mt-2 rounded-lg overflow-hidden">
             {/* Horizontal scroll container */}
             <div 
               className="relative w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory"

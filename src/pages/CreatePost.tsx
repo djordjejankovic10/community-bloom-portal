@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Image, Camera, Mic, LineChart, ArrowLeft, X, Repeat2, AtSign, Search, Sparkles, RotateCcw, CheckCircle, ChevronDown, FileText, Link } from "lucide-react";
+import { Image, Camera, Mic, LineChart, ArrowLeft, X, Repeat2, AtSign, Search, Sparkles, RotateCcw, CheckCircle, ChevronDown, FileText, Link, Dumbbell, Heart, StretchVertical, Battery, Apple, Utensils } from "lucide-react";
 import { Book, BookOpen, Calendar, Trophy, Users, UserCircle, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,13 +25,14 @@ import { cn } from "@/lib/utils";
 import { MentionProvider } from "@/components/mention/MentionProvider";
 import { MentionItem } from "@/components/mention/MentionContextMenu";
 
+// Circle data with icons that match the hamburger menu
 const CIRCLES = [
-  "General",
-  "Weight Training",
-  "Cardio",
-  "Yoga",
-  "Nutrition",
-  "Recovery",
+  { id: "general", name: "General", icon: FileText },
+  { id: "weight-training", name: "Weight Training", icon: Dumbbell },
+  { id: "cardio", name: "Cardio", icon: Heart },
+  { id: "yoga", name: "Yoga", icon: StretchVertical },
+  { id: "nutrition", name: "Nutrition", icon: Apple },
+  { id: "recovery", name: "Recovery", icon: Battery },
 ];
 
 type UploadedImage = MediaItem;
@@ -89,26 +90,21 @@ const CircleBottomSheet = ({
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Select Circle</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
         </div>
         
         <div className="space-y-2">
           {CIRCLES.map((circle) => (
             <Button
-              key={circle}
+              key={circle.id}
               variant="ghost"
-              className={`w-full justify-start text-left h-auto py-3 ${selectedCircle === circle ? 'bg-muted' : ''}`}
+              className={`w-full justify-start text-left h-auto py-3 ${selectedCircle === circle.name ? 'bg-muted' : ''}`}
               onClick={() => {
-                onSelect(circle);
+                onSelect(circle.name);
                 onClose();
               }}
             >
-              {circle}
-              {selectedCircle === circle && (
-                <CircleIcon className="h-4 w-4 ml-auto text-primary" />
-              )}
+              <circle.icon className="h-4 w-4 mr-2" />
+              {circle.name}
             </Button>
           ))}
         </div>
