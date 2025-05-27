@@ -10,6 +10,8 @@ As a mobile app user, I want to create a new text post so I can share my thought
   - Clear header indicating "Create Post"
   - Text input field with appropriate placeholder text
   - Channel/circle selector to choose where to post (if posting from circle feed, then this is hidden)
+    - selecting a circle is required, throw an error in a dialogue if no circle is selected
+      - "Error posting. Please select a circle to post in."
   - Post button (disabled until text entered)
   - Close/cancel button to exit composer
 - Text input supports:
@@ -69,9 +71,9 @@ As a mobile app user, I want to @mention other users in my posts to notify them.
 As a mobile app user, I want to attach photos and images to my posts to share visual content.
 
 **Acceptance Criteria:**
-- Photo attachment options clearly visible in composer:
-  - Camera option to take photo directly
-  - Gallery option to select existing images
+- "Photo library" attachment options clearly visible in composer
+-   Take member into native library
+- "Take photo or video" redirects into camera
 - Image selection interface supports:
   - Single and multiple selection modes
   - Preview of selected images with appropriate thumbnails
@@ -100,11 +102,6 @@ As a mobile app user, I want to attach photos and images to my posts to share vi
     - Use a subtle cross-fade transition between loading states to avoid jarring visual changes
   - Proper handling of portrait vs. landscape orientations
     - Always preserve aspect ratio - Never stretch or distort images
-    - Portrait images (taller than wide) must scale to either 600px maximum height or container width (whichever constraint is hit first), while landscape images (wider than tall) must scale to fit the full container width with height determined by aspect ratio. Test: Compare side-by-side rendering of portrait and landscape images to verify consistent, appropriate scaling.
-    - For carousels with mixed portrait and landscape images, maintain a consistent height for all images if any portrait image (aspect ratio < 1) is present. This approach uses a fixed 600px height with center-cropping for landscape images to maintain visual consistency during swiping.
-    - When all images in a carousel are landscape orientation, maintain natural height with a maximum of 600px.
-    - Extremely tall images (beyond 9:16 aspect ratio or less than 0.5625 ratio) should be center-cropped with a fixed height of 600px to ensure the width is always maximized while maintaining the center focus of the image. This prevents very narrow displays of tall vertical images.
-    - All images must be centered horizontally with consistent 8dp rounded corners and proper padding (16dp on sides), with no unnecessary white space or abrupt layout shifts when loading. 
 Test edge cases - Very tall/narrow images, panoramas, etc.
   - Proper error states for failed image loads
     - Display a placeholder with retry option when images fail to load, using a light gray background with broken image icon and brief error message
