@@ -14,6 +14,8 @@ import { BookOpen, Plus, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PinnedPosts } from "@/components/community/PinnedPosts";
 import { PostProps } from "@/types/post";
+import { PullToSearchBar } from "@/components/community/PullToSearchBar";
+import { usePullToReveal } from "@/hooks/usePullToReveal";
 
 // Helper function to get category icons
 const getCategoryIconName = (category: string): string => {
@@ -211,7 +213,12 @@ export const MOCK_POSTS = [
       handle: "@michaelt",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces&auto=format",
       verified: true,
-      role: "founder" as const
+      role: "founder" as const,
+      titleBadge: {
+        title: "Challenge Champion",
+        tier: "gold" as const,
+        icon: "🏆"
+      }
     },
     content: "What's your favorite post-workout recovery technique? I've been experimenting with different methods and would love to hear what works for everyone! #RecoveryTips",
     timestamp: "30m",
@@ -229,7 +236,12 @@ export const MOCK_POSTS = [
           lastName: "Chen",
           handle: "@sophiac",
           avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces&auto=format",
-          role: "moderator" as const
+          role: "moderator" as const,
+          titleBadge: {
+            title: "Fitness Guru",
+            tier: "bronze" as const,
+            icon: "💪"
+          }
         },
         content: "Ice baths have been a game-changer for me! I do 5 minutes at 50°F after intense leg days. The initial shock is worth the reduced soreness.",
         timestamp: "2h 45m ago",
@@ -565,7 +577,12 @@ export const MOCK_POSTS = [
       lastName: "Davis",
       handle: "@emmad",
       avatar: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=200&h=200&fit=crop&crop=faces&auto=format",
-      role: "admin" as const
+      role: "admin" as const,
+      titleBadge: {
+        title: "Community Star",
+        tier: "silver" as const,
+        icon: "⭐"
+      }
     },
     content: "Just finished my morning workout routine! What's your favorite exercise to start the day with?",
     timestamp: "2h ago",
@@ -583,7 +600,12 @@ export const MOCK_POSTS = [
           lastName: "Johnson",
           handle: "@davidj",
           avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces&auto=format",
-          role: "founder" as const
+          role: "founder" as const,
+          titleBadge: {
+            title: "Workout Master",
+            tier: "platinum" as const,
+            icon: "🔥"
+          }
         },
         content: "I always start with some light stretching and then move into a 10-minute HIIT session. Here's my progress from the last month:",
         timestamp: "1h ago",
@@ -2073,6 +2095,12 @@ const Community = () => {
   const [pinnedPosts, setPinnedPosts] = useState<PostProps[]>(PINNED_POSTS);
   const [currentSort, setCurrentSort] = useState<SortOption>("newest");
   const navigate = useNavigate();
+  
+  // Pull-to-reveal search functionality
+  const { isVisible: isSearchVisible } = usePullToReveal({
+    threshold: 50,
+    hideThreshold: 100
+  });
 
   const filteredPosts = MOCK_POSTS.filter(post => 
     (activeFilter === "all" || post.category === activeFilter) && !post.pinned
@@ -2111,9 +2139,12 @@ const Community = () => {
   const renderCommunityFeed = () => {
     return (
       <>
-        <CreatePost />
+        {/* Pull-to-reveal search bar */}
+        <PullToSearchBar
+          isVisible={isSearchVisible}
+        />
         
-        {/* No debug links - posts should appear in the main feed */}
+        <CreatePost />
         
         <div className="space-y-4">
           {pinnedPosts.length > 0 && (

@@ -25,14 +25,24 @@ import { cn } from "@/lib/utils";
 import { MentionProvider } from "@/components/mention/MentionProvider";
 import { MentionItem } from "@/components/mention/MentionContextMenu";
 
-// Circle data with icons that match the hamburger menu
-const CIRCLES = [
-  { id: "general", name: "General", icon: FileText },
-  { id: "weight-training", name: "Weight Training", icon: Dumbbell },
-  { id: "cardio", name: "Cardio", icon: Heart },
-  { id: "yoga", name: "Yoga", icon: StretchVertical },
-  { id: "nutrition", name: "Nutrition", icon: Apple },
-  { id: "recovery", name: "Recovery", icon: Battery },
+// Circle categories organized by access groups (matching hamburger menu)
+const ACCESS_GROUPS = [
+  {
+    name: "Exercise",
+    circles: [
+      { id: "weight-training", name: "Weight Training", icon: Dumbbell },
+      { id: "cardio", name: "Cardio", icon: Heart },
+      { id: "yoga", name: "Yoga", icon: StretchVertical },
+      { id: "recovery", name: "Recovery", icon: Battery },
+    ]
+  },
+  {
+    name: "Nutrition",
+    circles: [
+      { id: "nutrition", name: "Nutrition", icon: Apple },
+      { id: "keto-diet", name: "Keto Diet", icon: Utensils },
+    ]
+  }
 ];
 
 type UploadedImage = MediaItem;
@@ -92,20 +102,32 @@ const CircleBottomSheet = ({
           <h2 className="text-lg font-semibold">Select Circle</h2>
         </div>
         
-        <div className="space-y-2">
-          {CIRCLES.map((circle) => (
-            <Button
-              key={circle.id}
-              variant="ghost"
-              className={`w-full justify-start text-left h-auto py-3 ${selectedCircle === circle.name ? 'bg-muted' : ''}`}
-              onClick={() => {
-                onSelect(circle.name);
-                onClose();
-              }}
-            >
-              <circle.icon className="h-4 w-4 mr-2" />
-              {circle.name}
-            </Button>
+        <div className="space-y-4">
+          {ACCESS_GROUPS.map((group, index) => (
+            <div key={index} className="space-y-2">
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide px-2">
+                {group.name}
+              </h3>
+              
+              {group.circles.map((circle) => (
+                <Button
+                  key={circle.id}
+                  variant="ghost"
+                  className={`w-full justify-start text-left h-auto py-3 ${selectedCircle === circle.name ? 'bg-muted' : ''}`}
+                  onClick={() => {
+                    onSelect(circle.name);
+                    onClose();
+                  }}
+                >
+                  <circle.icon className="h-4 w-4 mr-2" />
+                  {circle.name}
+                </Button>
+              ))}
+              
+              {index < ACCESS_GROUPS.length - 1 && (
+                <Separator className="my-2" />
+              )}
+            </div>
           ))}
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { BellIcon, MessageCircle, Search, User, ChevronDown, X, Plus } from "lucide-react";
+import { BellIcon, MessageCircle, User, ChevronDown, X, Plus } from "lucide-react";
 import { CommunityMenu } from "./CommunityMenu";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -66,12 +66,6 @@ export const CommunityHeader = () => {
             </div>
           </div>
           <div className="flex gap-3 items-center">
-            <button 
-              className="h-7 w-7 text-primary hover:text-primary/80 transition-colors flex items-center justify-center rounded-full"
-              onClick={() => navigate("/search")}
-            >
-              <Search className="w-5 h-5" />
-            </button>
             <button 
               className="h-7 w-7 text-primary hover:text-primary/80 transition-colors relative flex items-center justify-center rounded-full"
               onClick={() => navigate("/messages")}

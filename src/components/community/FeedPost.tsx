@@ -49,6 +49,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { TitleBadge } from "@/components/ui/title-badge";
 
 // Type of reaction
 type ReactionType = 'inspired' | 'love' | 'haha' | 'wow' | 'sad' | 'angry';
@@ -853,7 +854,7 @@ export const FeedPost = ({
                 </DropdownMenu>
               )}
             </div>
-            <div className="flex items-center gap-1 mt-0.5">
+            <div className="flex items-center gap-1 mt-0.5 flex-wrap">
               {category && (
                 <Badge variant="outline" className={cn("px-1 py-0 bg-accent/50 flex items-center", isReply ? "text-[9px]" : "text-[10px]")}>
                   {getCategoryIcon(category)}
@@ -864,6 +865,14 @@ export const FeedPost = ({
                 <Badge variant={isReply ? "outline" : "default"} className={cn("px-1 py-0", isReply ? "text-[9px]" : "text-[10px]")}>
                   {author.role}
                 </Badge>
+              )}
+              {author.titleBadge && (
+                <TitleBadge
+                  title={author.titleBadge.title}
+                  tier={author.titleBadge.tier}
+                  icon={author.titleBadge.icon}
+                  size={isReply ? "sm" : "sm"}
+                />
               )}
             </div>
           </div>

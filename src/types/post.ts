@@ -23,6 +23,11 @@ export type PostAuthor = {
   avatar: string;
   verified?: boolean;
   role?: "founder" | "admin" | "moderator";
+  titleBadge?: {
+    title: string;
+    tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
+    icon: string;
+  };
 };
 
 export type PostProps = {

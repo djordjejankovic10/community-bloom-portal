@@ -30,6 +30,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+import { TitleBadge } from "@/components/ui/title-badge";
 
 // Define reaction types
 type ReactionType = 'inspired' | 'love' | 'haha' | 'wow' | 'sad' | 'angry';
@@ -481,7 +482,7 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
                                 </span>
                                 <span className="text-xs text-muted-foreground whitespace-nowrap">· {post.timestamp}</span>
                               </div>
-                              <div className="flex items-center gap-1 mt-0.5">
+                              <div className="flex items-center gap-1 mt-0.5 flex-wrap">
                                 {post.category && (
                                   <Badge variant="outline" className="px-1 py-0 bg-accent/50 flex items-center text-[10px]">
                                     {getCategoryIcon(post.category)}
@@ -492,6 +493,14 @@ export const PinnedPosts = ({ pinnedPosts, onUnpin }: PinnedPostsProps) => {
                                   <Badge variant="default" className="px-1 py-0 text-[10px]">
                                     {post.author.role}
                                   </Badge>
+                                )}
+                                {post.author.titleBadge && (
+                                  <TitleBadge
+                                    title={post.author.titleBadge.title}
+                                    tier={post.author.titleBadge.tier}
+                                    icon={post.author.titleBadge.icon}
+                                    size="sm"
+                                  />
                                 )}
                               </div>
                             </div>

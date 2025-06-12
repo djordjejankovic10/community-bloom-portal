@@ -27,6 +27,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { TitleBadge } from "@/components/ui/title-badge";
 
 // Define reaction types
 type ReactionType = 'inspired' | 'love' | 'haha' | 'wow' | 'sad' | 'angry';
@@ -140,7 +141,7 @@ const CURRENT_USER: ReactionUser = {
 };
 
 // Helper function to check if the current user is the author of a comment
-const isCurrentUserAuthor = (author: any): boolean => {
+const isCurrentUserAuthor = (author: { handle?: string; firstName?: string }): boolean => {
   // For testing purposes, consider any of these authors as the current user
   return author.handle === CURRENT_USER.handle || 
          author.firstName === "Current" || 
@@ -671,7 +672,7 @@ export const PostReplies = ({
                       </div>
                       
                       {/* Badges row */}
-                      <div className="flex items-center gap-1 mt-0.5 mb-1">
+                      <div className="flex items-center gap-1 mt-0.5 mb-1 flex-wrap">
                         {reply.category && (
                           <Badge variant="outline" className="px-1 py-0 bg-accent/50 text-[10px] flex items-center">
                             {reply.category}
@@ -681,6 +682,14 @@ export const PostReplies = ({
                           <Badge variant="default" className="text-[10px] px-1 py-0 h-4">
                             {reply.author.role}
                           </Badge>
+                        )}
+                        {reply.author.titleBadge && (
+                          <TitleBadge
+                            title={reply.author.titleBadge.title}
+                            tier={reply.author.titleBadge.tier}
+                            icon={reply.author.titleBadge.icon}
+                            size="sm"
+                          />
                         )}
                       </div>
                       
