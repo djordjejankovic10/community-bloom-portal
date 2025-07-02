@@ -8,12 +8,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMenuPreferences, Site } from "@/context/MenuPreferencesContext";
 import { MOCK_SITES } from "@/data/mock-sites";
 import { Button } from "@/components/ui/button";
+import { useUIPreferences } from "@/context/UIPreferences";
 
 export const CommunityHeader = () => {
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const { sites } = useMenuPreferences();
+  const { setHideBottomNav } = useUIPreferences();
   const [displaySites, setDisplaySites] = useState<Site[]>([]);
   
   // Calculate unread notifications count
@@ -30,6 +32,14 @@ export const CommunityHeader = () => {
       setDisplaySites(MOCK_SITES as Site[]);
     }
   }, [sites]);
+
+  // Hide/show bottom navigation when site switcher opens/closes
+  useEffect(() => {
+    setHideBottomNav(isBottomSheetOpen);
+    return () => {
+      setHideBottomNav(false);
+    };
+  }, [isBottomSheetOpen, setHideBottomNav]);
   
   const toggleBottomSheet = () => {
     setIsBottomSheetOpen(!isBottomSheetOpen);
@@ -95,13 +105,14 @@ export const CommunityHeader = () => {
       
       {/* Bottom Sheet */}
       {isBottomSheetOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={toggleBottomSheet}>
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-end" onClick={toggleBottomSheet}>
           <div 
-            className="bg-background rounded-t-xl w-full max-h-[80vh] overflow-y-auto p-4 relative"
+            className="bg-background rounded-t-xl w-full max-h-[80vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-semibold text-lg">Switch Community</h2>
+            {/* Header - Fixed */}
+            <div className="flex justify-between items-center p-4 border-b border-border flex-shrink-0">
+              <h2 className="font-semibold text-lg">Site Switcher</h2>
               <button 
                 onClick={toggleBottomSheet}
                 className="p-1 rounded-full hover:bg-muted/50"
@@ -110,53 +121,58 @@ export const CommunityHeader = () => {
               </button>
             </div>
             
-            {/* Current Site */}
-            <div className="mb-6 p-3 bg-muted/30 rounded-lg border border-border">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10 rounded-lg">
-                  <AvatarImage src="https://images.unsplash.com/photo-1493690283958-32df2c86326e?w=400&h=400&fit=crop" alt="ES Fitness" />
-                  <AvatarFallback>ES</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col">
-                  <span className="font-medium">ES Fitness</span>
-                  <span className="text-xs text-muted-foreground">www.esfitness.com</span>
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {/* Current Site */}
+              <div className="mb-6 p-3 bg-muted/30 rounded-lg border border-border">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10 rounded-lg">
+                    <AvatarImage src="https://images.unsplash.com/photo-1493690283958-32df2c86326e?w=400&h=400&fit=crop" alt="ES Fitness" />
+                    <AvatarFallback>ES</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="font-medium">ES Fitness</span>
+                    <span className="text-xs text-muted-foreground">www.esfitness.com</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Sites List */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-sm text-muted-foreground">YOUR SITES</h3>
+                </div>
+                
+                <div className="space-y-3">
+                  {displaySites.map((site) => (
+                    <div key={site.id} className="group relative">
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start gap-3 hover:bg-muted/50"
+                        onClick={() => handleSiteNavigation(site.url)}
+                      >
+                        <Avatar className="h-9 w-9">
+                          <AvatarImage src={site.logo} alt={site.name} />
+                          <AvatarFallback>{site.fallback}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium">{site.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {site.url}
+                          </span>
+                        </div>
+                      </Button>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
             
-            {/* Sites List */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium text-sm text-muted-foreground">YOUR COMMUNITIES</h3>
-              </div>
-              
-              <div className="space-y-3">
-                {displaySites.map((site) => (
-                  <div key={site.id} className="group relative">
-                    <Button 
-                      variant="ghost" 
-                      className="w-full justify-start gap-3 hover:bg-muted/50"
-                      onClick={() => handleSiteNavigation(site.url)}
-                    >
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage src={site.logo} alt={site.name} />
-                        <AvatarFallback>{site.fallback}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col items-start">
-                        <span className="font-medium">{site.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {site.url}
-                        </span>
-                      </div>
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              
-              {/* Add New Site Button */}
+            {/* Sticky Bottom CTA */}
+            <div className="p-4 border-t border-border flex-shrink-0">
               <Button 
                 variant="outline" 
-                className="w-full mt-4 gap-2"
+                className="w-full gap-2"
                 onClick={() => {
                   toggleBottomSheet();
                   // This would typically open a dialog to add a new site
@@ -164,7 +180,7 @@ export const CommunityHeader = () => {
                 }}
               >
                 <Plus className="h-4 w-4" />
-                Add New Community
+                Add More Sites
               </Button>
             </div>
           </div>

@@ -242,7 +242,7 @@ export const CommunityMenu = () => {
                   id="name" 
                   value={newSiteName} 
                   onChange={(e) => setNewSiteName(e.target.value)} 
-                  placeholder="My Community"
+                  placeholder="My Site"
                 />
               </div>
               <div className="space-y-2">
