@@ -105,3 +105,18 @@
     margin-right: auto;
   }
 }
+
+/* Chart color utilities for notification badges */
+@layer utilities {
+  .bg-chart-1\/10 { background-color: #fef1e8; } /* 10% tint of orange */
+  .bg-chart-2\/10 { background-color: #ebf3fe; } /* 10% tint of blue */
+  .bg-chart-3\/10 { background-color: #e7f8f1; } /* 10% tint of green */
+  .bg-chart-4\/10 { background-color: #f6eefe; } /* 10% tint of purple */
+  .bg-chart-5\/10 { background-color: #fdecec; } /* 10% tint of red */
+  
+  .text-chart-1 { color: #f97316; }
+  .text-chart-2 { color: #3b82f6; }
+  .text-chart-3 { color: #10b981; }
+  .text-chart-4 { color: #a855f7; }
+  .text-chart-5 { color: #ef4444; }
+}

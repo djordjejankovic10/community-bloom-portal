@@ -9,6 +9,17 @@ export default {
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
+  safelist: [
+    // Chart color classes for notification badges
+    {
+      pattern: /^(bg|text)-chart-[1-5]$/,
+    },
+    {
+      pattern: /^bg-chart-[1-5]\/10$/,
+    },
+    'bg-primary/10', 
+    'text-primary'
+  ],
   prefix: "",
   theme: {
     container: {
@@ -52,6 +63,13 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        chart: {
+          "1": "#f97316", // Orange for events
+          "2": "#3b82f6", // Blue for chat/messages
+          "3": "#10b981", // Green for announcements
+          "4": "#a855f7", // Purple for challenges
+          "5": "#ef4444", // Red for live room
         },
       },
       borderRadius: {

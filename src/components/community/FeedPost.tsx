@@ -115,25 +115,25 @@ const REACTION_DATA: Record<ReactionType, ReactionDataType> = {
     label: "Love"
   },
   haha: {
-    icon: <span className="text-base">😂</span>,
+    icon: <span className="text-sm">😂</span>,
     color: "text-yellow-500",
     bgColor: "bg-yellow-500",
     label: "Haha"
   },
   wow: {
-    icon: <span className="text-base">😮</span>,
+    icon: <span className="text-sm">😮</span>,
     color: "text-yellow-500",
     bgColor: "bg-yellow-500", 
     label: "Wow"
   },
   sad: {
-    icon: <span className="text-base">😢</span>,
+    icon: <span className="text-sm">😢</span>,
     color: "text-yellow-500",
     bgColor: "bg-yellow-500",
     label: "Sad"
   },
   angry: {
-    icon: <span className="text-base">😡</span>,
+    icon: <span className="text-sm">😡</span>,
     color: "text-red-600",
     bgColor: "bg-red-600",
     label: "Angry"
@@ -1108,24 +1108,16 @@ export const FeedPost = ({
                     </div>
                   )}
                   {reactionsCount.haha > 0 && (
-                    <div className="h-5 w-5 rounded-full flex items-center justify-center bg-yellow-500 text-white border-2 border-background">
-                      <span className="text-xs">😂</span>
-                    </div>
+                    <span className="text-lg">😂</span>
                   )}
                   {reactionsCount.wow > 0 && (
-                    <div className="h-5 w-5 rounded-full flex items-center justify-center bg-yellow-500 text-white border-2 border-background">
-                      <span className="text-xs">😮</span>
-                    </div>
+                    <span className="text-lg">😮</span>
                   )}
                   {reactionsCount.sad > 0 && (
-                    <div className="h-5 w-5 rounded-full flex items-center justify-center bg-yellow-500 text-white border-2 border-background">
-                      <span className="text-xs">😢</span>
-                    </div>
+                    <span className="text-lg">😢</span>
                   )}
                   {reactionsCount.angry > 0 && (
-                    <div className="h-5 w-5 rounded-full flex items-center justify-center bg-red-600 text-white border-2 border-background">
-                      <span className="text-xs">😡</span>
-                    </div>
+                    <span className="text-lg">😡</span>
                   )}
                 </div>
                 <span>{totalReactions}</span>
@@ -1160,12 +1152,16 @@ export const FeedPost = ({
                             : "text-muted-foreground"
                         )}
                       >
-                        <div className={cn(
-                          "h-4 w-4 rounded-full flex items-center justify-center text-white",
-                          REACTION_DATA[reactionKey].bgColor
-                        )}>
-                          {REACTION_DATA[reactionKey].icon}
-                        </div>
+                        {['haha', 'wow', 'sad', 'angry'].includes(reactionKey) ? (
+                          <span className="text-sm">{REACTION_DATA[reactionKey].icon}</span>
+                        ) : (
+                          <div className={cn(
+                            "h-4 w-4 rounded-full flex items-center justify-center text-white",
+                            REACTION_DATA[reactionKey].bgColor
+                          )}>
+                            {REACTION_DATA[reactionKey].icon}
+                          </div>
+                        )}
                         <span>{count}</span>
                       </button>
                     );
@@ -1181,12 +1177,18 @@ export const FeedPost = ({
                             <AvatarImage src={user.avatar} />
                             <AvatarFallback>{user.name[0]}</AvatarFallback>
                           </Avatar>
-                          <div className={cn(
-                            "absolute -bottom-1 -right-1 h-5 w-5 rounded-full flex items-center justify-center text-white border-2 border-background",
-                            REACTION_DATA[user.reactionType].bgColor
-                          )}>
-                            {REACTION_DATA[user.reactionType].icon}
-                          </div>
+                          {['haha', 'wow', 'sad', 'angry'].includes(user.reactionType) ? (
+                            <div className="absolute -bottom-1 -right-1">
+                              <span className="text-lg">{REACTION_DATA[user.reactionType].icon}</span>
+                            </div>
+                          ) : (
+                            <div className={cn(
+                              "absolute -bottom-1 -right-1 h-5 w-5 rounded-full flex items-center justify-center text-white border-2 border-background",
+                              REACTION_DATA[user.reactionType].bgColor
+                            )}>
+                              {REACTION_DATA[user.reactionType].icon}
+                            </div>
+                          )}
                         </div>
                         <div>
                           <div className="font-medium text-sm">{user.name}</div>
