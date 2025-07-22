@@ -10,6 +10,11 @@ import Community from "./pages/Community";
 import CreatePost from "./pages/CreatePost";
 import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
+import PlaybackPreferences from "./pages/PlaybackPreferences";
+import Appearance from "./pages/Appearance";
+import NotificationSettings from "./pages/NotificationSettings";
+import EditProfile from "./pages/EditProfile";
+import DebugMenu from "./components/debug/DebugMenu";
 import NotFound from "./pages/NotFound";
 import { MembersList } from "@/components/community/MembersList";
 import NotificationsPage from "./pages/Notifications";
@@ -85,6 +90,31 @@ const App = () => (
               <Route path="/profile" element={
                 <MainLayout>
                   <Profile />
+                </MainLayout>
+              } />
+              <Route path="/debug" element={
+                <MainLayout>
+                  <DebugMenu />
+                </MainLayout>
+              } />
+              <Route path="/settings/playback" element={
+                <MainLayout>
+                  <PlaybackPreferences />
+                </MainLayout>
+              } />
+              <Route path="/settings/appearance" element={
+                <MainLayout>
+                  <Appearance />
+                </MainLayout>
+              } />
+              <Route path="/settings/notifications" element={
+                <MainLayout>
+                  <NotificationSettings />
+                </MainLayout>
+              } />
+              <Route path="/profile/edit" element={
+                <MainLayout>
+                  <EditProfile />
                 </MainLayout>
               } />
               <Route path="/notifications" element={

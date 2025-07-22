@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -83,9 +85,21 @@
     max-width: 375px;
   }
   
-  /* Remove width constraint for CreatePost page */
+  /* Remove width constraints for full-width pages */
   [data-component-name="CreatePostPage"],
-  [data-component-name="CreatePostPage"] * {
+  [data-component-name="CreatePostPage"] *,
+  [data-component-name="Profile"],
+  [data-component-name="Profile"] *,
+  [data-component-name="DebugMenu"],
+  [data-component-name="DebugMenu"] *,
+  [data-component-name="PlaybackPreferences"],
+  [data-component-name="PlaybackPreferences"] *,
+  [data-component-name="Appearance"],
+  [data-component-name="Appearance"] *,
+  [data-component-name="NotificationSettings"],
+  [data-component-name="NotificationSettings"] *,
+  [data-component-name="EditProfile"],
+  [data-component-name="EditProfile"] * {
     max-width: none !important;
   }
   body {
@@ -93,9 +107,12 @@
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 100%;
+  }
+  
+  #root {
+    width: 100%;
+    min-height: 100vh;
   }
   
   /* Optional class for intentional mobile view constraint */
@@ -119,4 +136,52 @@
   .text-chart-3 { color: #10b981; }
   .text-chart-4 { color: #a855f7; }
   .text-chart-5 { color: #ef4444; }
+  
+  /* Full width utility for components that need to expand */
+  .full-width-override {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  
+  /* Figma design system fonts with proper fallbacks */
+  .font-greet-standard {
+    font-family: "Greet Standard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  
+  .font-sf-pro {
+    font-family: "SF Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  
+  .font-inter {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  
+  /* Figma design system colors - Light theme */
+  :root {
+    --figma-text-primary: #343332;
+    --figma-text-secondary: #3C3C43;
+    --figma-text-secondary-opacity: rgba(60,60,67,0.6);
+    --figma-border: #d2d1d1;
+    --figma-avatar-bg: #B6CDD8;
+    --figma-background: #ffffff;
+    --figma-destructive: #ff3e14;
+    --figma-grey-800: #4d4d4c;
+    --figma-grey-600: #828180;
+    --figma-toggle-bg: #e0e0e0;
+    --figma-blue-accent: #007AFF;
+  }
+
+  /* Figma design system colors - Dark theme */
+  .dark {
+    --figma-text-primary: #ffffff;
+    --figma-text-secondary: #ffffff;
+    --figma-text-secondary-opacity: rgba(255,255,255,0.6);
+    --figma-border: #404040;
+    --figma-avatar-bg: #B6CDD8;
+    --figma-background: #1a1a1a;
+    --figma-destructive: #ff3e14;
+    --figma-grey-800: #ffffff;
+    --figma-grey-600: rgba(255,255,255,0.7);
+    --figma-toggle-bg: #404040;
+  }
 }
