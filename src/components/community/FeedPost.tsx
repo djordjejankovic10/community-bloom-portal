@@ -759,6 +759,11 @@ export const FeedPost = ({
                 <span className={cn("font-medium text-foreground", isReply ? "text-xs" : "text-sm")}>
                   {author.firstName} {author.lastName}
                 </span>
+                {author.role && (
+                  <Badge variant={isReply ? "outline" : "default"} className={cn("px-1 py-0", isReply ? "text-[9px]" : "text-[10px]")}>
+                    {author.role}
+                  </Badge>
+                )}
                 <span className={cn("text-muted-foreground whitespace-nowrap", isReply ? "text-[10px]" : "text-xs")}>· {timestamp}</span>
               </div>
               
@@ -854,27 +859,25 @@ export const FeedPost = ({
                 </DropdownMenu>
               )}
             </div>
-            <div className="flex items-center gap-1 mt-0.5 flex-wrap">
-              {category && (
-                <Badge variant="outline" className={cn("px-1 py-0 bg-accent/50 flex items-center", isReply ? "text-[9px]" : "text-[10px]")}>
-                  {getCategoryIcon(category)}
-                  {formatCategory(category)}
-                </Badge>
-              )}
-              {author.role && (
-                <Badge variant={isReply ? "outline" : "default"} className={cn("px-1 py-0", isReply ? "text-[9px]" : "text-[10px]")}>
-                  {author.role}
-                </Badge>
-              )}
-              {author.titleBadge && (
-                <TitleBadge
-                  title={author.titleBadge.title}
-                  tier={author.titleBadge.tier}
-                  icon={author.titleBadge.icon}
-                  size={isReply ? "sm" : "sm"}
-                />
-              )}
-            </div>
+            {/* Title badge and category on separate line */}
+            {(category || author.titleBadge) && (
+              <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+                {category && (
+                  <Badge variant="outline" className={cn("px-1 py-0 bg-accent/50 flex items-center", isReply ? "text-[9px]" : "text-[10px]")}>
+                    {getCategoryIcon(category)}
+                    {formatCategory(category)}
+                  </Badge>
+                )}
+                {author.titleBadge && (
+                  <TitleBadge
+                    title={author.titleBadge.title}
+                    tier={author.titleBadge.tier}
+                    icon={author.titleBadge.icon}
+                    size={isReply ? "sm" : "sm"}
+                  />
+                )}
+              </div>
+            )}
           </div>
         </div>
         

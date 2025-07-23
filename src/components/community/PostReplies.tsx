@@ -570,6 +570,11 @@ export const PostReplies = ({
                           <span className="font-medium text-sm text-foreground">
                             {reply.author.firstName} {reply.author.lastName}
                           </span>
+                          {reply.author.role && (
+                            <Badge variant="default" className="text-[10px] px-1 py-0 h-4">
+                              {reply.author.role}
+                            </Badge>
+                          )}
                           <span className="text-xs text-muted-foreground whitespace-nowrap">· {formatTimestamp(reply.timestamp)}</span>
                         </div>
                         
@@ -810,27 +815,24 @@ export const PostReplies = ({
                       )}
                     </div>
 
-                    {/* Badges row - outside content like FeedPost */}
-                    <div className="flex items-center gap-1 ml-2 mt-1 mb-1 flex-wrap">
-                      {reply.category && (
-                        <Badge variant="outline" className="px-1 py-0 bg-accent/50 text-[10px] flex items-center">
-                          {reply.category}
-                        </Badge>
-                      )}
-                      {reply.author.role && (
-                        <Badge variant="default" className="text-[10px] px-1 py-0 h-4">
-                          {reply.author.role}
-                        </Badge>
-                      )}
-                      {reply.author.titleBadge && (
-                        <TitleBadge
-                          title={reply.author.titleBadge.title}
-                          tier={reply.author.titleBadge.tier}
-                          icon={reply.author.titleBadge.icon}
-                          size="sm"
-                        />
-                      )}
-                    </div>
+                    {/* Title badge and category row - outside content like FeedPost */}
+                    {(reply.category || reply.author.titleBadge) && (
+                      <div className="flex items-center gap-1 ml-2 mt-1 mb-1 flex-wrap">
+                        {reply.category && (
+                          <Badge variant="outline" className="px-1 py-0 bg-accent/50 text-[10px] flex items-center">
+                            {reply.category}
+                          </Badge>
+                        )}
+                        {reply.author.titleBadge && (
+                          <TitleBadge
+                            title={reply.author.titleBadge.title}
+                            tier={reply.author.titleBadge.tier}
+                            icon={reply.author.titleBadge.icon}
+                            size="sm"
+                          />
+                        )}
+                      </div>
+                    )}
 
                     {/* Timestamp outside the bubble */}
                     <div className="text-xs text-muted-foreground ml-2 mt-1 mb-0.5 flex items-center gap-1.5 justify-between">

@@ -229,27 +229,27 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
               
               <div className="flex-1">
                 <div className="flex flex-col">
-                  <div className="flex items-center">
+                  <div className="flex items-center gap-1">
                     <span className="font-semibold text-sm">{replyingTo.name}</span>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">· 5h</span>
-                  </div>
-                  
-                  {/* Badges row - matching FeedPost styling */}
-                  <div className="flex items-center gap-1 mt-1 mb-2 flex-wrap">
                     {replyingTo.role && (
                       <Badge variant="default" className="text-[10px] px-1 py-0 h-4">
                         {replyingTo.role}
                       </Badge>
                     )}
-                    {replyingTo.titleBadge && (
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">· 5h</span>
+                  </div>
+                  
+                  {/* Title badge row - separate line for title badges only */}
+                  {replyingTo.titleBadge && (
+                    <div className="flex items-center gap-1 mt-1 mb-2">
                       <TitleBadge
                         title={replyingTo.titleBadge.title}
                         tier={replyingTo.titleBadge.tier}
                         icon={replyingTo.titleBadge.icon}
                         size="sm"
                       />
-                    )}
-                  </div>
+                    </div>
+                  )}
                   
                   <div className="mt-1 text-base text-foreground">{replyingTo.content}</div>
                 </div>
