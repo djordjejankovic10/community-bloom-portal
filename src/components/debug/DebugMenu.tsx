@@ -1,4 +1,4 @@
-import { Moon, Palette, ArrowLeft, Layout, AtSign, Code, Sun } from "lucide-react";
+import { Palette, ArrowLeft, Layout, AtSign, Code, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
@@ -42,12 +42,6 @@ const DebugMenu = () => {
     // Call the context function directly
     toggleNavigation();
     console.log("Navigation toggled, new state:", !showNavigation);
-  };
-
-  const toggleDarkMode = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    console.log("Toggling theme from", theme, "to", newTheme);
-    setTheme(newTheme);
   };
 
   // Color theme options
@@ -125,22 +119,6 @@ const DebugMenu = () => {
         <div className="space-y-4 w-full">
           <h2 className="text-lg font-semibold" style={{ color: 'var(--figma-text-primary)' }}>Theme Settings</h2>
           
-          {/* Dark mode toggle */}
-          <div className="flex items-center justify-between py-3 border-b">
-            <div>
-              <Label 
-                htmlFor="dark-mode-toggle" 
-                className="font-medium text-foreground"
-              >
-                Dark Mode
-              </Label>
-              <p className="text-xs text-muted-foreground mt-1">
-                Use dark theme throughout the app
-              </p>
-            </div>
-            <Switch id="dark-mode-toggle" checked={theme === "dark"} onCheckedChange={toggleDarkMode} />
-          </div>
-
           {/* Theme selector */}
           <div className="py-3 border-b">
             <div className="flex items-center gap-2 mb-3">
