@@ -3,6 +3,8 @@ import { useUIPreferences } from "@/context/UIPreferences";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { TitleBadge } from "@/components/ui/title-badge";
 import { MediaUploader, MediaItem, MediaUploaderRef } from "@/components/ui/media-uploader";
 import { 
   Image, 
@@ -29,6 +31,12 @@ interface ReplySheetProps {
     name: string;
     avatar?: string;
     content?: string;
+    role?: "founder" | "admin" | "moderator";
+    titleBadge?: {
+      title: string;
+      tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
+      icon: string;
+    };
   };
   isTopLevel?: boolean; // Flag to indicate if this is a top-level comment
 }
@@ -221,12 +229,26 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
               
               <div className="flex-1">
                 <div className="flex flex-col">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <span className="font-semibold text-sm">{replyingTo.name}</span>
-                    </div>
-                    
-                    <span className="text-xs text-muted-foreground">5h</span>
+                  <div className="flex items-center">
+                    <span className="font-semibold text-sm">{replyingTo.name}</span>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">· 5h</span>
+                  </div>
+                  
+                  {/* Badges row - matching FeedPost styling */}
+                  <div className="flex items-center gap-1 mt-1 mb-2 flex-wrap">
+                    {replyingTo.role && (
+                      <Badge variant="default" className="text-[10px] px-1 py-0 h-4">
+                        {replyingTo.role}
+                      </Badge>
+                    )}
+                    {replyingTo.titleBadge && (
+                      <TitleBadge
+                        title={replyingTo.titleBadge.title}
+                        tier={replyingTo.titleBadge.tier}
+                        icon={replyingTo.titleBadge.icon}
+                        size="sm"
+                      />
+                    )}
                   </div>
                   
                   <div className="mt-1 text-base text-foreground">{replyingTo.content}</div>
@@ -252,7 +274,7 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
                 >
                   <Textarea
                     ref={textareaRef}
-                    placeholder="Post your reply"
+                    placeholder={isTopLevel ? "Post your comment" : "Post your reply"}
                     className="min-h-[80px] pl-0 pr-0 py-0 resize-none overflow-y-auto bg-transparent border-none shadow-none focus-visible:ring-0 text-base placeholder:text-muted-foreground/60"
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}

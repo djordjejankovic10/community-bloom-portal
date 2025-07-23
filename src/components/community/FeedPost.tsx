@@ -1386,7 +1386,9 @@ export const FeedPost = ({
         replyingTo={{
           name: `${author.firstName} ${author.lastName}`,
           avatar: author.avatar,
-          content: content
+          content: content,
+          role: author.role,
+          titleBadge: author.titleBadge
         }}
         isTopLevel={true}
       />

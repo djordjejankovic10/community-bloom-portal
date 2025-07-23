@@ -60,6 +60,12 @@ const PostDetail = () => {
     name: string;
     avatar?: string;
     content?: string;
+    role?: "founder" | "admin" | "moderator";
+    titleBadge?: {
+      title: string;
+      tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
+      icon: string;
+    };
     isTopLevel?: boolean;
   } | null>(null);
   
@@ -190,7 +196,9 @@ const PostDetail = () => {
           setReplyingToComment({
             name: `${comment.author.firstName} ${comment.author.lastName}`,
             content: comment.content,
-            avatar: comment.author.avatar
+            avatar: comment.author.avatar,
+            role: comment.author.role,
+            titleBadge: comment.author.titleBadge
           });
           setReplySheetOpen(true);
         } else {
@@ -370,6 +378,8 @@ const PostDetail = () => {
                   name: post?.author?.firstName + " " + post?.author?.lastName,
                   avatar: post?.author?.avatar,
                   content: post?.content,
+                  role: post?.author?.role,
+                  titleBadge: post?.author?.titleBadge,
                   isTopLevel: true // Flag to identify this as a top-level comment
                 });
                 setCommentSheetOpen(true);
@@ -448,7 +458,9 @@ const PostDetail = () => {
           replyingTo={{
             name: replyingToComment.name,
             avatar: replyingToComment.avatar,
-            content: replyingToComment.content
+            content: replyingToComment.content,
+            role: replyingToComment.role,
+            titleBadge: replyingToComment.titleBadge
           }}
           isTopLevel={true}
         />
