@@ -24,6 +24,7 @@ import { MediaUploader, MediaItem, MediaUploaderRef } from "@/components/ui/medi
 import { cn } from "@/lib/utils";
 import { MentionProvider } from "@/components/mention/MentionProvider";
 import { MentionItem } from "@/components/mention/MentionContextMenu";
+import { ComposerToolbar } from "@/components/community/ComposerToolbar";
 
 // Circle categories organized by access groups (matching hamburger menu)
 const ACCESS_GROUPS = [
@@ -636,142 +637,27 @@ const CreatePostPage = () => {
 
       <Separator />
 
-      <div className="flex justify-between px-3 py-3 w-full shrink-0 bg-background">
-        {!isRichTextOpen ? (
-          // Core toolbar
-          <div className="flex gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-              onClick={(e) => toggleMediaUploader(e)}
-            >
-              <Image className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-              onClick={() => setIsRichTextOpen(true)}
-            >
-              <span className="text-base font-semibold">Aa</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-              onClick={(e) => handleMentionClick(e)}
-            >
-              <AtSign className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-              onClick={handleAIClick}
-            >
-              <Sparkles className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-            >
-              <FileText className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-            >
-              <Link className="h-5 w-5" />
-            </Button>
-          </div>
-        ) : (
-          // Rich text formatting toolbar
-          <div className="flex gap-4 items-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full bg-primary/10"
-              onClick={() => {
-                setIsRichTextOpen(false);
-                setActiveFormats(new Set()); // Clear active formatting when closing
-              }}
-            >
-              <X className="h-5 w-5 text-primary" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-9 w-9 rounded-full",
-                activeFormats.has('bold') && "bg-primary text-primary-foreground"
-              )}
-              onClick={() => handleFormatting('bold')}
-            >
-              <Bold className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-9 w-9 rounded-full",
-                activeFormats.has('italic') && "bg-primary text-primary-foreground"
-              )}
-              onClick={() => handleFormatting('italic')}
-            >
-              <Italic className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-9 w-9 rounded-full",
-                activeFormats.has('underline') && "bg-primary text-primary-foreground"
-              )}
-              onClick={() => handleFormatting('underline')}
-            >
-              <Underline className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-9 w-9 rounded-full",
-                activeFormats.has('strikethrough') && "bg-primary text-primary-foreground"
-              )}
-              onClick={() => handleFormatting('strikethrough')}
-            >
-              <Strikethrough className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-              onClick={() => handleFormatting('bulletList')}
-            >
-              <List className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-              onClick={() => handleFormatting('numberedList')}
-            >
-              <ListOrdered className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-              onClick={() => handleFormatting('link')}
-            >
-              <Link className="h-5 w-5" />
-            </Button>
-          </div>
-        )}
-      </div>
+      <ComposerToolbar
+        isRichTextOpen={isRichTextOpen}
+        setIsRichTextOpen={(open) => {
+          setIsRichTextOpen(open);
+          if (!open) {
+            setActiveFormats(new Set()); // Clear active formatting when closing
+          }
+        }}
+        activeFormats={activeFormats}
+        onFormatting={handleFormatting}
+        onMediaUpload={() => toggleMediaUploader({} as React.MouseEvent<HTMLButtonElement>)}
+        onMentionClick={() => handleMentionClick({} as React.MouseEvent<HTMLButtonElement>)}
+        onAIClick={handleAIClick}
+        isLinkDialogOpen={isLinkDialogOpen}
+        linkText={linkText}
+        linkUrl={linkUrl}
+        setLinkText={setLinkText}
+        setLinkUrl={setLinkUrl}
+        onLinkCancel={handleLinkCancel}
+        onLinkSave={handleLinkSave}
+      />
 
       {/* No need for the custom mention dropdown anymore as it's handled by MentionProvider */}
 
@@ -795,58 +681,6 @@ const CreatePostPage = () => {
         onRegenerateContent={handleRegenerateContent}
         onConfirmContent={handleConfirmAIContent}
       />
-
-      {/* Link Dialog */}
-      {isLinkDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-background rounded-2xl w-full max-w-sm mx-4 shadow-xl">
-            {/* Header */}
-            <div className="px-6 py-4 border-b text-center">
-              <h3 className="text-lg font-semibold">Add Link</h3>
-            </div>
-            
-            {/* Form */}
-            <div className="p-6 space-y-4">
-              <div>
-                <Input
-                  placeholder="Text"
-                  value={linkText}
-                  onChange={(e) => setLinkText(e.target.value)}
-                  className="w-full"
-                />
-              </div>
-              <div>
-                <Input
-                  placeholder="Link"
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  className="w-full"
-                  type="url"
-                />
-              </div>
-            </div>
-            
-            {/* Actions */}
-            <div className="flex border-t">
-              <Button
-                variant="ghost"
-                className="flex-1 h-12 rounded-none border-r text-primary"
-                onClick={handleLinkCancel}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="ghost"
-                className="flex-1 h-12 rounded-none text-primary font-semibold"
-                onClick={handleLinkSave}
-                disabled={!linkUrl.trim()}
-              >
-                Save
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -11,7 +11,6 @@ import {
   AtSign,
   Sparkles,
   FileText,
-  Link,
   X,
   ArrowLeft
 } from "lucide-react";
@@ -20,6 +19,7 @@ import { AIBottomSheet } from "@/components/ai/AIBottomSheet";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { MentionProvider } from "@/components/mention/MentionProvider";
 import { MentionItem } from "@/components/mention/MentionContextMenu";
+import { ComposerToolbar } from "@/components/community/ComposerToolbar";
 
 // Type for mentioned content (using imported MentionItem)
 
@@ -70,6 +70,12 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
   const [aiGeneratedContent, setAiGeneratedContent] = useState("");
   const [mentionedContent, setMentionedContent] = useState<MentionItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  // Rich text formatting states
+  const [isRichTextOpen, setIsRichTextOpen] = useState(false);
+  const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set());
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const [linkText, setLinkText] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
 
   // Auto-focus the textarea when the sheet opens
   useEffect(() => {
@@ -144,6 +150,164 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
   
   const handleAIClick = () => {
     setIsAISheetOpen(true);
+  };
+
+  // Rich text formatting functionality
+  const handleFormatting = (formatType: string) => {
+    if (!textareaRef.current) return;
+
+    // Handle link formatting separately
+    if (formatType === 'link') {
+      const textarea = textareaRef.current;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = replyText.substring(start, end);
+      
+      setIsLinkDialogOpen(true);
+      if (selectedText) {
+        setLinkText(selectedText);
+      }
+      return;
+    }
+
+    // Handle list formatting separately (these are not toggle-able states)
+    if (formatType === 'bulletList' || formatType === 'numberedList') {
+      const textarea = textareaRef.current;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = replyText.substring(start, end);
+      const textBefore = replyText.substring(0, start);
+      const textAfter = replyText.substring(end);
+
+      let formattedText = '';
+      let newCursorPosition = start;
+
+      if (formatType === 'bulletList') {
+        formattedText = selectedText ? `• ${selectedText}` : '• ';
+        newCursorPosition = selectedText ? end + 2 : start + 2;
+      } else {
+        formattedText = selectedText ? `1. ${selectedText}` : '1. ';
+        newCursorPosition = selectedText ? end + 3 : start + 3;
+      }
+
+      const newContent = textBefore + formattedText + textAfter;
+      setReplyText(newContent);
+
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+          textareaRef.current.selectionStart = newCursorPosition;
+          textareaRef.current.selectionEnd = newCursorPosition;
+        }
+      }, 0);
+      return;
+    }
+
+    // Handle toggleable formatting (bold, italic, underline, strikethrough)
+    const newActiveFormats = new Set(activeFormats);
+    
+    if (newActiveFormats.has(formatType)) {
+      // Remove the format
+      newActiveFormats.delete(formatType);
+    } else {
+      // Add the format
+      newActiveFormats.add(formatType);
+    }
+    
+    setActiveFormats(newActiveFormats);
+
+    // Focus the textarea to continue typing with the new formatting
+    textareaRef.current.focus();
+  };
+
+  // Handle content changes with active formatting
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    const textarea = e.target;
+    const cursorPosition = textarea.selectionStart;
+    const lastChar = newValue[cursorPosition - 1];
+    
+    // Check if user just typed a character (not deleted)
+    if (newValue.length > replyText.length && lastChar && activeFormats.size > 0) {
+      // Clear formatting on space or newline for natural break points
+      if (lastChar === ' ' || lastChar === '\n') {
+        setReplyText(newValue);
+        setActiveFormats(new Set()); // Clear active formatting
+        return;
+      }
+      
+      // Apply active formatting to the newly typed character
+      let wrappedChar = lastChar;
+      const beforeChar = newValue.substring(0, cursorPosition - 1);
+      const afterChar = newValue.substring(cursorPosition);
+      
+      // Apply formatting in order: bold, italic, underline, strikethrough
+      if (activeFormats.has('bold')) {
+        wrappedChar = `**${wrappedChar}**`;
+      }
+      if (activeFormats.has('italic')) {
+        wrappedChar = `*${wrappedChar}*`;
+      }
+      if (activeFormats.has('underline')) {
+        wrappedChar = `__${wrappedChar}__`;
+      }
+      if (activeFormats.has('strikethrough')) {
+        wrappedChar = `~~${wrappedChar}~~`;
+      }
+      
+      const formattedContent = beforeChar + wrappedChar + afterChar;
+      setReplyText(formattedContent);
+      
+      // Set cursor position after the formatted text
+      const newCursorPos = cursorPosition + wrappedChar.length - 1;
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.selectionStart = newCursorPos;
+          textareaRef.current.selectionEnd = newCursorPos;
+        }
+      }, 0);
+    } else {
+      setReplyText(newValue);
+    }
+  };
+
+  // Handle link dialog actions
+  const handleLinkCancel = () => {
+    setIsLinkDialogOpen(false);
+    setLinkText("");
+    setLinkUrl("");
+  };
+
+  const handleLinkSave = () => {
+    if (!textareaRef.current || !linkUrl.trim()) return;
+
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = replyText.substring(start, end);
+    const textBefore = replyText.substring(0, start);
+    const textAfter = replyText.substring(end);
+
+    const displayText = linkText.trim() || selectedText || linkUrl;
+    const formattedText = `[${displayText}](${linkUrl})`;
+    const newContent = textBefore + formattedText + textAfter;
+    
+    setReplyText(newContent);
+    
+    // Close dialog and reset
+    setIsLinkDialogOpen(false);
+    setLinkText("");
+    setLinkUrl("");
+
+    // Set cursor position after the link
+    const newCursorPosition = start + formattedText.length;
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        textareaRef.current.selectionStart = newCursorPosition;
+        textareaRef.current.selectionEnd = newCursorPosition;
+      }
+    }, 0);
   };
   
   const handleAISubmit = () => {
@@ -277,7 +441,7 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
                     placeholder={isTopLevel ? "Post your comment" : "Post your reply"}
                     className="min-h-[80px] pl-0 pr-0 py-0 resize-none overflow-y-auto bg-transparent border-none shadow-none focus-visible:ring-0 text-base placeholder:text-muted-foreground/60"
                     value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
+                    onChange={handleContentChange}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey && replyText.trim()) {
                         e.preventDefault();
@@ -306,52 +470,29 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
         )}
       </div>
 
-      {/* Footer with action buttons - matching the CreatePost component */}
-      <div className="flex items-center border-t p-3 py-4 mt-auto pb-safe-area-inset-bottom">
-        <div className="flex gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-            onClick={(e) => toggleMediaUploader(e)}
-          >
-            <Image className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-            onClick={handleMentionClick}
-            title="Mention"
-          >
-            <AtSign className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-            onClick={handleAIClick}
-            title="AI Assist"
-          >
-            <Sparkles className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-            title="Document"
-          >
-            <FileText className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-            title="Link"
-          >
-            <Link className="h-5 w-5" />
-          </Button>
-        </div>
+      {/* Footer with ComposerToolbar - consistent with CreatePost component */}
+      <div className="border-t mt-auto pb-safe-area-inset-bottom">
+        <ComposerToolbar
+          isRichTextOpen={isRichTextOpen}
+          setIsRichTextOpen={(open) => {
+            setIsRichTextOpen(open);
+            if (!open) {
+              setActiveFormats(new Set()); // Clear active formatting when closing
+            }
+          }}
+          activeFormats={activeFormats}
+          onFormatting={handleFormatting}
+          onMediaUpload={() => toggleMediaUploader({} as React.MouseEvent<HTMLButtonElement>)}
+          onMentionClick={() => handleMentionClick()}
+          onAIClick={handleAIClick}
+          isLinkDialogOpen={isLinkDialogOpen}
+          linkText={linkText}
+          linkUrl={linkUrl}
+          setLinkText={setLinkText}
+          setLinkUrl={setLinkUrl}
+          onLinkCancel={handleLinkCancel}
+          onLinkSave={handleLinkSave}
+        />
       </div>
       
       {/* AI Assistant Bottom Sheet */}
