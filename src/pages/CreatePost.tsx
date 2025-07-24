@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Image, Camera, Mic, LineChart, ArrowLeft, X, Repeat2, AtSign, Search, Sparkles, RotateCcw, CheckCircle, ChevronDown, FileText, Link, Dumbbell, Heart, StretchVertical, Battery, Apple, Utensils } from "lucide-react";
+import { Image, Camera, Mic, LineChart, ArrowLeft, X, Repeat2, AtSign, Search, Sparkles, RotateCcw, CheckCircle, ChevronDown, FileText, Link, Dumbbell, Heart, StretchVertical, Battery, Apple, Utensils, Bold, Italic, Underline, Strikethrough, List, ListOrdered } from "lucide-react";
 import { Book, BookOpen, Calendar, Trophy, Users, UserCircle, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -216,6 +216,11 @@ const CreatePostPage = () => {
   const [aiNotes, setAINotes] = useState("");
   const [aiGeneratedContent, setAIGeneratedContent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isRichTextOpen, setIsRichTextOpen] = useState(false);
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const [linkText, setLinkText] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const params = useParams();
   const navigate = useNavigate();
@@ -379,6 +384,164 @@ const CreatePostPage = () => {
     setMentionedContent(mentionedContent.filter(mention => mention.id !== id));
   };
 
+  // Handle link dialog actions
+  const handleLinkCancel = () => {
+    setIsLinkDialogOpen(false);
+    setLinkText("");
+    setLinkUrl("");
+  };
+
+  const handleLinkSave = () => {
+    if (!textareaRef.current || !linkUrl.trim()) return;
+
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = content.substring(start, end);
+    const textBefore = content.substring(0, start);
+    const textAfter = content.substring(end);
+
+    const displayText = linkText.trim() || selectedText || linkUrl;
+    const formattedText = `[${displayText}](${linkUrl})`;
+    const newContent = textBefore + formattedText + textAfter;
+    
+    setContent(newContent);
+    
+    // Close dialog and reset
+    setIsLinkDialogOpen(false);
+    setLinkText("");
+    setLinkUrl("");
+
+    // Set cursor position after the link
+    const newCursorPosition = start + formattedText.length;
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        textareaRef.current.selectionStart = newCursorPosition;
+        textareaRef.current.selectionEnd = newCursorPosition;
+      }
+    }, 0);
+  };
+
+  // Handle rich text formatting
+  const handleFormatting = (formatType: string) => {
+    if (!textareaRef.current) return;
+
+    // Handle link formatting separately
+    if (formatType === 'link') {
+      const textarea = textareaRef.current;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = content.substring(start, end);
+      
+      setIsLinkDialogOpen(true);
+      if (selectedText) {
+        setLinkText(selectedText);
+      }
+      return;
+    }
+
+    // Handle list formatting separately (these are not toggle-able states)
+    if (formatType === 'bulletList' || formatType === 'numberedList') {
+      const textarea = textareaRef.current;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = content.substring(start, end);
+      const textBefore = content.substring(0, start);
+      const textAfter = content.substring(end);
+
+      let formattedText = '';
+      let newCursorPosition = start;
+
+      if (formatType === 'bulletList') {
+        formattedText = selectedText ? `• ${selectedText}` : '• ';
+        newCursorPosition = selectedText ? end + 2 : start + 2;
+      } else {
+        formattedText = selectedText ? `1. ${selectedText}` : '1. ';
+        newCursorPosition = selectedText ? end + 3 : start + 3;
+      }
+
+      const newContent = textBefore + formattedText + textAfter;
+      setContent(newContent);
+
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+          textareaRef.current.selectionStart = newCursorPosition;
+          textareaRef.current.selectionEnd = newCursorPosition;
+        }
+      }, 0);
+      return;
+    }
+
+    // Handle toggleable formatting (bold, italic, underline, strikethrough)
+    const newActiveFormats = new Set(activeFormats);
+    
+    if (newActiveFormats.has(formatType)) {
+      // Remove the format
+      newActiveFormats.delete(formatType);
+    } else {
+      // Add the format
+      newActiveFormats.add(formatType);
+    }
+    
+    setActiveFormats(newActiveFormats);
+
+    // Focus the textarea to continue typing with the new formatting
+    textareaRef.current.focus();
+  };
+
+  // Handle content changes with active formatting
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    const textarea = e.target;
+    const cursorPosition = textarea.selectionStart;
+    const lastChar = newValue[cursorPosition - 1];
+    
+    // Check if user just typed a character (not deleted)
+    if (newValue.length > content.length && lastChar && activeFormats.size > 0) {
+      // Clear formatting on space or newline for natural break points
+      if (lastChar === ' ' || lastChar === '\n') {
+        setContent(newValue);
+        setActiveFormats(new Set()); // Clear active formatting
+        return;
+      }
+      
+      // Apply active formatting to the newly typed character
+      let wrappedChar = lastChar;
+      const beforeChar = newValue.substring(0, cursorPosition - 1);
+      const afterChar = newValue.substring(cursorPosition);
+      
+      // Apply formatting in order: bold, italic, underline, strikethrough
+      if (activeFormats.has('bold')) {
+        wrappedChar = `**${wrappedChar}**`;
+      }
+      if (activeFormats.has('italic')) {
+        wrappedChar = `*${wrappedChar}*`;
+      }
+      if (activeFormats.has('underline')) {
+        wrappedChar = `__${wrappedChar}__`;
+      }
+      if (activeFormats.has('strikethrough')) {
+        wrappedChar = `~~${wrappedChar}~~`;
+      }
+      
+      const formattedContent = beforeChar + wrappedChar + afterChar;
+      setContent(formattedContent);
+      
+      // Set cursor position after the formatted text
+      const newCursorPos = cursorPosition + wrappedChar.length - 1;
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.selectionStart = newCursorPos;
+          textareaRef.current.selectionEnd = newCursorPos;
+        }
+      }, 0);
+    } else {
+      setContent(newValue);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full max-w-none flex flex-col bg-background" style={{ width: '100vw', maxWidth: '100vw' }}>
       <div className="flex items-center justify-between border-b p-3 shrink-0">
@@ -438,7 +601,7 @@ const CreatePostPage = () => {
                 className="w-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none pt-[10px]"
                 placeholder="What's on your mind?"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={handleContentChange}
                 rows={1}
               />
             </MentionProvider>
@@ -474,46 +637,140 @@ const CreatePostPage = () => {
       <Separator />
 
       <div className="flex justify-between px-3 py-3 w-full shrink-0 bg-background">
-        <div className="flex gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-            onClick={(e) => toggleMediaUploader(e)}
-          >
-            <Image className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-            onClick={(e) => handleMentionClick(e)}
-          >
-            <AtSign className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-            onClick={handleAIClick}
-          >
-            <Sparkles className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-          >
-            <FileText className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-          >
-            <Link className="h-5 w-5" />
-          </Button>
-        </div>
+        {!isRichTextOpen ? (
+          // Core toolbar
+          <div className="flex gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+              onClick={(e) => toggleMediaUploader(e)}
+            >
+              <Image className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+              onClick={() => setIsRichTextOpen(true)}
+            >
+              <span className="text-base font-semibold">Aa</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+              onClick={(e) => handleMentionClick(e)}
+            >
+              <AtSign className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+              onClick={handleAIClick}
+            >
+              <Sparkles className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+            >
+              <FileText className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+            >
+              <Link className="h-5 w-5" />
+            </Button>
+          </div>
+        ) : (
+          // Rich text formatting toolbar
+          <div className="flex gap-4 items-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full bg-primary/10"
+              onClick={() => {
+                setIsRichTextOpen(false);
+                setActiveFormats(new Set()); // Clear active formatting when closing
+              }}
+            >
+              <X className="h-5 w-5 text-primary" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-9 w-9 rounded-full",
+                activeFormats.has('bold') && "bg-primary text-primary-foreground"
+              )}
+              onClick={() => handleFormatting('bold')}
+            >
+              <Bold className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-9 w-9 rounded-full",
+                activeFormats.has('italic') && "bg-primary text-primary-foreground"
+              )}
+              onClick={() => handleFormatting('italic')}
+            >
+              <Italic className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-9 w-9 rounded-full",
+                activeFormats.has('underline') && "bg-primary text-primary-foreground"
+              )}
+              onClick={() => handleFormatting('underline')}
+            >
+              <Underline className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-9 w-9 rounded-full",
+                activeFormats.has('strikethrough') && "bg-primary text-primary-foreground"
+              )}
+              onClick={() => handleFormatting('strikethrough')}
+            >
+              <Strikethrough className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+              onClick={() => handleFormatting('bulletList')}
+            >
+              <List className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+              onClick={() => handleFormatting('numberedList')}
+            >
+              <ListOrdered className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+              onClick={() => handleFormatting('link')}
+            >
+              <Link className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* No need for the custom mention dropdown anymore as it's handled by MentionProvider */}
@@ -538,6 +795,58 @@ const CreatePostPage = () => {
         onRegenerateContent={handleRegenerateContent}
         onConfirmContent={handleConfirmAIContent}
       />
+
+      {/* Link Dialog */}
+      {isLinkDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-background rounded-2xl w-full max-w-sm mx-4 shadow-xl">
+            {/* Header */}
+            <div className="px-6 py-4 border-b text-center">
+              <h3 className="text-lg font-semibold">Add Link</h3>
+            </div>
+            
+            {/* Form */}
+            <div className="p-6 space-y-4">
+              <div>
+                <Input
+                  placeholder="Text"
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+              <div>
+                <Input
+                  placeholder="Link"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  className="w-full"
+                  type="url"
+                />
+              </div>
+            </div>
+            
+            {/* Actions */}
+            <div className="flex border-t">
+              <Button
+                variant="ghost"
+                className="flex-1 h-12 rounded-none border-r text-primary"
+                onClick={handleLinkCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="ghost"
+                className="flex-1 h-12 rounded-none text-primary font-semibold"
+                onClick={handleLinkSave}
+                disabled={!linkUrl.trim()}
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
