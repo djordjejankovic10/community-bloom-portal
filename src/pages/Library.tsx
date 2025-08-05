@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BellIcon, MessageCircle, Search, ChevronDown, X, Plus } from 'lucide-react';
+import { BellIcon, MessageCircle, Search, ChevronDown, X, Plus, Check, Settings } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { MOCK_NOTIFICATIONS } from '@/data/mockNotifications';
@@ -13,7 +13,7 @@ const LibraryHeader = () => {
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const { sites } = useMenuPreferences();
+  const { sites, selectedSiteId, setSelectedSite } = useMenuPreferences();
   const { setHideBottomNav } = useUIPreferences();
   const [displaySites, setDisplaySites] = useState<Site[]>([]);
   
@@ -44,9 +44,11 @@ const LibraryHeader = () => {
     setIsBottomSheetOpen(!isBottomSheetOpen);
   };
   
-  const handleSiteNavigation = (url: string) => {
+  const handleSiteNavigation = (site: Site) => {
+    // Set as selected site
+    setSelectedSite(site.id);
     // Open in a new tab for external URLs
-    window.open(`https://${url}`, '_blank');
+    window.open(`https://${site.url}`, '_blank');
     // Close the bottom sheet
     setIsBottomSheetOpen(false);
   };
@@ -115,77 +117,84 @@ const LibraryHeader = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header - Fixed */}
-            <div className="flex justify-between items-center p-4 border-b border-border flex-shrink-0">
-              <h2 className="font-semibold text-lg">Site Switcher</h2>
+            <div className="flex justify-between items-center p-4 flex-shrink-0">
+              <h2 className="font-semibold text-xl">Sites</h2>
               <button 
                 onClick={toggleBottomSheet}
                 className="p-1 rounded-full hover:bg-muted/50"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               </button>
             </div>
             
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-4">
-              {/* Current Site */}
-              <div className="mb-6 p-3 bg-muted/30 rounded-lg border border-border">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 rounded-lg">
-                    <AvatarImage src="https://images.unsplash.com/photo-1493690283958-32df2c86326e?w=400&h=400&fit=crop" alt="ES Fitness" />
-                    <AvatarFallback>ES</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="font-medium">ES Fitness</span>
-                    <span className="text-xs text-muted-foreground">Library • www.esfitness.com</span>
-                  </div>
-                </div>
-              </div>
-              
+                        {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto px-4">
               {/* Sites List */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-sm text-muted-foreground">YOUR SITES</h3>
-                </div>
-                
-                <div className="space-y-3">
-                  {displaySites.map((site) => (
-                    <div key={site.id} className="group relative">
-                      <Button 
-                        variant="ghost" 
-                        className="w-full justify-start gap-3 hover:bg-muted/50"
-                        onClick={() => handleSiteNavigation(site.url)}
-                      >
-                        <Avatar className="h-9 w-9">
-                          <AvatarImage src={site.logo} alt={site.name} />
-                          <AvatarFallback>{site.fallback}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col items-start">
-                          <span className="font-medium">{site.name}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {site.url}
-                          </span>
-                        </div>
-                      </Button>
+              <div className="space-y-2.5 pb-4">
+                {displaySites.map((site) => (
+                  <div 
+                    key={site.id} 
+                    className="flex items-center gap-4 p-0 cursor-pointer rounded-md"
+                    onClick={() => handleSiteNavigation(site)}
+                  >
+                    <div className="w-[52px] h-[52px] rounded-lg flex-shrink-0 overflow-hidden bg-gray-100 flex items-center justify-center">
+                      <img 
+                        src={site.logo} 
+                        alt={site.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to showing the first letter with unique colors per site
+                          const colors = [
+                            'from-blue-500 to-purple-600',      // Fitness Community - Blue/Purple
+                            'from-green-500 to-teal-600',       // Tech Enthusiasts - Green/Teal
+                            'from-orange-500 to-red-600',       // Book Club - Orange/Red
+                            'from-pink-500 to-rose-600',        // Photography Hub - Pink/Rose
+                            'from-indigo-500 to-purple-600',    // Art & Design - Indigo/Purple
+                            'from-yellow-500 to-orange-600',    // Music Producers - Yellow/Orange
+                            'from-emerald-500 to-green-600',    // Cooking Club - Emerald/Green
+                            'from-cyan-500 to-blue-600',        // Travel Buddies - Cyan/Blue
+                            'from-lime-500 to-green-600',       // Gardening Group - Lime/Green
+                            'from-violet-500 to-purple-600'     // DIY Projects - Violet/Purple
+                          ];
+                          const colorIndex = parseInt(site.id) - 1;
+                          const colorClass = colors[colorIndex] || 'from-gray-500 to-gray-600';
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.parentElement.innerHTML = `<div class="w-full h-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-lg">${site.name.charAt(0)}</div>`;
+                        }}
+                      />
                     </div>
-                  ))}
-                </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-[#343332] text-[16px] leading-5 tracking-[0.16px] truncate">
+                        {site.name}
+                      </div>
+                      <div className="font-medium text-[#6c6a69] text-[12px] leading-[17px] truncate">
+                        http://address.com/site
+                      </div>
+                    </div>
+                    {selectedSiteId === site.id && (
+                      <div className="w-6 h-6 flex-shrink-0">
+                        <Check className="w-6 h-6 text-red-500" />
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
-            
-            {/* Sticky Bottom CTA */}
-            <div className="p-4 border-t border-border flex-shrink-0">
-              <Button 
-                variant="outline" 
-                className="w-full gap-2"
+
+            {/* Sticky Manage Sites - Always visible at bottom */}
+            <div className="border-t border-border bg-background px-4 py-4 flex-shrink-0">
+              <div 
+                className="flex items-center gap-[11px] cursor-pointer p-2.5 hover:bg-muted/50 rounded-lg transition-colors"
                 onClick={() => {
                   toggleBottomSheet();
-                  // This would typically open a dialog to add a new site
-                  // For now we just close the sheet
+                  navigate('/settings/manage-sites');
                 }}
               >
-                <Plus className="h-4 w-4" />
-                Add More Sites
-              </Button>
+                <Settings className="w-5 h-5 text-[#343332]" />
+                <span className="font-medium text-[14px] text-[#343332] tracking-[-0.16px]">
+                  Manage sites
+                </span>
+              </div>
             </div>
           </div>
         </div>

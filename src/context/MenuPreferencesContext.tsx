@@ -15,6 +15,8 @@ type MenuPreferencesContextType = {
   sites: Site[];
   addSite: (site: Omit<Site, 'id'>) => void;
   removeSite: (id: string) => void;
+  selectedSiteId: string | null;
+  setSelectedSite: (id: string) => void;
 };
 
 const MenuPreferencesContext = createContext<MenuPreferencesContextType | undefined>(undefined);
@@ -24,6 +26,8 @@ export const MenuPreferencesProvider: React.FC<{ children: React.ReactNode }> = 
   const [showSitesList, setShowSitesList] = useState(false);
   // Initialize with mock sites
   const [sites, setSites] = useState<Site[]>(MOCK_SITES as Site[]);
+  // Selected site (default to first site)
+  const [selectedSiteId, setSelectedSiteId] = useState<string | null>("1");
 
   // Load preferences and sites from localStorage on mount
   useEffect(() => {
@@ -36,6 +40,11 @@ export const MenuPreferencesProvider: React.FC<{ children: React.ReactNode }> = 
     if (savedSites !== null) {
       setSites(JSON.parse(savedSites));
     }
+
+    const savedSelectedSite = localStorage.getItem('selectedSiteId');
+    if (savedSelectedSite !== null) {
+      setSelectedSiteId(savedSelectedSite);
+    }
   }, []);
 
   // Save preferences and sites to localStorage whenever they change
@@ -46,6 +55,12 @@ export const MenuPreferencesProvider: React.FC<{ children: React.ReactNode }> = 
   useEffect(() => {
     localStorage.setItem('sites', JSON.stringify(sites));
   }, [sites]);
+
+  useEffect(() => {
+    if (selectedSiteId) {
+      localStorage.setItem('selectedSiteId', selectedSiteId);
+    }
+  }, [selectedSiteId]);
 
   const toggleSitesList = () => {
     setShowSitesList((prev) => !prev);
@@ -63,12 +78,18 @@ export const MenuPreferencesProvider: React.FC<{ children: React.ReactNode }> = 
     setSites((prevSites) => prevSites.filter((site) => site.id !== id));
   };
 
+  const setSelectedSite = (id: string) => {
+    setSelectedSiteId(id);
+  };
+
   const value = {
     showSitesList,
     toggleSitesList,
     sites,
     addSite,
     removeSite,
+    selectedSiteId,
+    setSelectedSite,
   };
 
   return (

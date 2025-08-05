@@ -25,6 +25,7 @@ import ComingSoonPage from "./pages/ComingSoon";
 import LibraryPage from "./pages/Library";
 import WelcomePage from "./pages/Welcome";
 import ResourcesPage from "./pages/Resources";
+import ManageSites from "./pages/ManageSites";
 // Settings functionality now integrated into Profile page
 import { MainLayout } from "@/components/layout/MainLayout";
 import { MenuPreferencesProvider } from "@/context/MenuPreferencesContext";
@@ -110,6 +111,11 @@ const App = () => (
               <Route path="/settings/notifications" element={
                 <MainLayout>
                   <NotificationSettings />
+                </MainLayout>
+              } />
+              <Route path="/settings/manage-sites" element={
+                <MainLayout>
+                  <ManageSites />
                 </MainLayout>
               } />
               <Route path="/profile/edit" element={
