@@ -8,14 +8,14 @@ import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type FilterType = 'all' | 'mentions' | 'replies';
+type FilterType = 'all' | 'unread';
 
 /**
  * NotificationsPage Component
  * 
  * UX Notes: This page provides a comprehensive notification management experience with:
  * - Chronological sorting with unread notifications prioritized at the top
- * - Filtering capabilities for different notification types
+ * - Filtering capabilities between all notifications and unread notifications
  * - Bulk actions for managing multiple notifications
  * - Loading states that maintain user engagement
  * - Empty states that guide users on what to expect
@@ -52,8 +52,7 @@ const NotificationsPage = () => {
   const filteredNotifications = notifications
     .filter(notification => {
       if (activeFilter === 'all') return true;
-      if (activeFilter === 'mentions') return notification.type === 'mention';
-      if (activeFilter === 'replies') return notification.type === 'comment';
+      if (activeFilter === 'unread') return !notification.isRead;
       return true;
     })
     .sort((a, b) => {
@@ -88,8 +87,7 @@ const NotificationsPage = () => {
               className="text-sm"
               onClick={handleMarkAllAsRead}
             >
-              <Check className="h-4 w-4 mr-2" />
-              Mark all as read
+              mark all read
             </Button>
           )}
         </div>
@@ -97,10 +95,19 @@ const NotificationsPage = () => {
         
         <div className="px-4 py-2">
           <Tabs value={activeFilter} onValueChange={(value) => setActiveFilter(value as FilterType)} className="w-full">
-            <TabsList className="grid grid-cols-3 w-full">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="mentions">Mentions</TabsTrigger>
-              <TabsTrigger value="replies">Replies</TabsTrigger>
+            <TabsList className="grid grid-cols-2 w-full h-auto bg-transparent p-0 border-b">
+              <TabsTrigger 
+                value="all" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none pb-3 font-medium"
+              >
+                All
+              </TabsTrigger>
+              <TabsTrigger 
+                value="unread" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none pb-3 font-medium"
+              >
+                Unread
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
