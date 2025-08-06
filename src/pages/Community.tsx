@@ -16,6 +16,7 @@ import { PinnedPosts } from "@/components/community/PinnedPosts";
 import { PostProps } from "@/types/post";
 import { PullToSearchBar } from "@/components/community/PullToSearchBar";
 import { usePullToReveal } from "@/hooks/usePullToReveal";
+import { AnnouncementBanner } from "@/components/community/AnnouncementBanner";
 
 // Helper function to get category icons
 const getCategoryIconName = (category: string): string => {
@@ -2139,6 +2140,9 @@ const Community = () => {
   const renderCommunityFeed = () => {
     return (
       <>
+        {/* Announcement banner - positioned at the very top of the feed */}
+        <AnnouncementBanner />
+        
         {/* Pull-to-reveal search bar */}
         <PullToSearchBar
           isVisible={isSearchVisible}
