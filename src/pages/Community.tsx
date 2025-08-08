@@ -286,6 +286,30 @@ export const MOCK_POSTS = [
     },
     replies: [],
   },
+  // Showcase: Post with audio file attachment
+  {
+    index: 1204,
+    category: "design",
+    author: {
+      firstName: "Jamie",
+      lastName: "Rivera",
+      handle: "@jamie",
+      avatar: "https://images.unsplash.com/photo-1545996124-0501ebae84d0?w=200&h=200&fit=crop&crop=faces&auto=format",
+      verified: false,
+    },
+    content: "Audio note attached for quick review.",
+    timestamp: "Just now",
+    metrics: { likes: 5, comments: 1 },
+    attachments: [
+      {
+        fileName: "12-59-36.m4a",
+        fileType: "audio/mp4",
+        url: "https://example.com/12-59-36.m4a",
+        fileSizeLabel: "7.1 KB",
+      },
+    ],
+    replies: [],
+  },
   // Deep threaded comments example post
   {
     index: 1001,
@@ -2190,7 +2214,7 @@ const Community = () => {
   );
 
   // Ensure our showcase posts are always at the very top regardless of sort
-  const showcaseIndices = new Set([1201, 1202, 1203]);
+  const showcaseIndices = new Set([1201, 1202, 1203, 1204]);
 
   // Make sure all posts have valid index properties
   const postsWithIndices = filteredPosts.map((post, idx) => {
@@ -2202,10 +2226,13 @@ const Community = () => {
   });
 
   const sortedPosts = [...postsWithIndices].sort((a, b) => {
-    // Showcase posts first
+    // Showcase posts first; if both are showcase, order by index desc so newest demo appears first
     const aShow = showcaseIndices.has(a.index || -1) ? 1 : 0;
     const bShow = showcaseIndices.has(b.index || -1) ? 1 : 0;
     if (aShow !== bShow) return bShow - aShow; // true first
+    if (aShow === 1 && bShow === 1) {
+      return (b.index || 0) - (a.index || 0);
+    }
 
     if (currentSort === "latest") {
       // Sort by engagement (likes + comments)

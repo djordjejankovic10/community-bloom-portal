@@ -1112,6 +1112,7 @@ export const FeedPost = ({
           <div className="mt-2 space-y-2 px-4">
             {attachments.map((file, i) => {
               const ext = file.fileName.split('.').pop()?.toUpperCase();
+              const isAudio = file.fileType?.startsWith('audio/') || /\.(m4a|mp3|wav|aac)$/i.test(file.fileName);
               return (
                 <a
                   key={`${file.fileName}-${i}`}
@@ -1119,7 +1120,18 @@ export const FeedPost = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between rounded-lg border p-3 hover:bg-accent"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isAudio) {
+                      e.preventDefault();
+                      const w = window.open('', '_blank');
+                      if (w) {
+                        const html = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>${file.fileName}</title></head><body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#111"><audio src="${file.url}" controls autoplay style="width:90%"></audio></body></html>`;
+                        w.document.write(html);
+                        w.document.close();
+                      }
+                    }
+                  }}
                 >
                   <div className="min-w-0 flex-1 pr-3">
                     <div className="truncate text-sm font-medium">{file.fileName}</div>
