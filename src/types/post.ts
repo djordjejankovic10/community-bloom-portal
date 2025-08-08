@@ -16,6 +16,14 @@ export type PostMedia = {
   aspectRatio?: number; // Width divided by height, for tall image detection
 };
 
+// Generic file attachment (non-image/video) such as PDFs, docs, zips
+export type PostAttachment = {
+  fileName: string;
+  fileType: string; // e.g., application/pdf, application/zip
+  url: string;
+  fileSizeLabel?: string; // Optional display string like "1.2 MB"
+};
+
 export type PostAuthor = {
   firstName: string;
   lastName: string;
@@ -37,6 +45,7 @@ export type PostProps = {
   metrics: PostMetrics;
   media?: PostMedia;
   mediaItems?: PostMedia[]; // Multiple media items for carousel
+  attachments?: PostAttachment[]; // Non-image/video file attachments
   replies?: PostProps[];
   index?: number;
   pinned?: boolean;

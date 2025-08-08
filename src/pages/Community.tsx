@@ -204,6 +204,88 @@ export const MOCK_POSTS = [
   PINNED_POST_996,
   PINNED_POST_995,
   PINNED_POST_994,
+  // Showcase: Single attached file (image)
+  {
+    index: 1201,
+    category: "product",
+    author: {
+      firstName: "Ava",
+      lastName: "Nguyen",
+      handle: "@ava",
+      avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&crop=faces&auto=format",
+      verified: true,
+    },
+    content: "Quick update — attaching the single file mock we discussed.",
+    timestamp: "Just now",
+    metrics: { likes: 12, comments: 3, shares: 1 },
+    attachments: [
+      {
+        fileName: "Design-Brief-Q2.pdf",
+        fileType: "application/pdf",
+        url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        fileSizeLabel: "1.1 MB",
+      }
+    ],
+    replies: [],
+  },
+  // Showcase: Multiple attached files (mixed images + video)
+  {
+    index: 1202,
+    category: "design",
+    author: {
+      firstName: "Noah",
+      lastName: "Lee",
+      handle: "@noah",
+      avatar: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=200&h=200&fit=crop&crop=faces&auto=format",
+      verified: false,
+    },
+    content: "Here are multiple attachments from today’s session.",
+    timestamp: "Just now",
+    metrics: { likes: 24, comments: 5 },
+    attachments: [
+      {
+        fileName: "Wireframes.fig",
+        fileType: "application/octet-stream",
+        url: "https://example.com/wireframes.fig",
+        fileSizeLabel: "4.8 MB",
+      },
+      {
+        fileName: "Copy-Deck.docx",
+        fileType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        url: "https://example.com/copy-deck.docx",
+        fileSizeLabel: "280 KB",
+      },
+      {
+        fileName: "Sprint-Assets.zip",
+        fileType: "application/zip",
+        url: "https://example.com/sprint-assets.zip",
+        fileSizeLabel: "12.3 MB",
+      },
+    ],
+    replies: [],
+  },
+  // Showcase: Post with embedded content (simulated)
+  {
+    index: 1203,
+    category: "marketing",
+    author: {
+      firstName: "Elena",
+      lastName: "Garcia",
+      handle: "@elena",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces&auto=format",
+      verified: true,
+    },
+    content: "Embedded content preview: YouTube demo (simulated).",
+    timestamp: "Just now",
+    metrics: { likes: 31, comments: 7 },
+    // Keep media for visual embed simulation
+    media: {
+      type: "video" as const,
+      url: "https://www.w3schools.com/html/movie.mp4",
+      aspectRatio: 1.78,
+    },
+    replies: [],
+  },
   // Deep threaded comments example post
   {
     index: 1001,
@@ -2107,6 +2189,9 @@ const Community = () => {
     (activeFilter === "all" || post.category === activeFilter) && !post.pinned
   );
 
+  // Ensure our showcase posts are always at the very top regardless of sort
+  const showcaseIndices = new Set([1201, 1202, 1203]);
+
   // Make sure all posts have valid index properties
   const postsWithIndices = filteredPosts.map((post, idx) => {
     // If post doesn't have an index property, assign one based on its position
@@ -2117,6 +2202,11 @@ const Community = () => {
   });
 
   const sortedPosts = [...postsWithIndices].sort((a, b) => {
+    // Showcase posts first
+    const aShow = showcaseIndices.has(a.index || -1) ? 1 : 0;
+    const bShow = showcaseIndices.has(b.index || -1) ? 1 : 0;
+    if (aShow !== bShow) return bShow - aShow; // true first
+
     if (currentSort === "latest") {
       // Sort by engagement (likes + comments)
       const engagementA = a.metrics.likes + a.metrics.comments;

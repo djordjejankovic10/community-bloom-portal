@@ -223,6 +223,7 @@ export const FeedPost = ({
   metrics: initialMetrics, 
   media, 
   mediaItems,
+  attachments,
   replies, 
   index, 
   pinned, 
@@ -1039,25 +1040,39 @@ export const FeedPost = ({
                         {idx + 1}/{mediaItems.length}
                       </div>
                     )}
-                    <img
-                      src={item.url}
-                      alt=""
-                      className={cn(
-                        "w-full rounded-lg cursor-pointer",
-                        // Check if any image in the carousel is at least 600px high (portrait)
-                        // If so, use a fixed height of 600px for ALL images with object-cover
-                        mediaItems.some(mediaItem => mediaItem.aspectRatio && mediaItem.aspectRatio < 1) 
-                          ? "h-[600px] object-cover object-center" 
-                          : "max-h-[600px] object-contain"
-                      )}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveImageIndex(idx);
-                        setIsPhotoViewerOpen(true);
-                        setZoomLevel(1);
-                        setPosition({ x: 0, y: 0 });
-                      }}
-                    />
+                    {item.type === 'image' ? (
+                      <img
+                        src={item.url}
+                        alt=""
+                        className={cn(
+                          "w-full rounded-lg cursor-pointer",
+                          mediaItems.some(mediaItem => mediaItem.aspectRatio && mediaItem.aspectRatio < 1) 
+                            ? "h-[600px] object-cover object-center" 
+                            : "max-h-[600px] object-contain"
+                        )}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveImageIndex(idx);
+                          setIsPhotoViewerOpen(true);
+                          setZoomLevel(1);
+                          setPosition({ x: 0, y: 0 });
+                        }}
+                      />
+                    ) : item.type === 'video' ? (
+                      <div className="w-full rounded-lg bg-muted aspect-video flex items-center justify-center">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-12 w-12 rounded-full bg-background/80 hover:bg-background/90"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log("Play video:", item.url);
+                          }}
+                        >
+                          <Play className="h-6 w-6" />
+                        </Button>
+                      </div>
+                    ) : null}
                   </div>
                 ))}
               </div>
@@ -1089,6 +1104,33 @@ export const FeedPost = ({
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Attachments Section - non-image/video files (e.g., PDFs) */}
+        {Array.isArray(attachments) && attachments.length > 0 && (
+          <div className="mt-2 space-y-2 px-4">
+            {attachments.map((file, i) => {
+              const ext = file.fileName.split('.').pop()?.toUpperCase();
+              return (
+                <a
+                  key={`${file.fileName}-${i}`}
+                  href={file.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between rounded-lg border p-3 hover:bg-accent"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="min-w-0 flex-1 pr-3">
+                    <div className="truncate text-sm font-medium">{file.fileName}</div>
+                    <div className="text-xs text-muted-foreground">{file.fileSizeLabel || file.fileType}</div>
+                  </div>
+                  <div className="h-10 w-10 rounded bg-muted/70 flex items-center justify-center">
+                    <span className="text-[10px] font-medium text-muted-foreground uppercase">{ext || 'FILE'}</span>
+                  </div>
+                </a>
+              );
+            })}
           </div>
         )}
       </div>

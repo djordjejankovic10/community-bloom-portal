@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { 
   Image, 
@@ -14,7 +15,9 @@ import {
   Strikethrough,
   List,
   ListOrdered,
-  Link
+  Link,
+  Code,
+  Paperclip
 } from "lucide-react";
 
 interface ComposerToolbarProps {
@@ -23,8 +26,10 @@ interface ComposerToolbarProps {
   activeFormats: Set<string>;
   onFormatting: (formatType: string) => void;
   onMediaUpload: () => void;
+  onAttachFile: () => void;
   onMentionClick: () => void;
   onAIClick: () => void;
+  onEmbedClick: () => void;
   // Link dialog props
   isLinkDialogOpen: boolean;
   linkText: string;
@@ -33,6 +38,12 @@ interface ComposerToolbarProps {
   setLinkUrl: (url: string) => void;
   onLinkCancel: () => void;
   onLinkSave: () => void;
+  // Embed dialog props
+  isEmbedDialogOpen: boolean;
+  embedContent: string;
+  setEmbedContent: (content: string) => void;
+  onEmbedCancel: () => void;
+  onEmbedSave: () => void;
 }
 
 /**
@@ -50,8 +61,10 @@ export const ComposerToolbar: React.FC<ComposerToolbarProps> = ({
   activeFormats,
   onFormatting,
   onMediaUpload,
+  onAttachFile,
   onMentionClick,
   onAIClick,
+  onEmbedClick,
   isLinkDialogOpen,
   linkText,
   linkUrl,
@@ -59,6 +72,11 @@ export const ComposerToolbar: React.FC<ComposerToolbarProps> = ({
   setLinkUrl,
   onLinkCancel,
   onLinkSave,
+  isEmbedDialogOpen,
+  embedContent,
+  setEmbedContent,
+  onEmbedCancel,
+  onEmbedSave,
 }) => {
   return (
     <>
@@ -73,6 +91,16 @@ export const ComposerToolbar: React.FC<ComposerToolbarProps> = ({
               onClick={onMediaUpload}
             >
               <Image className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+              onClick={onAttachFile}
+              aria-label="Attach file"
+              title="Attach file"
+            >
+              <Paperclip className="h-5 w-5" />
             </Button>
             <Button
               variant="ghost"
@@ -102,8 +130,9 @@ export const ComposerToolbar: React.FC<ComposerToolbarProps> = ({
               variant="ghost"
               size="icon"
               className="h-9 w-9 rounded-full"
+              onClick={onEmbedClick}
             >
-              <FileText className="h-5 w-5" />
+              <Code className="h-5 w-5" />
             </Button>
           </div>
         ) : (
@@ -233,6 +262,50 @@ export const ComposerToolbar: React.FC<ComposerToolbarProps> = ({
                 className="flex-1 h-12 rounded-none text-primary font-semibold"
                 onClick={onLinkSave}
                 disabled={!linkUrl.trim()}
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Embed Dialog */}
+      {isEmbedDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-background rounded-2xl w-full max-w-md mx-4 shadow-xl">
+            {/* Header */}
+            <div className="px-6 py-4 border-b text-center">
+              <h3 className="text-lg font-semibold">Embed Content</h3>
+            </div>
+            
+            {/* Form */}
+            <div className="p-6 space-y-4">
+              <div>
+                <Textarea
+                  placeholder="Paste a URL (e.g., YouTube, Twitter, Instagram)"
+                  value={embedContent}
+                  onChange={(e) => setEmbedContent(e.target.value)}
+                  className="w-full min-h-[100px] resize-none"
+                  rows={4}
+                />
+              </div>
+            </div>
+            
+            {/* Actions */}
+            <div className="flex border-t">
+              <Button
+                variant="ghost"
+                className="flex-1 h-12 rounded-none border-r text-primary"
+                onClick={onEmbedCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="ghost"
+                className="flex-1 h-12 rounded-none text-primary font-semibold"
+                onClick={onEmbedSave}
+                disabled={!embedContent.trim()}
               >
                 Save
               </Button>

@@ -221,8 +221,14 @@ const CreatePostPage = () => {
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [linkText, setLinkText] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
+  const [isEmbedDialogOpen, setIsEmbedDialogOpen] = useState(false);
+  const [embedContent, setEmbedContent] = useState("");
+  const [embeddedItems, setEmbeddedItems] = useState<{type: 'url' | 'embed', content: string, preview?: string | null}[]>([]);
+  type AttachedFile = { name: string; size: number; type: string; url: string };
+  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileAttachInputRef = useRef<HTMLInputElement>(null);
   const params = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -424,6 +430,87 @@ const CreatePostPage = () => {
     }, 0);
   };
 
+  // Handle embed dialog actions
+  const handleEmbedClick = () => {
+    setIsEmbedDialogOpen(true);
+  };
+
+  const handleEmbedCancel = () => {
+    setIsEmbedDialogOpen(false);
+    setEmbedContent("");
+  };
+
+  const handleEmbedSave = () => {
+    if (!embedContent.trim()) return;
+
+    // Determine if it's a URL or HTML embed code
+    const isUrl = embedContent.trim().startsWith('http') && !embedContent.includes('<');
+    const isHtmlEmbed = embedContent.includes('<iframe') || embedContent.includes('<blockquote') || embedContent.includes('<embed');
+
+    let processedContent = embedContent.trim();
+    let embedType: 'url' | 'embed' = 'url';
+
+    if (isHtmlEmbed) {
+      embedType = 'embed';
+      // For demo purposes, we'll store the HTML as-is
+      // In production, you'd want to sanitize and validate the HTML
+    } else if (isUrl) {
+      embedType = 'url';
+    } else {
+      // Try to detect if it's a URL without protocol
+      if (embedContent.includes('.') && !embedContent.includes(' ')) {
+        processedContent = embedContent.startsWith('www.') ? `https://${embedContent}` : `https://www.${embedContent}`;
+        embedType = 'url';
+      }
+    }
+
+    // Add to embedded items
+    const newEmbedItem = {
+      type: embedType,
+      content: processedContent,
+      preview: null // Will be populated by preview service
+    };
+
+    setEmbeddedItems(prev => [...prev, newEmbedItem]);
+
+    // Close dialog and reset
+    setIsEmbedDialogOpen(false);
+    setEmbedContent("");
+
+    toast({
+      description: "Embed added successfully!",
+    });
+  };
+
+  // Attach file actions
+  const handleAttachFileClick = () => {
+    fileAttachInputRef.current?.click();
+  };
+
+  const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const newFiles: AttachedFile[] = Array.from(files).map((f) => ({
+      name: f.name,
+      size: f.size,
+      type: f.type || 'application/octet-stream',
+      url: URL.createObjectURL(f),
+    }));
+    setAttachedFiles((prev) => [...prev, ...newFiles]);
+    // reset input
+    if (fileAttachInputRef.current) fileAttachInputRef.current.value = '';
+  };
+
+  const handleRemoveAttachment = (index: number) => {
+    setAttachedFiles((prev) => {
+      const copy = [...prev];
+      const item = copy[index];
+      if (item?.url) URL.revokeObjectURL(item.url);
+      copy.splice(index, 1);
+      return copy;
+    });
+  };
+
   // Handle rich text formatting
   const handleFormatting = (formatType: string) => {
     if (!textareaRef.current) return;
@@ -617,6 +704,82 @@ const CreatePostPage = () => {
                 ref={mediaUploaderRef}
               />
             )}
+
+            {/* Attached files preview */}
+            {attachedFiles.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {attachedFiles.map((file, idx) => (
+                  <div key={`${file.name}-${idx}`} className="flex items-center justify-between rounded-lg border p-2">
+                    <div className="min-w-0 flex-1 pr-3">
+                      <div className="truncate text-sm font-medium">{file.name}</div>
+                      <div className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</div>
+                    </div>
+                    {(() => {
+                      const ext = file.name.split('.').pop()?.toUpperCase();
+                      if (file.type.startsWith('image/')) {
+                        return <img src={file.url} alt={file.name} className="h-10 w-10 object-cover rounded" />;
+                      }
+                      if (file.type.startsWith('video/')) {
+                        return (
+                          <div className="h-10 w-10 rounded bg-muted/70 flex items-center justify-center">
+                            <Video className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        );
+                      }
+                      return (
+                        <div className="h-10 w-10 rounded bg-muted/70 flex items-center justify-center">
+                          <span className="text-[10px] font-medium text-muted-foreground uppercase">{ext || 'FILE'}</span>
+                        </div>
+                      );
+                    })()}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="ml-2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                      onClick={() => handleRemoveAttachment(idx)}
+                      aria-label="Remove attachment"
+                      title="Remove"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Display embedded content */}
+            {embeddedItems.length > 0 && (
+              <div className="space-y-2 mt-2">
+                {embeddedItems.map((item, index) => (
+                  <div key={index} className="border rounded-lg p-3 bg-accent/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {item.type === 'embed' ? 'HTML Embed' : 'URL Embed'}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                        onClick={() => {
+                          setEmbeddedItems(prev => prev.filter((_, i) => i !== index));
+                        }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="text-sm text-foreground break-all">
+                      {item.type === 'url' ? (
+                        <span>{item.content}</span>
+                      ) : (
+                        <code className="text-xs bg-muted p-1 rounded">
+                          {item.content.length > 100 ? `${item.content.substring(0, 100)}...` : item.content}
+                        </code>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             
             {/* Display mentioned content */}
             {mentionedContent.length > 0 && (
@@ -648,8 +811,10 @@ const CreatePostPage = () => {
         activeFormats={activeFormats}
         onFormatting={handleFormatting}
         onMediaUpload={() => toggleMediaUploader({} as React.MouseEvent<HTMLButtonElement>)}
+        onAttachFile={handleAttachFileClick}
         onMentionClick={() => handleMentionClick({} as React.MouseEvent<HTMLButtonElement>)}
         onAIClick={handleAIClick}
+        onEmbedClick={handleEmbedClick}
         isLinkDialogOpen={isLinkDialogOpen}
         linkText={linkText}
         linkUrl={linkUrl}
@@ -657,6 +822,20 @@ const CreatePostPage = () => {
         setLinkUrl={setLinkUrl}
         onLinkCancel={handleLinkCancel}
         onLinkSave={handleLinkSave}
+        isEmbedDialogOpen={isEmbedDialogOpen}
+        embedContent={embedContent}
+        setEmbedContent={setEmbedContent}
+        onEmbedCancel={handleEmbedCancel}
+        onEmbedSave={handleEmbedSave}
+      />
+
+      {/* Hidden file input for attachments */}
+      <input
+        ref={fileAttachInputRef}
+        type="file"
+        className="hidden"
+        onChange={handleFilesSelected}
+        multiple
       />
 
       {/* No need for the custom mention dropdown anymore as it's handled by MentionProvider */}

@@ -76,6 +76,8 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [linkText, setLinkText] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
+  const [isEmbedDialogOpen, setIsEmbedDialogOpen] = useState(false);
+  const [embedContent, setEmbedContent] = useState("");
 
   // Auto-focus the textarea when the sheet opens
   useEffect(() => {
@@ -309,6 +311,28 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
       }
     }, 0);
   };
+
+  // Handle embed dialog actions
+  const handleEmbedClick = () => {
+    setIsEmbedDialogOpen(true);
+  };
+
+  const handleEmbedCancel = () => {
+    setIsEmbedDialogOpen(false);
+    setEmbedContent("");
+  };
+
+  const handleEmbedSave = () => {
+    if (!embedContent.trim()) return;
+
+    // For replies, we'll just add the embed content as a reference in the text
+    const embedRef = embedContent.includes('<') ? '[HTML Embed]' : `[${embedContent}]`;
+    setReplyText(prev => prev + (prev ? '\n\n' : '') + embedRef);
+    
+    // Close dialog and reset
+    setIsEmbedDialogOpen(false);
+    setEmbedContent("");
+  };
   
   const handleAISubmit = () => {
     if (aiNotes.trim()) {
@@ -483,8 +507,10 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
           activeFormats={activeFormats}
           onFormatting={handleFormatting}
           onMediaUpload={() => toggleMediaUploader({} as React.MouseEvent<HTMLButtonElement>)}
+          onAttachFile={() => toggleMediaUploader({} as React.MouseEvent<HTMLButtonElement>)}
           onMentionClick={() => handleMentionClick()}
           onAIClick={handleAIClick}
+          onEmbedClick={handleEmbedClick}
           isLinkDialogOpen={isLinkDialogOpen}
           linkText={linkText}
           linkUrl={linkUrl}
@@ -492,6 +518,11 @@ export function ReplySheet({ open, onClose, onSendReply, replyingTo, isTopLevel 
           setLinkUrl={setLinkUrl}
           onLinkCancel={handleLinkCancel}
           onLinkSave={handleLinkSave}
+          isEmbedDialogOpen={isEmbedDialogOpen}
+          embedContent={embedContent}
+          setEmbedContent={setEmbedContent}
+          onEmbedCancel={handleEmbedCancel}
+          onEmbedSave={handleEmbedSave}
         />
       </div>
       
