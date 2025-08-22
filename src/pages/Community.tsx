@@ -228,6 +228,86 @@ export const MOCK_POSTS = [
     ],
     replies: [],
   },
+  // Showcase: Rich Media Post Example with mixed carousel and attachments
+  {
+    index: 1205,
+    category: "fitness",
+    author: {
+      firstName: "Sarah",
+      lastName: "Martinez",
+      handle: "@sarahfitness",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces&auto=format",
+      role: "admin" as const,
+      titleBadge: {
+        title: "Fitness Coach",
+        tier: "gold" as const,
+        icon: "🏆"
+      }
+    },
+    content: "Complete workout package from today's training session! 💪 Here's everything you need to follow along - photos from the session showing different exercises and techniques. Swipe through the media to see the progression, then download the files below for your home workouts. Don't forget to tag me when you try these exercises! #FitnessJourney #WorkoutWednesday",
+    timestamp: "45m",
+    metrics: {
+      likes: 89,
+      comments: 23,
+      shares: 12,
+      userReacted: true,
+      userReactionType: 'inspired' as const
+    },
+    mediaItems: [
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200&h=800&fit=crop&auto=format",
+        aspectRatio: 1.5 // Landscape - group workout setup
+      },
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&h=800&fit=crop&auto=format",
+        aspectRatio: 1.5 // Landscape - gym equipment view
+      },
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=1200&h=800&fit=crop&auto=format",
+        aspectRatio: 1.5 // Landscape - workout in progress
+      },
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&h=800&fit=crop&auto=format",
+        aspectRatio: 1.5 // Landscape - team training session
+      },
+      {
+        type: "image" as const,
+        url: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=1200&h=800&fit=crop&auto=format",
+        aspectRatio: 1.5 // Landscape - finished workout celebration
+      }
+    ],
+    attachments: [
+      {
+        fileName: "Complete_Workout_Guide.pdf",
+        fileType: "application/pdf",
+        url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        fileSizeLabel: "2.4 MB"
+      },
+      {
+        fileName: "Nutrition_Plan_Week1.pdf",
+        fileType: "application/pdf", 
+        url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        fileSizeLabel: "1.8 MB"
+      },
+      {
+        fileName: "Workout_Playlist.m4a",
+        fileType: "audio/m4a",
+        url: "https://sample-music.netlify.app/death%20bed.mp3",
+        fileSizeLabel: "8.2 MB"
+      },
+      {
+        fileName: "Exercise_Tracking_Sheet.xlsx",
+        fileType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        url: "https://file-examples.com/storage/fe68c23451e7bb68d03ff74/2017/10/file_example_XLS_10.xls",
+        fileSizeLabel: "24 KB"
+      }
+    ],
+    replies: []
+  },
   // Showcase: Multiple attached files (mixed images + video)
   {
     index: 1202,
@@ -2214,7 +2294,7 @@ const Community = () => {
   );
 
   // Ensure our showcase posts are always at the very top regardless of sort
-  const showcaseIndices = new Set([1201, 1202, 1203, 1204]);
+  const showcaseIndices = new Set([1201, 1205, 1202, 1203, 1204]);
 
   // Make sure all posts have valid index properties
   const postsWithIndices = filteredPosts.map((post, idx) => {

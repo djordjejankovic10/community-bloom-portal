@@ -949,7 +949,7 @@ export const FeedPost = ({
                 <img
                   src={media.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
                   alt=""
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-center"
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                   <Button
@@ -1059,18 +1059,25 @@ export const FeedPost = ({
                         }}
                       />
                     ) : item.type === 'video' ? (
-                      <div className="w-full rounded-lg bg-muted aspect-video flex items-center justify-center">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-12 w-12 rounded-full bg-background/80 hover:bg-background/90"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            console.log("Play video:", item.url);
-                          }}
-                        >
-                          <Play className="h-6 w-6" />
-                        </Button>
+                      <div className="relative w-full rounded-lg bg-muted aspect-video overflow-hidden">
+                        <img
+                          src={item.thumbnail || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&fit=crop"}
+                          alt=""
+                          className="w-full h-full object-cover object-center"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-12 w-12 rounded-full bg-background/80 hover:bg-background/90"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              console.log("Play video:", item.url);
+                            }}
+                          >
+                            <Play className="h-6 w-6" />
+                          </Button>
+                        </div>
                       </div>
                     ) : null}
                   </div>
@@ -1530,4 +1537,90 @@ export const MixedOrientationPostExample = () => {
   };
   
   return <FeedPost {...mixedMediaPost} />;
+};
+
+// Example post with mixed media carousel (images + videos) and file attachments
+export const RichMediaPostExample = () => {
+  const richMediaPost: PostProps = {
+    author: {
+      firstName: "Sarah",
+      lastName: "Martinez",
+      handle: "@sarahfitness",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces&auto=format",
+      role: "admin",
+      titleBadge: {
+        title: "Fitness Coach",
+        tier: "gold",
+        icon: "🏆"
+      }
+    },
+    content: "Complete workout package from today's training session! 💪 Here's everything you need to follow along - photos from the session showing different exercises and techniques. Swipe through the media to see the progression, then download the files below for your home workouts. Don't forget to tag me when you try these exercises! #FitnessJourney #WorkoutWednesday",
+    timestamp: "45m ago",
+    metrics: {
+      likes: 89,
+      comments: 23,
+      shares: 12,
+      userReacted: true,
+      userReactionType: 'inspired'
+    },
+    mediaItems: [
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=1200&fit=crop&auto=format",
+        aspectRatio: 0.67 // Portrait - workout setup photo
+      },
+      {
+        type: "video",
+        url: "https://sample-videos.com/zip/10/mp4/SampleVideo_720x480_1mb.mp4",
+        thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop&auto=format",
+        aspectRatio: 1.33 // Landscape - exercise demo video
+      },
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200&h=800&fit=crop&auto=format",
+        aspectRatio: 1.5 // Landscape - group workout photo
+      },
+      {
+        type: "video",
+        url: "https://sample-videos.com/zip/10/mp4/SampleVideo_720x480_2mb.mp4",
+        thumbnail: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=800&h=600&fit=crop&auto=format",
+        aspectRatio: 1.2 // Form correction video
+      },
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=800&h=1200&fit=crop&auto=format",
+        aspectRatio: 0.66 // Portrait - final results photo
+      }
+    ],
+    attachments: [
+      {
+        fileName: "Complete_Workout_Guide.pdf",
+        fileType: "application/pdf",
+        url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        fileSizeLabel: "2.4 MB"
+      },
+      {
+        fileName: "Nutrition_Plan_Week1.pdf",
+        fileType: "application/pdf", 
+        url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        fileSizeLabel: "1.8 MB"
+      },
+      {
+        fileName: "Workout_Playlist.m4a",
+        fileType: "audio/m4a",
+        url: "https://sample-music.netlify.app/death%20bed.mp3",
+        fileSizeLabel: "8.2 MB"
+      },
+      {
+        fileName: "Exercise_Tracking_Sheet.xlsx",
+        fileType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        url: "https://file-examples.com/storage/fe68c23451e7bb68d03ff74/2017/10/file_example_XLS_10.xls",
+        fileSizeLabel: "24 KB"
+      }
+    ],
+    index: 1000,
+    category: "fitness"
+  };
+  
+  return <FeedPost {...richMediaPost} />;
 };
